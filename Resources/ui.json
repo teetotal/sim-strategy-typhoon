@@ -1,0 +1,77 @@
+{
+    "_Name": "main",
+    "_GridDim":{"x":1,"y":30},
+    "_Margin":{"x":0.0,"y":0.0},
+    "_InnerMargin":{"x":0.0,"y":0.0},
+    "_Objects": [
+    ],
+    "_Subs":[
+        {
+            "_Name": "top",
+            "_BGColor": [1, 1 , 1, 0],
+            "_From": {"x": 0, "y": 28},
+            "_To": {"x": 0, "y": 29},
+            "_GridDim":{"x":12,"y":1},
+            "_Margin":{"x":10, "y":10},
+            "_InnerMargin":{"x":0.0,"y":0},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":10,"y":0},
+                    "name":"zoomin",
+                    "tag":"UI",
+                    "prefab": "button_default",
+                    "ui": true,
+                    "text": "IN"
+                },
+                {
+                    "position":{"x":11,"y":0},
+                    "name":"zoomout",
+                    "tag":"UI",
+                    "prefab": "button_default",
+                    "ui": true,
+                    "text": "OUT"
+                }
+            ]
+        },
+        {
+            "_Name": "bottom",
+            "_BGColor": [1, 1 , 1, 0],
+            "_From": {"x": 0, "y": 1},
+            "_To": {"x": 0, "y": 2},
+            "_GridDim":{"x":12,"y":1},
+            "_Margin":{"x":10, "y":0.1},
+            "_InnerMargin":{"x":0.0,"y":0},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"building",
+                    "tag":"UI",
+                    "prefab": "button_default",
+                    "ui": true,
+                    "text": "BUILD"
+                }
+            ]
+        },
+        {
+            "_Name": "buildings",
+            "_BGColor": [0, 0, 0, 1],
+            "_From": {"x": 0, "y": 0},
+            "_To": {"x": 0, "y": 4},
+            "_GridDim":{"x":1,"y":1},
+            "_Margin":{"x":0, "y":0},
+            "_InnerMargin":{"x":0.1,"y":0.1},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"scrollview",
+                    "tag":"UI",
+                    "prefab": "scrollview_default",
+                    "ui": true
+                }
+            ]
+        }
+    ]
+}

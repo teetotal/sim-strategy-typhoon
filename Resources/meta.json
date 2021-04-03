@@ -1,0 +1,83 @@
+{
+    "resources": [
+        {
+            "id": 0,
+            "name": "나무"
+        },
+        {
+            "id": 1,
+            "name": "열매"
+        }
+    ],
+    "actors": [
+        {
+            "id": 0,
+            "name": "고양이 전사",
+            "level": 1,
+            "ability": {
+                "building": 1,
+                "farming": 1,
+                "carring": 1,
+                "attack": 10,
+                "depense": 10,
+                "moving": 1
+            },
+            "wage": [
+                {
+                    "resourceId": 1,
+                    "amount": 1 
+                }
+            ]
+        },
+        {
+            "id": 1,
+            "name": "착한 멍멍이",
+            "level": 1,
+            "ability": {
+                "building": 1,
+                "farming": 2,
+                "carring": 2,
+                "attack": 1,
+                "depense": 1,
+                "moving": 2
+            },
+            "wage": [
+                {
+                    "resourceId": 1,
+                    "amount": 1 
+                }
+            ]
+        }
+    ],
+    "buildings": [
+        {
+            "desc": "10초",
+            "id": 0,
+            "name": "열매열매 채집장 lv.1",
+            "level": 1,
+            "dimension": {
+                "x": 1,
+                "y": 1
+            },
+            "buildCost": 10,
+            "costs": [
+                {
+                    "resourceId": 0,
+                    "amount": 10
+                }
+            ],
+            "output": [
+                {
+                    "resourceId": 1,
+                    "amount": 4
+                }
+            ],
+            "actors": [
+                {
+                    "actorId": 0,
+                    "max": 5
+                }
+            ]
+        }
+    ]
+}

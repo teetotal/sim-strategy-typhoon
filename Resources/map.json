@@ -1,0 +1,92 @@
+{   
+    "prefabs": [
+        {
+            "name": "ForestEmpty",
+            "cost": 0
+        },
+        {
+            "name": "ForestTreeSpruce_01",
+            "cost": 10
+        },
+        {
+            "name": "ForestTreeSpruce_02",
+            "cost": 11
+        },
+        {
+            "name": "ForestTreeSpruce_03",
+            "cost": 12
+        },
+        {
+            "name": "ForestTent_01",
+            "cost": 1
+        },
+        {
+            "name": "ForestTent_02",
+            "cost": 2
+        },
+        {
+            "name": "ForestTent_03",
+            "cost": 3
+        }
+    ],
+    "grid": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+    },
+    "dimension": {
+        "x": 16,
+        "y": 16
+    },
+    "defaultVal": {
+        "cost": 0,
+        "prefabId": 0,
+        "tag": "Bottom"
+    },
+    "nodes": [
+        {
+            "prefabId": 1,
+            "positions": [48, 64, 80, 96, 112, 128, 144, 160, 176],
+            "range": {
+                "start": 0,
+                "end": 15
+            }
+        },
+        {
+            "prefabId": 1,
+            "positions": [],
+            "range": {
+                "start": 192,
+                "end": 255
+            }
+        },
+        {
+            "prefabId": 2,
+            "positions": [],
+            "range": {
+                "start": 16,
+                "end": 31
+            }
+        },
+        {
+            "prefabId": 3,
+            "positions": [],
+            "range": {
+                "start": 32,
+                "end": 47
+            }
+        },
+        {
+            "prefabId": 4,
+            "positions": [ 60, 120, 180 ]
+        },
+        {
+            "prefabId": 5,
+            "positions": [ 88, 72 ]
+        },
+        {
+            "prefabId": 6,
+            "positions": [ 100, 105 ]
+        }
+    ]
+}
