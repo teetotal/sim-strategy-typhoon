@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class ContextNone : IContext
 {
-    bool isDrag = false;
+    public bool isDrag = false;
     Vector3 posFirst;
     Quaternion v3Rotation;
     const float weight = 1.5f;
@@ -11,6 +11,10 @@ public class ContextNone : IContext
     public void Init()
     {
         v3Rotation = Camera.main.transform.rotation;
+    }
+    public void Reset()
+    {
+        isDrag = false;
     }
 
     Vector3 GetDiff(Vector3 v3Direction)

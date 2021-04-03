@@ -125,7 +125,7 @@ public class MapManager
             //positions
             for(int i = 0; i < node.positions.Count; i++)
             {
-                CreateBuilding(node.positions[i], node, prefabInfo);   
+                CreateBuilding(node.positions[i], prefabInfo.name, prefabInfo.cost);   
             }
 
             //range
@@ -133,17 +133,17 @@ public class MapManager
             {
                 for(int id = node.range.start; id <= node.range.end; id++)
                 {
-                    CreateBuilding(id, node, prefabInfo);   
+                    CreateBuilding(id, prefabInfo.name, prefabInfo.cost);   
                 }
             }
         }
     }
-    private void CreateBuilding(int id, Map.Node node, Map.Prefab prefabInfo)
+    public void CreateBuilding(int id, string prefab, int cost)
     {
         GameObject parent = defaultGameObjects[id];
         Vector2Int position = GetMapPosition(id);
-        map[position.x, position.y] = prefabInfo.cost;
-        GameObject obj = Resources.Load<GameObject>(prefabInfo.name);
+        map[position.x, position.y] = cost;
+        GameObject obj = Resources.Load<GameObject>(prefab);
         obj = GameObject.Instantiate(obj, new Vector3(parent.transform.position.x, parent.transform.position.y + 0.1f, parent.transform.position.z), Quaternion.identity);
 
         obj.transform.SetParent(parent.transform);

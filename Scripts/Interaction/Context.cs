@@ -11,6 +11,7 @@ public class Context
         BUILD,
         MAX
     }
+    public Dictionary<Context.Mode, IContext> contexts;
     private static readonly Lazy<Context> hInstance = new Lazy<Context>(() => new Context());
     public Mode mode = Mode.NONE;
     public bool isInitialized = false;
@@ -22,6 +23,36 @@ public class Context
     }
     protected Context()
     {
+        contexts = new Dictionary<Context.Mode, IContext>()
+        {
+            { Context.Mode.NONE,        new ContextNone()   },
+            { Context.Mode.UI_BUILD,    new ContextDummy()  },
+            { Context.Mode.BUILD,       new ContextBuild()  }
+        };
+
+        //init
+        foreach (KeyValuePair<Context.Mode, IContext> kv in contexts)
+        {
+            kv.Value.Init();
+        }
+    }
+    public void Update()
+    {
+        //event별 context 호출
+        if(Input.GetMouseButtonDown(0))
+        {
+            contexts[mode].OnTouch();
+        }
+        else if(Input.GetMouseButtonUp(0))
+        {
+            contexts[mode].OnTouchRelease();
+        }
+        contexts[mode].OnMove();
+    }
+    public void SetMode(Mode _mode)
+    {
+        mode = _mode;
+        contexts[mode].Reset();
     }
 }
 
@@ -29,6 +60,8 @@ public class Context
 public class ContextDummy : IContext
 {
     public void Init()
+    {
+    }public void Reset()
     {
     }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 [Serializable]
 public class Meta
@@ -33,12 +34,6 @@ public class Meta
         public int amount; 
     }
     [Serializable]
-    public struct Dimension
-    {
-        public int x;
-        public int y; 
-    }
-    [Serializable]
     public struct Actor
     {
         public int id;
@@ -52,8 +47,9 @@ public class Meta
     {
         public int id;
         public string name;
+        public string prefab;
         public int level;
-        public Dimension dimension;
+        public Vector2Int dimension;
         public int buildCost;
         public List<ResourceIdAmount> costs;
         public List<ResourceIdAmount> output;

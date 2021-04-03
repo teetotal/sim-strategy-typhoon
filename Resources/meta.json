@@ -54,6 +54,7 @@
             "desc": "10초",
             "id": 0,
             "name": "열매열매 채집장 lv.1",
+            "prefab": "ForestCabin",
             "level": 1,
             "dimension": {
                 "x": 1,
@@ -70,6 +71,35 @@
                 {
                     "resourceId": 1,
                     "amount": 4
+                }
+            ],
+            "actors": [
+                {
+                    "actorId": 0,
+                    "max": 5
+                }
+            ]
+        },
+        {
+            "id": 1,
+            "name": "열매열매 채집장 lv.2",
+            "prefab": "",
+            "level": 2,
+            "dimension": {
+                "x": 2,
+                "y": 2
+            },
+            "buildCost": 20,
+            "costs": [
+                {
+                    "resourceId": 0,
+                    "amount": 20
+                }
+            ],
+            "output": [
+                {
+                    "resourceId": 1,
+                    "amount": 8
                 }
             ],
             "actors": [

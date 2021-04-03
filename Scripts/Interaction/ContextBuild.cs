@@ -5,11 +5,19 @@ public class ContextBuild : IContext
 {
     List<GameObject> areaObjects = new List<GameObject>();
     GameObject green, red;
+    Meta.Building selectedBuilding;
+    int selectedMapId = -1;
+    bool isAvailableChoice = false;
 
     public void Init()
     {
         green = Resources.Load<GameObject>("CubeGreen");
         red = Resources.Load<GameObject>("CubeRed");
+    }
+    public void Reset()
+    {
+        selectedMapId = -1;
+        isAvailableChoice = false;
     }
     public void OnMove()
     {
@@ -17,8 +25,8 @@ public class ContextBuild : IContext
         if(obj != null && obj.tag == "Bottom")
         {
             Clear();
-            int id = int.Parse(obj.name.Replace("(Clone)", ""));
-            CreateAreaCubes(id, new Vector2Int(2, 2));
+            selectedMapId = int.Parse(obj.name.Replace("(Clone)", ""));
+            isAvailableChoice = CreateAreaCubes(selectedMapId, selectedBuilding.dimension);
         }
     }
 
@@ -30,8 +38,18 @@ public class ContextBuild : IContext
     public void OnTouchRelease()
     {
         Debug.Log("[ContextBuild] OnTouchRelease");
+        if(isAvailableChoice)
+        {
+            MapManager.Instance.CreateBuilding(selectedMapId, selectedBuilding.prefab, 9999); //건물의 a* cost는 9999로 일단 고정
+            Context.Instance.SetMode(Context.Mode.NONE);
+            Clear();
+        }
     }
-
+    //----------------------------------------------------
+    public void SetBuildingId(int id)
+    {
+        selectedBuilding = MetaManager.Instance.buildingInfo[id];
+    }
     private void Clear()
     {
         for(int n=0; n < areaObjects.Count; n++)
@@ -66,6 +84,7 @@ public class ContextBuild : IContext
                 if(MapManager.Instance.GetBuildingObject(id) != null)
                 {
                     obj = red;
+                    ret = false;
                 }
                 areaObjects.Add(GameObject.Instantiate(obj, new Vector3(position.x, position.y + 0.1f, position.z), Quaternion.identity));
             }

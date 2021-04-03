@@ -4,7 +4,7 @@ using UnityEngine;
 public class MetaManager
 {
     public Meta meta;
-    public Dictionary<int, Dictionary<int, Meta.Building>> buildingInfo = new Dictionary<int, Dictionary<int, Meta.Building>>(); // 빌딩 id, 레벨별 
+    public Dictionary<int, Meta.Building> buildingInfo = new Dictionary<int, Meta.Building>(); // 빌딩 id, 레벨별 
     public Dictionary<int, string> resourceInfo = new Dictionary<int, string>();         
     private static readonly Lazy<MetaManager> hInstance = new Lazy<MetaManager>(() => new MetaManager());
  
@@ -25,11 +25,7 @@ public class MetaManager
         for(int n = 0; n < meta.buildings.Count; n++)
         {
             Meta.Building b = meta.buildings[n];
-            if(buildingInfo.ContainsKey(b.id) == false)
-            {
-                buildingInfo[b.id] = new Dictionary<int, Meta.Building>();
-            }
-            buildingInfo[b.id][b.level] = b;
+            buildingInfo[b.id] = b;
         }
         //resourcesInfo
         for(int n = 0; n < meta.resources.Count; n++)
@@ -68,7 +64,7 @@ public class NodeManager
     }
     */
 }
-
+/*
 public class BuildingManager
 {
     public Object Create(ref Node attachedNode, int pos, string name, BuildingTypes type)
@@ -78,6 +74,7 @@ public class BuildingManager
         return o;
     }
 }
+*/
 public class TimeManager
 {
     public List<TimeNode> timeNodes = new List<TimeNode>(); //시대에 대한 정보

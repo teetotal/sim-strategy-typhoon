@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 public class GamePlay : MonoBehaviour
 {
     public Camera camera;
@@ -14,8 +14,9 @@ public class GamePlay : MonoBehaviour
         for(int n = 0; n < MetaManager.Instance.meta.buildings.Count; n++)
         {
             GameObject obj = Resources.Load<GameObject>("button_default");
-            obj.GetComponentInChildren<Text>().text = MetaManager.Instance.meta.buildings[n].name;
-            obj.name = "building-" + MetaManager.Instance.meta.buildings[n].id.ToString();
+            Meta.Building buildingInfo = MetaManager.Instance.meta.buildings[n];
+            obj.GetComponentInChildren<Text>().text = buildingInfo.name;
+            obj.name = string.Format("building-{0}", buildingInfo.id);
             listBuildingItems.Add(Instantiate(obj));
         }
         
@@ -52,14 +53,12 @@ public class GamePlay : MonoBehaviour
     void OnClickButton(GameObject obj)
     {
         Debug.Log("OnClick " + obj.name);
-        switch(obj.name)
+        string name = obj.name.Replace("(Clone)", "");
+        switch(name)
         {
             case "building":
                 buildingLayer.SetActive(true);
                 Context.Instance.mode = Context.Mode.UI_BUILD;
-                break;
-            case "building_close":
-                buildingLayer.SetActive(false);
                 break;
             case "zoomin":
                 if(Camera.main.fieldOfView > 10)
@@ -72,7 +71,19 @@ public class GamePlay : MonoBehaviour
             default:
                 break;
         }
-
+        string[] arr = name.Split('-');
+        if(arr.Length >= 2)
+        {
+            if(arr[0] == "building")
+            {
+                int id = int.Parse(arr[1]);
+                
+                Context.Instance.SetMode(Context.Mode.BUILD);
+                ((ContextBuild)Context.Instance.contexts[Context.Mode.BUILD]).SetBuildingId(id);
+                buildingLayer.SetActive(false);
+                
+            }
+        }
     }
 
     // Update is called once per frame
@@ -80,8 +91,18 @@ public class GamePlay : MonoBehaviour
     {
         if(Input.GetMouseButtonUp(0))
         {
-            GameObject obj = Touch.Instance.GetTouchedObject3D();
-            Debug.Log(obj);
+            switch(Context.Instance.mode)
+            {
+                case Context.Mode.UI_BUILD:
+                    if(!EventSystem.current.IsPointerOverGameObject()) //UI가 클릭되지 않은 경우
+                    {
+                        buildingLayer.SetActive(false);
+                        Context.Instance.SetMode(Context.Mode.NONE);
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
     }
     
