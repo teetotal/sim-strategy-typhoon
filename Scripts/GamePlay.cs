@@ -11,6 +11,7 @@ public class GamePlay : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Context.Instance.Init(ref canvas, "progress_default", "CubeGreen", "CubeRed");
         for(int n = 0; n < MetaManager.Instance.meta.buildings.Count; n++)
         {
             GameObject obj = Resources.Load<GameObject>("button_default");

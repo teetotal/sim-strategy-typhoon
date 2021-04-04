@@ -20,50 +20,37 @@ public class Updater
     {
     }
 
-    public List<Object> Update()
+    public void Update()
     {
-        List<Object> list = null;
-        if(queue.Count > 0)
-        {
-            list = new List<Object>();
-        }
-
         while(queue.Count > 0)
         {
-            QNode q = queue.Dequeue();
-            Object o = Fetch(q);      
-            if(o != null)
-            {
-                list.Add(o); 
-            }     
+            Fetch(queue.Dequeue());     
         }
 
         //nodeManager.nodes로 부터 빌딩, 액터까지 모두 찾아서 이벤트 처리
 
             //building event 처리
+        BuildingManager.Instance.Update();
             //actor event 처리
             
             //일정 주기로 update node resource
-
-        
-
-        return list;
     }
 
-    private Object Fetch(QNode q)
+    private void Fetch(QNode q)
     {
         switch(q.type)
         {
             case ActionType.BUILDING_CREATE:
-                return nodeManager.Create(q.nodePos, nodeManager.GetName());
+                BuildingManager.Instance.Construct(q.mapId, q.buildingId);
+                break;
             default:
-                return null;
+                return;
         }
     }
 
     /* ---------------------------------------------------------------------------- */
-    public void AddQ(ActionType type, int node, int building, List<int> values)
+    public void AddQ(ActionType type, int id, int building, List<int> values)
     {
-        queue.Enqueue(new QNode(type, node, building, values));
+        queue.Enqueue(new QNode(type, id, building, values));
     }
 }

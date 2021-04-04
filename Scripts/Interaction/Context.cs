@@ -15,6 +15,8 @@ public class Context
     private static readonly Lazy<Context> hInstance = new Lazy<Context>(() => new Context());
     public Mode mode = Mode.NONE;
     public bool isInitialized = false;
+    public Transform canvas;
+    public GameObject greenPrefab, redPrefab, progressPrefab;
     public static Context Instance
     {
         get {
@@ -48,6 +50,14 @@ public class Context
             contexts[mode].OnTouchRelease();
         }
         contexts[mode].OnMove();
+    }
+    public void Init(ref Transform canvas, string progressPrefab, string greenCube, string redCube)
+    {
+        this.canvas = canvas;
+        this.progressPrefab = Resources.Load<GameObject>(progressPrefab);
+        this.greenPrefab = Resources.Load<GameObject>(greenCube);
+        this.redPrefab = Resources.Load<GameObject>(redCube);
+
     }
     public void SetMode(Mode _mode)
     {

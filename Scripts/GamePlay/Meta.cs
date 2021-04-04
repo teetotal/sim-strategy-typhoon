@@ -50,7 +50,7 @@ public class Meta
         public string prefab;
         public int level;
         public Vector2Int dimension;
-        public int buildCost;
+        public int buildTime;
         public List<ResourceIdAmount> costs;
         public List<ResourceIdAmount> output;
         public List<ActorIdMax> actors;

@@ -4,15 +4,13 @@ using UnityEngine;
 public class ContextBuild : IContext
 {
     List<GameObject> areaObjects = new List<GameObject>();
-    GameObject green, red;
+    
     Meta.Building selectedBuilding;
     int selectedMapId = -1;
     bool isAvailableChoice = false;
 
     public void Init()
     {
-        green = Resources.Load<GameObject>("CubeGreen");
-        red = Resources.Load<GameObject>("CubeRed");
     }
     public void Reset()
     {
@@ -40,7 +38,7 @@ public class ContextBuild : IContext
         Debug.Log("[ContextBuild] OnTouchRelease");
         if(isAvailableChoice)
         {
-            MapManager.Instance.CreateBuilding(selectedMapId, selectedBuilding.prefab, 9999); //건물의 a* cost는 9999로 일단 고정
+            Updater.Instance.AddQ(ActionType.BUILDING_CREATE, selectedMapId, selectedBuilding.id, null);
             Context.Instance.SetMode(Context.Mode.NONE);
             Clear();
         }
@@ -80,10 +78,10 @@ public class ContextBuild : IContext
             if(id != -1)
             {
                 Vector3 position = MapManager.Instance.GetVector3FromMapId(id);
-                GameObject obj = green;
+                GameObject obj = Context.Instance.greenPrefab;
                 if(MapManager.Instance.GetBuildingObject(id) != null)
                 {
-                    obj = red;
+                    obj = Context.Instance.redPrefab;
                     ret = false;
                 }
                 areaObjects.Add(GameObject.Instantiate(obj, new Vector3(position.x, position.y + 0.1f, position.z), Quaternion.identity));

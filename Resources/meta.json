@@ -60,7 +60,7 @@
                 "x": 1,
                 "y": 1
             },
-            "buildCost": 10,
+            "buildTime": 10,
             "costs": [
                 {
                     "resourceId": 0,
@@ -89,7 +89,7 @@
                 "x": 2,
                 "y": 2
             },
-            "buildCost": 20,
+            "buildTime": 20,
             "costs": [
                 {
                     "resourceId": 0,

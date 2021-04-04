@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 public class MetaManager
 {
     public Meta meta;
@@ -64,17 +65,41 @@ public class NodeManager
     }
     */
 }
-/*
+
 public class BuildingManager
 {
-    public Object Create(ref Node attachedNode, int pos, string name, BuildingTypes type)
+    private Dictionary<int, BuildingObject> objects = new Dictionary<int, BuildingObject>();
+    private static readonly Lazy<BuildingManager> hInstance = new Lazy<BuildingManager>(() => new BuildingManager());
+    
+    public static BuildingManager Instance
     {
-        BuildingObject o = new BuildingObject(pos, name, type);
-        attachedNode.builtObjects.Add(o);
-        return o;
+        get {
+            return hInstance.Value;
+        } 
+    }
+    protected BuildingManager()
+    {
+    }
+    
+    public void Construct(int mapId, int buildingId)
+    {
+        //map에 설정
+        MapManager.Instance.CreateBuilding(mapId, MetaManager.Instance.buildingInfo[buildingId].prefab, 9999); //건물의 a* cost는 9999로 일단 고정
+        //화면 처리에 필요한 object 설정
+        BuildingObject obj = new BuildingObject(mapId, buildingId);
+        obj.SetConstruction();
+        objects[mapId] = obj;
+        
+    }
+    public void Update()
+    {
+        foreach(KeyValuePair<int, BuildingObject> kv in objects)
+        {
+            kv.Value.Update();
+        }
     }
 }
-*/
+
 public class TimeManager
 {
     public List<TimeNode> timeNodes = new List<TimeNode>(); //시대에 대한 정보

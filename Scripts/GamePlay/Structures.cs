@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 //자원
 public struct Resource
 {
@@ -19,7 +19,7 @@ public struct ResourceActor
 //기본 struct
 public class Object
 {
-    public int pos;     //node 위치와 building위치를 같게 할지 빌딩은 내부 위치로 나눠서 할지...
+    public int mapId;     //node 위치와 building위치를 같게 할지 빌딩은 내부 위치로 나눠서 할지...
     public string name;
     public int level;
 }
@@ -27,22 +27,69 @@ public class Object
 public struct Action
 {
     public ActionType type;
-    public int totalTime;       //Action이 적용되는 총 시간
-    public int currentTime;     //현재까지 진행된 시간
+    public float totalTime;       //Action이 적용되는 총 시간
+    public float currentTime;     //현재까지 진행된 시간
 }
 //건물 정보
 public class BuildingObject : Object
 {
     public Node attachedNode;               //소속된 node 정보
-    public BuildingTypes type;
-    public List<Action> actions; //현재 겪고 있는 액션 리스트.
-    public List<Actor> actors;
-    public BuildingObject(int pos, string name, BuildingTypes type)
+    public int buildingId;
+    public List<Action> actions = new List<Action>(); //현재 겪고 있는 액션 리스트.
+    public List<Actor> actors = new List<Actor>();
+    public GameObject progress;
+    public BuildingObject(int mapId, int buildingId)
     {
-        this.pos = pos;
-        this.level = 1;
-        this.name = name;
-        this.type = type;
+        this.mapId = mapId;
+        this.buildingId = buildingId;
+    }
+    public void SetConstruction()
+    {
+        Action action = new Action();
+        action.type = ActionType.BUILDING_CREATE;
+        action.currentTime = 0;
+        action.totalTime = MetaManager.Instance.buildingInfo[buildingId].buildTime;
+        actions.Add(action);
+
+        //progress
+        Vector3 pos = Camera.main.WorldToScreenPoint(MapManager.Instance.defaultGameObjects[mapId].transform.position + new Vector3(0, 1.0f, 0));
+        progress = GameObject.Instantiate(Context.Instance.progressPrefab, pos, Quaternion.identity);
+        progress.transform.SetParent(Context.Instance.canvas);
+    }
+
+    public void Update()
+    {
+        List<int> removeActionIds = new List<int>();
+        for(int n = 0; n < actions.Count; n++)
+        {
+            Action action = actions[n];
+            //progress
+            action.currentTime += Time.deltaTime;
+            actions[n] = action;
+            if(progress)
+            {
+                progress.GetComponent<Slider>().value = action.currentTime / action.totalTime;
+                //Debug.Log(string.Format("{0}-{1}/{2}", mapId, action.currentTime, action.totalTime));
+            }
+
+            //finish
+            if(action.currentTime >= action.totalTime)
+            {
+                removeActionIds.Add(n);
+                switch(action.type)
+                {
+                    case ActionType.BUILDING_CREATE:
+                        GameObject.Destroy(progress);
+                        progress = null;
+                        break;
+                }
+            }
+        }
+
+        for(int n = 0; n < removeActionIds.Count; n++)
+        {   
+            actions.RemoveAt(removeActionIds[n]);
+        }
     }
 }
 //움직이는 객체 정보
@@ -64,9 +111,9 @@ public class Node : Object
     public Dictionary<int, int> currentResource;        // 현재 보유 자원
     public List<BuildingObject> builtObjects;   // 소속된 건물들
 
-    public Node(int pos, string name)
+    public Node(int mapId, string name)
     {
-        this.pos = pos;
+        this.mapId = mapId;
         this.level = 1;
         this.name = name;
         connections = new List<Node>();
@@ -85,15 +132,15 @@ public class Node : Object
 public struct QNode
 {
     public ActionType type;
-    public int nodePos;
-    public int buildingPos;
+    public int mapId; //mapid
+    public int buildingId;
     public List<int> values;    //caller쪽과 protocol을 맞춰야 한다.
 
-    public QNode(ActionType type, int node, int building, List<int> values)
+    public QNode(ActionType type, int mapId, int buildingId, List<int> values)
     {
         this.type = type;
-        this.nodePos = node;
-        this.buildingPos = building;
+        this.mapId = mapId;
+        this.buildingId = buildingId;
         this.values = values;
     }
 }
