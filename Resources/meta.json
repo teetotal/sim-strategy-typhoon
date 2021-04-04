@@ -83,7 +83,7 @@
         {
             "id": 1,
             "name": "열매열매 채집장 lv.2",
-            "prefab": "",
+            "prefab": "ForestMushroom01",
             "level": 2,
             "dimension": {
                 "x": 2,

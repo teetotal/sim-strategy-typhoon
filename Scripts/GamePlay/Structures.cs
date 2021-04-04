@@ -52,8 +52,9 @@ public class BuildingObject : Object
         actions.Add(action);
 
         //progress
-        Vector3 pos = Camera.main.WorldToScreenPoint(MapManager.Instance.defaultGameObjects[mapId].transform.position + new Vector3(0, 1.0f, 0));
+        Vector3 pos = GetProgressPosition();
         progress = GameObject.Instantiate(Context.Instance.progressPrefab, pos, Quaternion.identity);
+        progress.name = string.Format("progress-{0}-{1}", mapId, buildingId);
         progress.transform.SetParent(Context.Instance.canvas);
     }
 
@@ -64,12 +65,18 @@ public class BuildingObject : Object
         {
             Action action = actions[n];
             //progress
+            if(progress != null)
+                progress.transform.position = GetProgressPosition(); //position
+
             action.currentTime += Time.deltaTime;
             actions[n] = action;
-            if(progress)
+
+            switch(action.type)
             {
-                progress.GetComponent<Slider>().value = action.currentTime / action.totalTime;
-                //Debug.Log(string.Format("{0}-{1}/{2}", mapId, action.currentTime, action.totalTime));
+                case ActionType.BUILDING_CREATE:
+                    progress.GetComponent<Slider>().value = action.currentTime / action.totalTime;
+                    //Debug.Log(string.Format("{0}-{1}/{2}", mapId, action.currentTime, action.totalTime));
+                    break;
             }
 
             //finish
@@ -90,6 +97,10 @@ public class BuildingObject : Object
         {   
             actions.RemoveAt(removeActionIds[n]);
         }
+    }
+    private Vector3 GetProgressPosition()
+    {
+        return Camera.main.WorldToScreenPoint(MapManager.Instance.defaultGameObjects[mapId].transform.position + new Vector3(0, 1.0f, 0));
     }
 }
 //움직이는 객체 정보
