@@ -84,7 +84,7 @@ public class BuildingManager
     public void Construct(int mapId, int buildingId)
     {
         //map에 설정
-        MapManager.Instance.CreateBuilding(mapId, MetaManager.Instance.buildingInfo[buildingId].prefab, 9999); //건물의 a* cost는 9999로 일단 고정
+        MapManager.Instance.CreateBuilding(mapId, MetaManager.Instance.buildingInfo[buildingId].prefab, -1); //건물의 a* cost는 9999로 일단 고정
         //화면 처리에 필요한 object 설정
         BuildingObject obj = new BuildingObject(mapId, buildingId);
         obj.SetConstruction();

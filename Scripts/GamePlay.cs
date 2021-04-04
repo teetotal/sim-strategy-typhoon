@@ -8,6 +8,11 @@ public class GamePlay : MonoBehaviour
     public Transform canvas;
     private GameObject buildingLayer;
     private List<GameObject> listBuildingItems = new List<GameObject>();
+
+    //a*
+    List<int> route = new List<int>();
+    float time = 0;
+    GameObject actor;
     // Start is called before the first frame update
     void Start()
     {
@@ -32,7 +37,8 @@ public class GamePlay : MonoBehaviour
             buildingLayer = GameObject.Find("buildings");
             buildingLayer.SetActive(false);
         }
-        
+
+        actor = GameObject.Find("actor");
     }
     void OnCreatePost(GameObject obj, string layerName)
     {
@@ -92,6 +98,23 @@ public class GamePlay : MonoBehaviour
     {
         if(Input.GetMouseButtonUp(0))
         {
+            time = 0;
+            //Astar test
+            route.Clear();
+            Astar astar = new Astar(MapManager.Instance.map);
+            Stack<Astar.Pos> stack = astar.Search(new Astar.Pos(1, 3), new Astar.Pos(12, 6));
+            if(stack == null)
+                return;
+            
+            while(stack.Count > 0)
+            {
+                int id = MapManager.Instance.GetMapId(new Vector2Int(stack.Peek().x, stack.Peek().y));
+                route.Add(id);
+                stack.Pop();
+                Debug.Log(MapManager.Instance.GetMapPosition(id));
+                
+            }
+            //------------------------------
             switch(Context.Instance.mode)
             {
                 case Context.Mode.UI_BUILD:
@@ -104,6 +127,51 @@ public class GamePlay : MonoBehaviour
                 default:
                     break;
             }
+        }
+        //a*
+        time += Time.deltaTime;
+        int idx = (int)time;
+        if(idx > route.Count - 2)
+            return;
+        float ratio = time % 1.0f;
+        Vector3 posNext;
+        Vector3 pos = MapManager.Instance.GetVector3FromMapId(route[idx]);//GetRoutePosition(idx);
+        if(idx < route.Count - 3)
+        {
+            actor.GetComponent<Animator>().SetInteger("Speed", 2);
+            posNext = MapManager.Instance.GetVector3FromMapId(route[idx + 1]);//GetRoutePosition(idx + 1);
+        } 
+        else if(idx <= route.Count - 2)
+        {
+            actor.GetComponent<Animator>().SetInteger("Speed", 2);
+            posNext = MapManager.Instance.GetVector3FromMapId(route[idx + 1]);
+        }
+        else
+        {
+            return;
+        }
+
+        //Vector3 diff = (posNext - pos) * ratio * 1.0f;
+        actor.transform.position = Vector3.Lerp(pos, posNext, ratio) + new Vector3(0, 0.1f, 0);//pos + diff + new Vector3(0, 0.1f, 0);
+
+        Vector3 target = posNext + new Vector3(0, 0.1f, 0);
+        
+        Vector3 dir = target - actor.transform.position;
+        actor.transform.rotation = Quaternion.Lerp(actor.transform.rotation, Quaternion.LookRotation(dir), ratio);
+    }
+
+    Vector3 GetRoutePosition(int id)
+    {
+        Vector3 pos = MapManager.Instance.GetVector3FromMapId(route[id]);
+        if(id > 0)
+        {
+            Vector3 posPre = MapManager.Instance.GetVector3FromMapId(route[id - 1]);
+            Vector3 posNext = MapManager.Instance.GetVector3FromMapId(route[id + 1]);
+            return posPre + ((posNext - posPre) * 0.5f);
+        }
+        else
+        {
+            return pos;
         }
     }
     
