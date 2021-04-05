@@ -66,9 +66,26 @@ public class NodeManager
     */
 }
 
+
+public class ActorManager
+{
+    private Dictionary<int, Actor> actors = new Dictionary<int, Actor>();
+    private static readonly Lazy<ActorManager> hInstance = new Lazy<ActorManager>(() => new ActorManager());
+    
+    public static ActorManager Instance
+    {
+        get {
+            return hInstance.Value;
+        } 
+    }
+    protected ActorManager()
+    {
+    }
+}
+
 public class BuildingManager
 {
-    private Dictionary<int, BuildingObject> objects = new Dictionary<int, BuildingObject>();
+    public Dictionary<int, BuildingObject> objects = new Dictionary<int, BuildingObject>();
     private static readonly Lazy<BuildingManager> hInstance = new Lazy<BuildingManager>(() => new BuildingManager());
     
     public static BuildingManager Instance
@@ -84,12 +101,16 @@ public class BuildingManager
     public void Construct(int mapId, int buildingId)
     {
         //map에 설정
-        MapManager.Instance.CreateBuilding(mapId, MetaManager.Instance.buildingInfo[buildingId].prefab, -1); //건물의 a* cost는 9999로 일단 고정
+        MapManager.Instance.CreateBuilding(mapId, MetaManager.Instance.buildingInfo[buildingId].prefab); //건물의 a* cost는 -1. 지나가지 못함
         //화면 처리에 필요한 object 설정
         BuildingObject obj = new BuildingObject(mapId, buildingId);
         obj.SetConstruction();
         objects[mapId] = obj;
-        
+    }
+    public void Destroy(int mapId)
+    {
+        MapManager.Instance.DestroyBuilding(mapId);
+        objects.Remove(mapId);
     }
     public void Update()
     {

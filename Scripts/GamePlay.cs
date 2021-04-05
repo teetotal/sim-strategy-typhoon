@@ -16,7 +16,7 @@ public class GamePlay : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Context.Instance.Init(ref canvas, "progress_default", "CubeGreen", "CubeRed");
+        Context.Instance.Init(ref canvas, "progress_default", "CubeGreen", "CubeRed", "select_ui");
         for(int n = 0; n < MetaManager.Instance.meta.buildings.Count; n++)
         {
             GameObject obj = Resources.Load<GameObject>("button_default");
@@ -100,6 +100,7 @@ public class GamePlay : MonoBehaviour
         {
             time = 0;
             //Astar test
+            
             route.Clear();
             Astar astar = new Astar(MapManager.Instance.map);
             Stack<Astar.Pos> stack = astar.Search(new Astar.Pos(1, 3), new Astar.Pos(12, 6));
@@ -114,6 +115,7 @@ public class GamePlay : MonoBehaviour
                 Debug.Log(MapManager.Instance.GetMapPosition(id));
                 
             }
+            
             //------------------------------
             switch(Context.Instance.mode)
             {

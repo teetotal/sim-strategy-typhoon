@@ -5,4 +5,5 @@ public interface IContext
     void OnMove();
     void OnTouch();
     void OnTouchRelease();
+    void OnDrag();
 }

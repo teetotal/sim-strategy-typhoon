@@ -2,11 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum BuildingTypes
-{
-    MAX
-}
-
 public enum ActionType
 {
     NODE_CREATE,

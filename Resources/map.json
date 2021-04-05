@@ -15,18 +15,6 @@
         {
             "name": "ForestTreeSpruce_03",
             "cost": -1
-        },
-        {
-            "name": "ForestTent_01",
-            "cost": -1
-        },
-        {
-            "name": "ForestTent_02",
-            "cost": -1
-        },
-        {
-            "name": "ForestTent_03",
-            "cost": -1
         }
     ],
     "grid": {
@@ -75,18 +63,6 @@
                 "start": 32,
                 "end": 47
             }
-        },
-        {
-            "prefabId": 4,
-            "positions": [ 60, 120, 180 ]
-        },
-        {
-            "prefabId": 5,
-            "positions": [ 88, 72 ]
-        },
-        {
-            "prefabId": 6,
-            "positions": [ 100, 105 ]
         }
     ]
 }

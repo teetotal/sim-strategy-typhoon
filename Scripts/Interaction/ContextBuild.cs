@@ -43,6 +43,10 @@ public class ContextBuild : IContext
             Clear();
         }
     }
+    public void OnDrag()
+    {
+        
+    }
     //----------------------------------------------------
     public void SetBuildingId(int id)
     {

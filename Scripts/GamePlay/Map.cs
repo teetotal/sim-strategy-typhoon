@@ -125,7 +125,7 @@ public class MapManager
             //positions
             for(int i = 0; i < node.positions.Count; i++)
             {
-                CreateBuilding(node.positions[i], prefabInfo.name, prefabInfo.cost);   
+                CreateEnvironment(node.positions[i], prefabInfo.name, prefabInfo.cost);   
             }
 
             //range
@@ -133,19 +133,35 @@ public class MapManager
             {
                 for(int id = node.range.start; id <= node.range.end; id++)
                 {
-                    CreateBuilding(id, prefabInfo.name, prefabInfo.cost);   
+                    CreateEnvironment(id, prefabInfo.name, prefabInfo.cost);   
                 }
             }
         }
     }
-    public void CreateBuilding(int id, string prefab, int cost)
+    public void DestroyBuilding(int mapId)
+    {
+        Vector2Int pos = GetMapPosition(mapId);
+        map[pos.x, pos.y] = mapMeta.defaultVal.cost;
+        GameObject.DestroyImmediate(buildingObjects[mapId]);
+        buildingObjects.Remove(mapId);
+    }
+    public void CreateBuilding(int id, string prefab)
+    {
+        Construct(id, prefab, -1, true);
+    }
+    private void CreateEnvironment(int id, string prefab, int mapCost)
+    {
+        Construct(id, prefab, mapCost, false);
+    }
+    private void Construct(int id, string prefab, int mapCost, bool isBuilding)
     {
         GameObject parent = defaultGameObjects[id];
         Vector2Int position = GetMapPosition(id);
-        map[position.x, position.y] = cost;
+        map[position.x, position.y] = mapCost;
         GameObject obj = Resources.Load<GameObject>(prefab);
         obj = GameObject.Instantiate(obj, new Vector3(parent.transform.position.x, parent.transform.position.y + 0.1f, parent.transform.position.z), Quaternion.identity);
-
+        obj.tag = isBuilding ? "Building" : "Environment";
+        obj.name = id.ToString();
         obj.transform.SetParent(parent.transform);
         if(buildingObjects.ContainsKey(id) == true)
         {

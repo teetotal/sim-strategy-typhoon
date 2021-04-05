@@ -82,14 +82,14 @@
         },
         {
             "id": 1,
-            "name": "열매열매 채집장 lv.2",
-            "prefab": "ForestMushroom01",
+            "name": "호수",
+            "prefab": "ForestLake",
             "level": 2,
             "dimension": {
-                "x": 2,
-                "y": 2
+                "x": 1,
+                "y": 1
             },
-            "buildTime": 20,
+            "buildTime": 5,
             "costs": [
                 {
                     "resourceId": 0,
@@ -102,12 +102,169 @@
                     "amount": 8
                 }
             ],
-            "actors": [
+            "actors": []
+        },
+        {
+            "id": 2,
+            "name": "강 직선",
+            "prefab": "ForestRiverStraight",
+            "level": 2,
+            "dimension": {
+                "x": 1,
+                "y": 1
+            },
+            "buildTime": 5,
+            "costs": [
                 {
-                    "actorId": 0,
-                    "max": 5
+                    "resourceId": 0,
+                    "amount": 20
                 }
-            ]
+            ],
+            "output": [
+                {
+                    "resourceId": 1,
+                    "amount": 8
+                }
+            ],
+            "actors": []
+        },
+        {
+            "id": 3,
+            "name": "강 커브",
+            "prefab": "ForestRiverCurve",
+            "level": 2,
+            "dimension": {
+                "x": 1,
+                "y": 1
+            },
+            "buildTime": 5,
+            "costs": [
+                {
+                    "resourceId": 0,
+                    "amount": 20
+                }
+            ],
+            "output": [
+                {
+                    "resourceId": 1,
+                    "amount": 8
+                }
+            ],
+            "actors": []
+        },
+        {
+            "id": 4,
+            "name": "텐트 1",
+            "prefab": "ForestTent_01",
+            "level": 1,
+            "dimension": {
+                "x": 1,
+                "y": 1
+            },
+            "buildTime": 5,
+            "costs": [
+                {
+                    "resourceId": 0,
+                    "amount": 20
+                }
+            ],
+            "output": [],
+            "actors": []
+        },
+        {
+            "id": 5,
+            "name": "텐트 2",
+            "prefab": "ForestTent_02",
+            "level": 1,
+            "dimension": {
+                "x": 1,
+                "y": 1
+            },
+            "buildTime": 5,
+            "costs": [
+                {
+                    "resourceId": 0,
+                    "amount": 20
+                }
+            ],
+            "output": [],
+            "actors": []
+        },
+        {
+            "id": 6,
+            "name": "텐트 3",
+            "prefab": "ForestTent_03",
+            "level": 1,
+            "dimension": {
+                "x": 1,
+                "y": 1
+            },
+            "buildTime": 5,
+            "costs": [
+                {
+                    "resourceId": 0,
+                    "amount": 20
+                }
+            ],
+            "output": [],
+            "actors": []
+        },
+        {
+            "id": 7,
+            "name": "hill",
+            "prefab": "ForestEmptyCube",
+            "level": 1,
+            "dimension": {
+                "x": 1,
+                "y": 1
+            },
+            "buildTime": 5,
+            "costs": [
+                {
+                    "resourceId": 0,
+                    "amount": 20
+                }
+            ],
+            "output": [],
+            "actors": []
+        },
+        {
+            "id": 8,
+            "name": "과실수 1",
+            "prefab": "ForestTree_01",
+            "level": 1,
+            "dimension": {
+                "x": 1,
+                "y": 1
+            },
+            "buildTime": 5,
+            "costs": [
+                {
+                    "resourceId": 0,
+                    "amount": 20
+                }
+            ],
+            "output": [],
+            "actors": []
+        },
+        {
+            "id": 9,
+            "name": "과실수 2",
+            "prefab": "ForestTree_02",
+            "level": 1,
+            "dimension": {
+                "x": 1,
+                "y": 1
+            },
+            "buildTime": 5,
+            "costs": [
+                {
+                    "resourceId": 0,
+                    "amount": 20
+                }
+            ],
+            "output": [],
+            "actors": []
         }
     ]
 }

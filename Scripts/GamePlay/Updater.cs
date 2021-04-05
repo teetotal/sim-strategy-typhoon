@@ -43,6 +43,9 @@ public class Updater
             case ActionType.BUILDING_CREATE:
                 BuildingManager.Instance.Construct(q.mapId, q.buildingId);
                 break;
+            case ActionType.BUILDING_DESTROY:
+                BuildingManager.Instance.Destroy(q.mapId);
+                break;
             default:
                 return;
         }

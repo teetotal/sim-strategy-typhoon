@@ -16,7 +16,7 @@ public class Context
     public Mode mode = Mode.NONE;
     public bool isInitialized = false;
     public Transform canvas;
-    public GameObject greenPrefab, redPrefab, progressPrefab;
+    public GameObject greenPrefab, redPrefab, progressPrefab, selectUIPrefab;
     public static Context Instance
     {
         get {
@@ -31,12 +31,6 @@ public class Context
             { Context.Mode.UI_BUILD,    new ContextDummy()  },
             { Context.Mode.BUILD,       new ContextBuild()  }
         };
-
-        //init
-        foreach (KeyValuePair<Context.Mode, IContext> kv in contexts)
-        {
-            kv.Value.Init();
-        }
     }
     public void Update()
     {
@@ -49,14 +43,26 @@ public class Context
         {
             contexts[mode].OnTouchRelease();
         }
+        else if(Input.GetMouseButton(0))
+        {
+            contexts[mode].OnDrag();
+        }
+        
         contexts[mode].OnMove();
     }
-    public void Init(ref Transform canvas, string progressPrefab, string greenCube, string redCube)
+    public void Init(ref Transform canvas, string progressPrefab, string greenCube, string redCube, string selectUIPrefab)
     {
         this.canvas = canvas;
         this.progressPrefab = Resources.Load<GameObject>(progressPrefab);
         this.greenPrefab = Resources.Load<GameObject>(greenCube);
         this.redPrefab = Resources.Load<GameObject>(redCube);
+        this.selectUIPrefab = Resources.Load<GameObject>(selectUIPrefab);
+
+        //init
+        foreach (KeyValuePair<Context.Mode, IContext> kv in contexts)
+        {
+            kv.Value.Init();
+        }
 
     }
     public void SetMode(Mode _mode)
@@ -84,6 +90,9 @@ public class ContextDummy : IContext
     }
 
     public void OnTouchRelease()
+    {
+    }
+    public void OnDrag()
     {
     }
 }
