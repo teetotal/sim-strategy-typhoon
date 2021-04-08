@@ -196,15 +196,15 @@ public class MapManager
         GameObject.DestroyImmediate(buildingObjects[mapId]);
         buildingObjects.Remove(mapId);
     }
-    public void CreateBuilding(int id, string prefab)
+    public GameObject CreateBuilding(int id, string prefab)
     {
-        Construct(id, prefab, -1, true);
+        return Construct(id, prefab, -1, true);
     }
-    private void CreateEnvironment(int id, string prefab, int mapCost)
+    private GameObject CreateEnvironment(int id, string prefab, int mapCost)
     {
-        Construct(id, prefab, mapCost, false);
+        return Construct(id, prefab, mapCost, false);
     }
-    private void Construct(int id, string prefab, int mapCost, bool isBuilding)
+    private GameObject Construct(int id, string prefab, int mapCost, bool isBuilding)
     {
         GameObject parent = defaultGameObjects[id];
         Vector2Int position = GetMapPosition(id);
@@ -219,5 +219,7 @@ public class MapManager
             throw new Exception("Already assigned position. conflict creating building");
         }
         buildingObjects[id] = obj;
+        
+        return obj;
     }
 }

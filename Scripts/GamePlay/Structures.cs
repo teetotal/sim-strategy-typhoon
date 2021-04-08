@@ -2,19 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-//자원
-public struct Resource
-{
-    public int id;          //resource 고유 ID
-    public string amount;   //소비량
-}
-//건물이 생산할 수 있는 액터 
-public struct ResourceActor
-{
-    public ActorType type;
-    public int level;
-    public int amount;
-}
 
 //각종 행위. 공격, 이동
 public struct Action
@@ -29,6 +16,7 @@ public struct Action
 //기본 struct
 public abstract class Object
 {
+    public GameObject gameObject;
     public int mapId;     //이동시 업데이트 필요
     public int id;
     public int level;
@@ -38,7 +26,8 @@ public abstract class Object
     public abstract void Update();
     protected Vector3 GetProgressPosition()
     {
-        return Camera.main.WorldToScreenPoint(MapManager.Instance.defaultGameObjects[mapId].transform.position + new Vector3(0, 1.0f, 0));
+        //return Camera.main.WorldToScreenPoint(MapManager.Instance.defaultGameObjects[mapId].transform.position + new Vector3(0, 1.0f, 0));
+        return Camera.main.WorldToScreenPoint(gameObject.transform.position + new Vector3(0, 1.0f, 0));
     }
     protected void RemoveActions(List<int> removeActionIds)
     {
@@ -115,8 +104,6 @@ public class BuildingObject : Object
 //움직이는 객체 정보
 public class Actor : Object
 {
-    public ActorType type;
-    public GameObject gameObject;
     public BuildingObject attachedBuilding; //소속된 건물 정보
     //전투의 경우, 수량 정보도 필요할 수 있음.
     public int currentHeadcount; //현재 인원. 전체 인원은 type과 level로 파악
@@ -137,12 +124,6 @@ public class Actor : Object
         action.totalTime = MetaManager.Instance.actorInfo[id].createTime;
         actions.Add(action);
 
-        //progress
-        Vector3 pos = GetProgressPosition();
-        progress = GameObject.Instantiate(Context.Instance.progressPrefab, pos, Quaternion.identity);
-        progress.name = string.Format("progress-{0}-{1}", mapId, this.id);
-        progress.transform.SetParent(Context.Instance.canvas);
-
         //prefab 생성
         Vector3 position = MapManager.Instance.GetVector3FromMapId(mapId);
         GameObject obj = Resources.Load<GameObject>(MetaManager.Instance.actorInfo[id].prefab);
@@ -153,6 +134,12 @@ public class Actor : Object
         obj.transform.SetParent(parent.transform);
 
         gameObject = obj;
+
+        //progress
+        Vector3 pos = GetProgressPosition();
+        progress = GameObject.Instantiate(Context.Instance.progressPrefab, pos, Quaternion.identity);
+        progress.name = string.Format("progress-{0}-{1}", mapId, this.id);
+        progress.transform.SetParent(Context.Instance.canvas);
 
         return true;
     }

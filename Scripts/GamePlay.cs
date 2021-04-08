@@ -177,11 +177,12 @@ public class GamePlay : MonoBehaviour
     // UI canceling
     void Update()
     {
+        /*
         foreach(KeyValuePair<int, Actor> kv in ActorManager.Instance.actors)
         {
             kv.Value.gameObject.GetComponent<Animator>().SetInteger("Speed", 2);
         }
-        
+        */
 
         if(Input.GetMouseButtonUp(0))
         {

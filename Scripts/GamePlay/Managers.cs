@@ -132,12 +132,16 @@ public class BuildingManager
     
     public void Construct(int mapId, int buildingId)
     {
-        //map에 설정 & prefab생성. environment object를 map에 적절히 assign해야 해서 mapmanager에서 처리함
-        MapManager.Instance.CreateBuilding(mapId, MetaManager.Instance.buildingInfo[buildingId].prefab); //건물의 a* cost는 -1. 지나가지 못함
         //화면 처리에 필요한 object 설정
         BuildingObject obj = new BuildingObject();
+        //map에 설정 & prefab생성. environment object를 map에 적절히 assign해야 해서 mapmanager에서 처리함
+        obj.gameObject = MapManager.Instance.CreateBuilding(mapId, MetaManager.Instance.buildingInfo[buildingId].prefab); //건물의 a* cost는 -1. 지나가지 못함
+            
         if(obj.Create(mapId, buildingId))
+        {
             objects[obj.mapId] = obj;
+        }
+        
     }
     public void Destroy(int mapId)
     {

@@ -38,6 +38,7 @@ public class ContextCreatingActor : IContext
 public class ContextActor : IContext
 {
     public int selectedMapId;
+    GameObject point;
     
     public void Init()
     {
@@ -50,6 +51,27 @@ public class ContextActor : IContext
 
     public void OnMove()
     {
+        GameObject obj = Touch.Instance.GetTouchedObject3D();
+        if(obj != null && obj.tag == MetaManager.Instance.GetTag(MetaManager.TAG.BOTTOM))
+        {
+            Clear();
+            int id = int.Parse(obj.name.Replace("(Clone)", ""));
+            Vector3 position = MapManager.Instance.GetVector3FromMapId(id);
+            GameObject prefab = Context.Instance.greenPrefab;
+            if(MapManager.Instance.GetBuildingObject(id) != null)
+            {
+                prefab = Context.Instance.redPrefab;
+            }
+            
+            point = GameObject.Instantiate(prefab, new Vector3(position.x, position.y + 0.1f, position.z), Quaternion.identity);
+            
+        }
+    }
+    private void Clear()
+    {
+        if(point)
+            GameObject.DestroyImmediate(point);
+        point = null;
     }
 
     public void OnTouch()
@@ -58,6 +80,7 @@ public class ContextActor : IContext
 
     public void OnTouchRelease()
     {
+        Clear();
         //이동중이면 어쩔거야?
         GameObject obj = Touch.Instance.GetTouchedObject3D();
         if(obj != null && obj.tag == MetaManager.Instance.GetTag(MetaManager.TAG.BOTTOM))
