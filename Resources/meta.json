@@ -13,6 +13,7 @@
         {
             "id": 0,
             "name": "고양이 전사",
+            "prefab": "actor",
             "level": 1,
             "ability": {
                 "building": 1,
@@ -32,6 +33,7 @@
         {
             "id": 1,
             "name": "착한 멍멍이",
+            "prefab": "actor",
             "level": 1,
             "ability": {
                 "building": 1,

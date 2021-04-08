@@ -46,7 +46,7 @@
             "_Objects":[
                 {
                     "position":{"x":0,"y":0},
-                    "name":"building",
+                    "name":"btn_building",
                     "tag":"UI",
                     "prefab": "button_default",
                     "ui": true,
@@ -66,7 +66,26 @@
             "_Objects":[
                 {
                     "position":{"x":0,"y":0},
-                    "name":"scrollview",
+                    "name":"scrollview_building",
+                    "tag":"UI",
+                    "prefab": "scrollview_default",
+                    "ui": true
+                }
+            ]
+        },
+        {
+            "_Name": "actors",
+            "_BGColor": [0, 0, 0, 1],
+            "_From": {"x": 0, "y": 0},
+            "_To": {"x": 0, "y": 4},
+            "_GridDim":{"x":1,"y":1},
+            "_Margin":{"x":0, "y":0},
+            "_InnerMargin":{"x":0.1,"y":0.1},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"scrollview_actor",
                     "tag":"UI",
                     "prefab": "scrollview_default",
                     "ui": true

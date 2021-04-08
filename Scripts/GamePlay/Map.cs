@@ -87,6 +87,40 @@ public class MapManager
     {
         return defaultGameObjects[id].transform.position;
     }
+    public int AssignNearEmptyMapId(int id)
+    {
+        Vector2Int pos = GetMapPosition(id);
+        int range = 1;
+        while(true)
+        {
+            int cnt = 0;
+            for(int y = pos.y - range; y < pos.y + range; y++)
+            {
+                if(y < 0 || map.GetLength(1) <= y)
+                    continue;
+
+                for(int x = pos.x - range; x < pos.x + range; x++)
+                {
+                    if(x < 0 || map.GetLength(0) <= x)
+                        continue;
+
+                    if(map[x,y] == mapMeta.defaultVal.cost)
+                    {
+                        map[x, y] = mapMeta.defaultVal.cost + 1;
+                        return GetMapId(new Vector2Int(x, y));
+                    }
+                    else
+                    {
+                        cnt++;
+                    }
+                }
+            }
+
+            if(cnt == 0)
+                    return -1;
+            range++;
+        }
+    }
     public void Load()
     {
         mapMeta = Json.LoadJsonFile<Map>("map");

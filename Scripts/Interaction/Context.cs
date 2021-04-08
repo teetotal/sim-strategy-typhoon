@@ -9,8 +9,11 @@ public class Context
         NONE,
         UI_BUILD,
         BUILD,
+        UI_ACTOR,
         MAX
     }
+    public delegate void OnClickForCreatingActor(int mapId, int buildId); //Actor생성용
+    public OnClickForCreatingActor onClickForCreatingActor;
     public Dictionary<Context.Mode, IContext> contexts;
     private static readonly Lazy<Context> hInstance = new Lazy<Context>(() => new Context());
     public Mode mode = Mode.NONE;
@@ -27,9 +30,10 @@ public class Context
     {
         contexts = new Dictionary<Context.Mode, IContext>()
         {
-            { Context.Mode.NONE,        new ContextNone()   },
-            { Context.Mode.UI_BUILD,    new ContextDummy()  },
-            { Context.Mode.BUILD,       new ContextBuild()  }
+            { Mode.NONE,        new ContextNone()   },
+            { Mode.UI_BUILD,    new ContextDummy()  },
+            { Mode.BUILD,       new ContextBuild()  },
+            { Mode.UI_ACTOR,    new ContextCreatingActor()  }
         };
     }
     public void Update()
@@ -50,13 +54,20 @@ public class Context
         
         contexts[mode].OnMove();
     }
-    public void Init(ref Transform canvas, string progressPrefab, string greenCube, string redCube, string selectUIPrefab)
+    public void Init(ref Transform canvas, 
+                    string progressPrefab, 
+                    string greenCube, 
+                    string redCube, 
+                    string selectUIPrefab,
+                    OnClickForCreatingActor onClickForCreatingActor
+                    )
     {
         this.canvas = canvas;
         this.progressPrefab = Resources.Load<GameObject>(progressPrefab);
         this.greenPrefab = Resources.Load<GameObject>(greenCube);
         this.redPrefab = Resources.Load<GameObject>(redCube);
         this.selectUIPrefab = Resources.Load<GameObject>(selectUIPrefab);
+        this.onClickForCreatingActor = onClickForCreatingActor;
 
         //init
         foreach (KeyValuePair<Context.Mode, IContext> kv in contexts)

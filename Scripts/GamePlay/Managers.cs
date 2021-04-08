@@ -5,7 +5,8 @@ using UnityEngine.UI;
 public class MetaManager
 {
     public Meta meta;
-    public Dictionary<int, Meta.Building> buildingInfo = new Dictionary<int, Meta.Building>(); // 빌딩 id, 레벨별 
+    public Dictionary<int, Meta.Building> buildingInfo = new Dictionary<int, Meta.Building>(); // 빌딩 정보
+    public Dictionary<int, Meta.Actor> actorInfo = new Dictionary<int, Meta.Actor>(); // actor 정보
     public Dictionary<int, string> resourceInfo = new Dictionary<int, string>();         
     private static readonly Lazy<MetaManager> hInstance = new Lazy<MetaManager>(() => new MetaManager());
  
@@ -28,6 +29,12 @@ public class MetaManager
             Meta.Building b = meta.buildings[n];
             buildingInfo[b.id] = b;
         }
+        //actorInfo
+        for(int n = 0; n < meta.actors.Count; n++)
+        {
+            Meta.Actor b = meta.actors[n];
+            actorInfo[b.id] = b;
+        }
         //resourcesInfo
         for(int n = 0; n < meta.resources.Count; n++)
         {
@@ -36,36 +43,6 @@ public class MetaManager
         }
     }
 }
-
-//노드
-public class NodeManager
-{
-    public Dictionary<int, Node> nodes = new Dictionary<int, Node>();
-    public List<string> names;
-    private int currentIdx;
-    public string GetName()
-    {
-        return names[currentIdx++];
-    }
-
-    public Object Create(int pos, string name)
-    {
-        Node node = new Node(pos, name);
-        nodes[pos] = node;
-        return node;
-    }
-    /*
-    public Object Destroy(int pos)
-    {
-        
-    }
-    public Object Upgrade(int pos, int level)
-    {
-        
-    }
-    */
-}
-
 
 public class ActorManager
 {
@@ -81,11 +58,18 @@ public class ActorManager
     protected ActorManager()
     {
     }
+    public void Create(int mapId, int actorId)
+    {
+        //화면 처리에 필요한 object 설정
+        Actor obj = new Actor();
+        if(obj.Create(mapId, actorId))
+            actors[mapId] = obj;
+    }
 }
 
 public class BuildingManager
 {
-    public Dictionary<int, BuildingObject> objects = new Dictionary<int, BuildingObject>();
+    public Dictionary<int, Object> objects = new Dictionary<int, Object>();
     private static readonly Lazy<BuildingManager> hInstance = new Lazy<BuildingManager>(() => new BuildingManager());
     
     public static BuildingManager Instance
@@ -100,12 +84,12 @@ public class BuildingManager
     
     public void Construct(int mapId, int buildingId)
     {
-        //map에 설정
+        //map에 설정 & prefab생성. environment object를 map에 적절히 assign해야 해서 mapmanager에서 처리함
         MapManager.Instance.CreateBuilding(mapId, MetaManager.Instance.buildingInfo[buildingId].prefab); //건물의 a* cost는 -1. 지나가지 못함
         //화면 처리에 필요한 object 설정
-        BuildingObject obj = new BuildingObject(mapId, buildingId);
-        obj.SetConstruction();
-        objects[mapId] = obj;
+        BuildingObject obj = new BuildingObject();
+        if(obj.Create(mapId, buildingId))
+            objects[mapId] = obj;
     }
     public void Destroy(int mapId)
     {
@@ -114,7 +98,7 @@ public class BuildingManager
     }
     public void Update()
     {
-        foreach(KeyValuePair<int, BuildingObject> kv in objects)
+        foreach(KeyValuePair<int, Object> kv in objects)
         {
             kv.Value.Update();
         }

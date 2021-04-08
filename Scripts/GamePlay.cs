@@ -6,8 +6,7 @@ public class GamePlay : MonoBehaviour
 {
     public Camera camera;
     public Transform canvas;
-    private GameObject buildingLayer;
-    private List<GameObject> listBuildingItems = new List<GameObject>();
+    private GameObject buildingLayer, actorLayer;
 
     //a*
     List<int> route = new List<int>();
@@ -16,15 +15,7 @@ public class GamePlay : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Context.Instance.Init(ref canvas, "progress_default", "CubeGreen", "CubeRed", "select_ui");
-        for(int n = 0; n < MetaManager.Instance.meta.buildings.Count; n++)
-        {
-            GameObject obj = Resources.Load<GameObject>("button_default");
-            Meta.Building buildingInfo = MetaManager.Instance.meta.buildings[n];
-            obj.GetComponentInChildren<Text>().text = buildingInfo.name;
-            obj.name = string.Format("building-{0}", buildingInfo.id);
-            listBuildingItems.Add(Instantiate(obj));
-        }
+        Context.Instance.Init(ref canvas, "progress_default", "CubeGreen", "CubeRed", "select_ui", OnClickForCreatingActor);
         
         LoaderPerspective.Instance.SetUI(camera, ref canvas, OnClickButton);
         if(!LoaderPerspective.Instance.LoadJsonFile("ui"))
@@ -35,37 +26,101 @@ public class GamePlay : MonoBehaviour
         {
             LoaderPerspective.Instance.AddComponents(OnCreate, OnCreatePost);
             buildingLayer = GameObject.Find("buildings");
-            buildingLayer.SetActive(false);
+            actorLayer = GameObject.Find("actors");
+
+            HideLayers();
         }
 
         actor = GameObject.Find("actor");
     }
+    void HideLayers()
+    {
+        buildingLayer.SetActive(false);
+        actorLayer.SetActive(false);
+    }
+    /*
+        Set scroll view 
+    */
     void OnCreatePost(GameObject obj, string layerName)
     {
         switch(obj.name)
         {
-            case "scrollview":
-                LoaderPerspective.Instance.CreateScrollViewItems(listBuildingItems, 15, obj.GetComponent<RectTransform>().sizeDelta, OnClickButton);
+            case "scrollview_building":
+                LoaderPerspective.Instance.CreateScrollViewItems(GetBuildingScrollItems(), 15, obj.GetComponent<RectTransform>().sizeDelta, OnClickButton, obj);
+                break;
+            case "scrollview_actor":
+                LoaderPerspective.Instance.CreateScrollViewItems(GetActorScrollItems(), 15, obj.GetComponent<RectTransform>().sizeDelta, OnClickButton, obj);
+                break;
+            default:
+                break;
+        }
+    }
+     List<GameObject> GetBuildingScrollItems()
+    {
+        List<GameObject> list = new List<GameObject>();
+        for(int n = 0; n < MetaManager.Instance.meta.buildings.Count; n++)
+        {
+            GameObject obj = Resources.Load<GameObject>("button_default");
+            Meta.Building buildingInfo = MetaManager.Instance.meta.buildings[n];
+            obj.GetComponentInChildren<Text>().text = buildingInfo.name;
+            obj.name = string.Format("building-{0}", buildingInfo.id);
+            list.Add(Instantiate(obj));
+        }
+
+        return list;
+    }
+
+    List<GameObject> GetActorScrollItems()
+    {
+        List<GameObject> list = new List<GameObject>();
+        for(int n = 0; n < MetaManager.Instance.meta.actors.Count; n++)
+        {
+            GameObject obj = Resources.Load<GameObject>("button_default");
+            Meta.Actor info = MetaManager.Instance.meta.actors[n];
+            obj.GetComponentInChildren<Text>().text = info.name;
+            obj.name = string.Format("actor-{0}", info.id);
+            list.Add(Instantiate(obj));
+        }
+
+        return list;
+    }
+    /*
+        OnClick 처리
+    */
+    void OnClickForCreatingActor(int mapId, int buildingId)
+    {
+        Debug.Log(string.Format("{0}-{1}", mapId, buildingId));
+        actorLayer.SetActive(true);
+        Context.Instance.SetMode(Context.Mode.UI_ACTOR);
+        ((ContextCreatingActor)Context.Instance.contexts[Context.Mode.UI_ACTOR]).SetSelectedBuilding(mapId, buildingId);
+    }
+    void OnClickButton(GameObject obj)
+    {
+        Debug.Log("OnClick " + obj.name);
+        string name = obj.name.Replace("(Clone)", "");
+        switch(Context.Instance.mode)
+        {
+            case Context.Mode.NONE:
+                OnClick_NONE(obj, name);
+                break;
+            case Context.Mode.UI_BUILD:
+                OnClick_UI_BUILD(obj, name);
+                break;
+            case Context.Mode.UI_ACTOR:
+                OnClick_UI_ACTOR(obj, name);
                 break;
             default:
                 break;
         }
     }
 
-    GameObject OnCreate(string layerName,string name, string tag, Vector2 position, Vector2 size)
+    void OnClick_NONE(GameObject obj, string name)
     {
-        return null;
-    } 
-
-    void OnClickButton(GameObject obj)
-    {
-        Debug.Log("OnClick " + obj.name);
-        string name = obj.name.Replace("(Clone)", "");
         switch(name)
         {
-            case "building":
+            case "btn_building":
                 buildingLayer.SetActive(true);
-                Context.Instance.mode = Context.Mode.UI_BUILD;
+                Context.Instance.SetMode(Context.Mode.UI_BUILD);
                 break;
             case "zoomin":
                 if(Camera.main.fieldOfView > 10)
@@ -78,22 +133,36 @@ public class GamePlay : MonoBehaviour
             default:
                 break;
         }
+    }
+
+    void OnClick_UI_BUILD(GameObject obj, string name)
+    {
         string[] arr = name.Split('-');
-        if(arr.Length >= 2)
+        if(arr.Length >= 2 && arr[0] == "building")
         {
-            if(arr[0] == "building")
-            {
-                int id = int.Parse(arr[1]);
-                
-                Context.Instance.SetMode(Context.Mode.BUILD);
-                ((ContextBuild)Context.Instance.contexts[Context.Mode.BUILD]).SetBuildingId(id);
-                buildingLayer.SetActive(false);
-                
-            }
+            int id = int.Parse(arr[1]);
+            Context.Instance.SetMode(Context.Mode.BUILD);
+            ((ContextBuild)Context.Instance.contexts[Context.Mode.BUILD]).SetBuildingId(id);
+            HideLayers();
         }
     }
 
-    // Update is called once per frame
+    void OnClick_UI_ACTOR(GameObject obj, string name)
+    {
+        string[] arr = name.Split('-');
+        if(arr.Length >= 2 && arr[0] == "actor")
+        {
+            int id = int.Parse(arr[1]);
+            //actor에 대한 cost 처리
+            int mapId = ((ContextCreatingActor)Context.Instance.contexts[Context.Mode.UI_ACTOR]).selectedMapId;
+
+            Updater.Instance.AddQ(ActionType.ACTOR_CREATE, mapId, id, null);
+            Context.Instance.SetMode(Context.Mode.NONE);
+            HideLayers();
+        }
+    }
+
+    // UI canceling
     void Update()
     {
         if(Input.GetMouseButtonUp(0))
@@ -112,17 +181,17 @@ public class GamePlay : MonoBehaviour
                 int id = MapManager.Instance.GetMapId(new Vector2Int(stack.Peek().x, stack.Peek().y));
                 route.Add(id);
                 stack.Pop();
-                Debug.Log(MapManager.Instance.GetMapPosition(id));
-                
+                //Debug.Log(MapManager.Instance.GetMapPosition(id));
             }
             
             //------------------------------
             switch(Context.Instance.mode)
             {
                 case Context.Mode.UI_BUILD:
+                case Context.Mode.UI_ACTOR:
                     if(!EventSystem.current.IsPointerOverGameObject()) //UI가 클릭되지 않은 경우
                     {
-                        buildingLayer.SetActive(false);
+                        HideLayers();
                         Context.Instance.SetMode(Context.Mode.NONE);
                     }
                     break;
@@ -161,60 +230,8 @@ public class GamePlay : MonoBehaviour
         Vector3 dir = target - actor.transform.position;
         actor.transform.rotation = Quaternion.Lerp(actor.transform.rotation, Quaternion.LookRotation(dir), ratio);
     }
-
-    Vector3 GetRoutePosition(int id)
+     GameObject OnCreate(string layerName,string name, string tag, Vector2 position, Vector2 size)
     {
-        Vector3 pos = MapManager.Instance.GetVector3FromMapId(route[id]);
-        if(id > 0)
-        {
-            Vector3 posPre = MapManager.Instance.GetVector3FromMapId(route[id - 1]);
-            Vector3 posNext = MapManager.Instance.GetVector3FromMapId(route[id + 1]);
-            return posPre + ((posNext - posPre) * 0.5f);
-        }
-        else
-        {
-            return pos;
-        }
-    }
-    
-    void DisplayEvent(List<Object> list)
-    {
-        if(list == null)
-        {
-            return;
-        }
-        //display event
-        for(int n = 0; n < list.Count; n++)
-        {
-            Object o = list[n];
-            if(o is Actor)
-            {
-                EventActor((Actor)o);
-            }
-            else if(o is BuildingObject)
-            {
-                EventBuilding((BuildingObject)o);
-            }
-            else if(o is Node)
-            {
-                EventNode((Node)o);
-            }
-        }
-    }
-
-    void EventActor(Actor actor)
-    {
-
-    }
-
-    void EventBuilding(BuildingObject building)
-    {
-
-    }
-
-    void EventNode(Node node)
-    {
-
-    }
-    
+        return null;
+    } 
 }

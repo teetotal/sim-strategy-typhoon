@@ -24,6 +24,9 @@ public class ContextNone : IContext
         // R
         btn[1].onClick.AddListener(()=>{ OnClickR(); });
 
+        // B
+        btn[2].onClick.AddListener(()=>{ OnClickB(); });
+
         selectUI.SetActive(false);
 
 
@@ -97,7 +100,7 @@ public class ContextNone : IContext
     }
     int GetSelectedBuildingId()
     {
-        return BuildingManager.Instance.objects[GetSelectedMapId()].buildingId;
+        return BuildingManager.Instance.objects[GetSelectedMapId()].id;
     }
 
     void OnClickX()
@@ -116,6 +119,16 @@ public class ContextNone : IContext
         {
             Vector3 angles = selectedObj.transform.localEulerAngles;
             selectedObj.transform.localEulerAngles = new Vector3(angles.x, angles.y + 90, angles.z);
+        }
+    }
+
+    void OnClickB()
+    {
+        if(selectedObj)
+        {
+            int mapId = GetSelectedMapId();
+            int buildingId = GetSelectedBuildingId();
+            Context.Instance.onClickForCreatingActor(mapId, buildingId);
         }
     }
 }

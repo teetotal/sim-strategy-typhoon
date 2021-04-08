@@ -12,6 +12,7 @@ public enum ActionType
     BUILDING_DESTROY,
     BUILDING_UPGRADE,
 
+    ACTOR_CREATE,
     ACTOR_MOVING,
     ACTOR_ATTACK,
     MAX,

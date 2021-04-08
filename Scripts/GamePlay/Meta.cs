@@ -38,6 +38,7 @@ public class Meta
     {
         public int id;
         public string name;
+        public string prefab;
         public int level;
         public Ability ability;
         public List<ResourceIdAmount> wage;

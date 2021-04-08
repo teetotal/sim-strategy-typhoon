@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Updater 
 {
-    private NodeManager nodeManager = new NodeManager();                //node
     private Queue<QNode> queue = new Queue<QNode>();
 
     private static readonly Lazy<Updater> hInstance = new Lazy<Updater>(() => new Updater());
@@ -41,10 +40,13 @@ public class Updater
         switch(q.type)
         {
             case ActionType.BUILDING_CREATE:
-                BuildingManager.Instance.Construct(q.mapId, q.buildingId);
+                BuildingManager.Instance.Construct(q.mapId, q.id);
                 break;
             case ActionType.BUILDING_DESTROY:
                 BuildingManager.Instance.Destroy(q.mapId);
+                break;
+            case ActionType.ACTOR_CREATE:
+                ActorManager.Instance.Create(q.mapId, q.id);
                 break;
             default:
                 return;
@@ -52,8 +54,8 @@ public class Updater
     }
 
     /* ---------------------------------------------------------------------------- */
-    public void AddQ(ActionType type, int id, int building, List<int> values)
+    public void AddQ(ActionType type, int mapId, int building, List<int> values)
     {
-        queue.Enqueue(new QNode(type, id, building, values));
+        queue.Enqueue(new QNode(type, mapId, building, values));
     }
 }

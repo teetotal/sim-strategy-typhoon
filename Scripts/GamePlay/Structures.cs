@@ -15,14 +15,7 @@ public struct ResourceActor
     public int level;
     public int amount;
 }
-/* --------------------------- */
-//기본 struct
-public class Object
-{
-    public int mapId;     //node 위치와 building위치를 같게 할지 빌딩은 내부 위치로 나눠서 할지...
-    public string name;
-    public int level;
-}
+
 //각종 행위. 공격, 이동
 public struct Action
 {
@@ -30,35 +23,56 @@ public struct Action
     public float totalTime;       //Action이 적용되는 총 시간
     public float currentTime;     //현재까지 진행된 시간
 }
+
+/* --------------------------- */
+//기본 struct
+public abstract class Object
+{
+    public int mapId;     //이동시 업데이트 필요
+    public int id;
+    public int level;
+    public List<Action> actions = new List<Action>(); //현재 겪고 있는 액션 리스트.
+    public GameObject progress;
+    public abstract bool Create(int mapId, int id);
+    public abstract void Update();
+    protected Vector3 GetProgressPosition()
+    {
+        return Camera.main.WorldToScreenPoint(MapManager.Instance.defaultGameObjects[mapId].transform.position + new Vector3(0, 1.0f, 0));
+    }
+    protected void RemoveActions(List<int> removeActionIds)
+    {
+        for(int n = 0; n < removeActionIds.Count; n++)
+        {   
+            actions.RemoveAt(removeActionIds[n]);
+        }
+    }
+}
 //건물 정보
 public class BuildingObject : Object
-{
-    public Node attachedNode;               //소속된 node 정보
-    public int buildingId;
-    public List<Action> actions = new List<Action>(); //현재 겪고 있는 액션 리스트.
+{   
     public List<Actor> actors = new List<Actor>();
-    public GameObject progress;
-    public BuildingObject(int mapId, int buildingId)
+    
+    public override bool Create(int mapId, int id)
     {
         this.mapId = mapId;
-        this.buildingId = buildingId;
-    }
-    public void SetConstruction()
-    {
+        this.id = id;
+
         Action action = new Action();
         action.type = ActionType.BUILDING_CREATE;
         action.currentTime = 0;
-        action.totalTime = MetaManager.Instance.buildingInfo[buildingId].buildTime;
+        action.totalTime = MetaManager.Instance.buildingInfo[this.id].buildTime;
         actions.Add(action);
 
         //progress
         Vector3 pos = GetProgressPosition();
         progress = GameObject.Instantiate(Context.Instance.progressPrefab, pos, Quaternion.identity);
-        progress.name = string.Format("progress-{0}-{1}", mapId, buildingId);
+        progress.name = string.Format("progress-{0}-{1}", mapId, this.id);
         progress.transform.SetParent(Context.Instance.canvas);
+
+        return true;
     }
 
-    public void Update()
+    public override void Update()
     {
         List<int> removeActionIds = new List<int>();
         for(int n = 0; n < actions.Count; n++)
@@ -93,50 +107,40 @@ public class BuildingObject : Object
             }
         }
 
-        for(int n = 0; n < removeActionIds.Count; n++)
-        {   
-            actions.RemoveAt(removeActionIds[n]);
-        }
+        RemoveActions(removeActionIds);
     }
-    private Vector3 GetProgressPosition()
-    {
-        return Camera.main.WorldToScreenPoint(MapManager.Instance.defaultGameObjects[mapId].transform.position + new Vector3(0, 1.0f, 0));
-    }
+    
 }
 //움직이는 객체 정보
 public class Actor : Object
 {
     public ActorType type;
-    public Node attachedNode;               //소속된 node 정보
     public BuildingObject attachedBuilding; //소속된 건물 정보
-    public Action action; //현재 액션
-    public int targetPos;   //액션 타겟 위치. ex) 옆 건물로 이동시 pos가 from, targetPos가 to
     //전투의 경우, 수량 정보도 필요할 수 있음.
     public int currentHeadcount; //현재 인원. 전체 인원은 type과 level로 파악
-}
-//건물들이 모인 하나의 그룹. 지역
-public class Node : Object
-{
-    public List<Node> connections;          // 연결된 노드들
-    public Dictionary<int, int> necessaryResource;   // 주기적으로 필요한 자원 id, amount
-    public Dictionary<int, int> currentResource;        // 현재 보유 자원
-    public List<BuildingObject> builtObjects;   // 소속된 건물들
 
-    public Node(int mapId, string name)
+    public override bool Create(int mapId, int id)
     {
-        this.mapId = mapId;
-        this.level = 1;
-        this.name = name;
-        connections = new List<Node>();
-        necessaryResource = new Dictionary<int, int>();
-        currentResource = new Dictionary<int, int>();
-        builtObjects = new List<BuildingObject>();
+        //생성 위치 찾기.
+        mapId = MapManager.Instance.AssignNearEmptyMapId(mapId);
+        if(mapId == -1)
+            return false;
+
+        //prefab 생성
+        Vector3 position = MapManager.Instance.GetVector3FromMapId(mapId);
+        GameObject obj = Resources.Load<GameObject>(MetaManager.Instance.actorInfo[id].prefab);
+        obj = GameObject.Instantiate(obj, new Vector3(position.x, position.y + 0.1f, position.z), Quaternion.identity);
+        obj.tag = "Actor";
+        obj.name = string.Format("actor-{0}", mapId); //id어떻게 설정하지? seq를 할당해야 하나? 아님 현재 위치 기반으로 해야하나?
+        GameObject parent = MapManager.Instance.defaultGameObjects[mapId];
+        obj.transform.SetParent(parent.transform);
+
+        return true;
     }
 
-    public void Update()
+    public override void Update()
     {
-        //necessaryResource
-        //currentResource
+        
     }
 }
 /* --------------------------- */
@@ -144,14 +148,14 @@ public struct QNode
 {
     public ActionType type;
     public int mapId; //mapid
-    public int buildingId;
+    public int id;
     public List<int> values;    //caller쪽과 protocol을 맞춰야 한다.
 
-    public QNode(ActionType type, int mapId, int buildingId, List<int> values)
+    public QNode(ActionType type, int mapId, int id, List<int> values)
     {
         this.type = type;
         this.mapId = mapId;
-        this.buildingId = buildingId;
+        this.id = id;
         this.values = values;
     }
 }
