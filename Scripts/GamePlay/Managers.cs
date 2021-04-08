@@ -4,6 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 public class MetaManager
 {
+    public enum TAG
+    {
+        BOTTOM = 0,
+        ENVIRONMENT,
+        BUILDING,
+        ACTOR,
+        MAX
+    }
     public Meta meta;
     public Dictionary<int, Meta.Building> buildingInfo = new Dictionary<int, Meta.Building>(); // 빌딩 정보
     public Dictionary<int, Meta.Actor> actorInfo = new Dictionary<int, Meta.Actor>(); // actor 정보
@@ -42,11 +50,26 @@ public class MetaManager
             resourceInfo[r.id] = r.name;
         }
     }
+    public string GetTag(TAG tag)
+    {
+        int idx = (int)tag;
+        return meta.tags[idx];
+    }
+    public TAG GetTag(string tag)
+    {
+        for(int n = 0; n < meta.tags.Count; n++)
+        {
+            if(tag == meta.tags[n])
+                return (TAG)n;
+        }
+        
+        return TAG.MAX;
+    }
 }
 
 public class ActorManager
 {
-    private Dictionary<int, Actor> actors = new Dictionary<int, Actor>();
+    public Dictionary<int, Actor> actors = new Dictionary<int, Actor>();
     private static readonly Lazy<ActorManager> hInstance = new Lazy<ActorManager>(() => new ActorManager());
     
     public static ActorManager Instance
@@ -63,7 +86,32 @@ public class ActorManager
         //화면 처리에 필요한 object 설정
         Actor obj = new Actor();
         if(obj.Create(mapId, actorId))
-            actors[mapId] = obj;
+            actors[obj.mapId] = obj;
+    }
+    public void Moving(QNode q)
+    {
+        Actor actor = ActorManager.Instance.actors[q.mapId];
+        
+        int to = q.values[q.values.Count -1];
+        //mapmanager 변경. 
+        MapManager.Instance.Move(q.mapId, to);
+        //actormanager변경
+        ActorManager.Instance.actors[to] = actor;
+        ActorManager.Instance.actors.Remove(q.mapId);
+        //actor map id변경
+        actor.mapId = to;
+        GameObject parent = MapManager.Instance.defaultGameObjects[to];
+        actor.gameObject.name = actor.mapId.ToString();
+        actor.gameObject.transform.SetParent(parent.transform);
+
+        actor.SetMoving(q.values);
+    }
+    public void Update()
+    {
+        foreach(KeyValuePair<int, Actor> kv in actors)
+        {
+            kv.Value.Update();
+        }
     }
 }
 
@@ -89,7 +137,7 @@ public class BuildingManager
         //화면 처리에 필요한 object 설정
         BuildingObject obj = new BuildingObject();
         if(obj.Create(mapId, buildingId))
-            objects[mapId] = obj;
+            objects[obj.mapId] = obj;
     }
     public void Destroy(int mapId)
     {

@@ -10,16 +10,17 @@ public class Context
         UI_BUILD,
         BUILD,
         UI_ACTOR,
+        ACTOR,
         MAX
     }
-    public delegate void OnClickForCreatingActor(int mapId, int buildId); //Actor생성용
-    public OnClickForCreatingActor onClickForCreatingActor;
+    public delegate void OnClickForObject(int mapId, int id); //건물, 액터 선택시 이벤트용
+    public OnClickForObject onClickForCreatingActor, onClickForUpgradingActor;
     public Dictionary<Context.Mode, IContext> contexts;
     private static readonly Lazy<Context> hInstance = new Lazy<Context>(() => new Context());
     public Mode mode = Mode.NONE;
     public bool isInitialized = false;
     public Transform canvas;
-    public GameObject greenPrefab, redPrefab, progressPrefab, selectUIPrefab;
+    public GameObject greenPrefab, redPrefab, progressPrefab, selectUIPrefab, selectUIActorPrefab;
     public static Context Instance
     {
         get {
@@ -33,7 +34,8 @@ public class Context
             { Mode.NONE,        new ContextNone()   },
             { Mode.UI_BUILD,    new ContextDummy()  },
             { Mode.BUILD,       new ContextBuild()  },
-            { Mode.UI_ACTOR,    new ContextCreatingActor()  }
+            { Mode.UI_ACTOR,    new ContextCreatingActor()  },
+            { Mode.ACTOR,       new ContextActor()  }
         };
     }
     public void Update()
@@ -59,7 +61,9 @@ public class Context
                     string greenCube, 
                     string redCube, 
                     string selectUIPrefab,
-                    OnClickForCreatingActor onClickForCreatingActor
+                    string selectUIActorPrefab,
+                    OnClickForObject onClickForCreatingActor,
+                    OnClickForObject onClickForUpgradingActor
                     )
     {
         this.canvas = canvas;
@@ -67,7 +71,9 @@ public class Context
         this.greenPrefab = Resources.Load<GameObject>(greenCube);
         this.redPrefab = Resources.Load<GameObject>(redCube);
         this.selectUIPrefab = Resources.Load<GameObject>(selectUIPrefab);
+        this.selectUIActorPrefab = Resources.Load<GameObject>(selectUIActorPrefab);
         this.onClickForCreatingActor = onClickForCreatingActor;
+        this.onClickForUpgradingActor = onClickForUpgradingActor;
 
         //init
         foreach (KeyValuePair<Context.Mode, IContext> kv in contexts)
@@ -88,18 +94,16 @@ public class ContextDummy : IContext
 {
     public void Init()
     {
-    }public void Reset()
+    }
+    public void Reset()
     {
     }
-
     public void OnMove()
     {
     }
-
     public void OnTouch()
     {
     }
-
     public void OnTouchRelease()
     {
     }

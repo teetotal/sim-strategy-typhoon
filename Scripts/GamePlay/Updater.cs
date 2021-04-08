@@ -26,13 +26,12 @@ public class Updater
             Fetch(queue.Dequeue());     
         }
 
-        //nodeManager.nodes로 부터 빌딩, 액터까지 모두 찾아서 이벤트 처리
-
-            //building event 처리
+        //building event 처리
         BuildingManager.Instance.Update();
-            //actor event 처리
+        //actor event 처리
+        ActorManager.Instance.Update();
             
-            //일정 주기로 update node resource
+        //일정 주기로 update node resource
     }
 
     private void Fetch(QNode q)
@@ -48,14 +47,17 @@ public class Updater
             case ActionType.ACTOR_CREATE:
                 ActorManager.Instance.Create(q.mapId, q.id);
                 break;
+            case ActionType.ACTOR_MOVING:
+                ActorManager.Instance.Moving(q);
+                break;
             default:
                 return;
         }
     }
 
     /* ---------------------------------------------------------------------------- */
-    public void AddQ(ActionType type, int mapId, int building, List<int> values)
+    public void AddQ(ActionType type, int mapId, int id, List<int> values)
     {
-        queue.Enqueue(new QNode(type, mapId, building, values));
+        queue.Enqueue(new QNode(type, mapId, id, values));
     }
 }

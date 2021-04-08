@@ -1,4 +1,10 @@
 {
+    "tags": [
+        "Bottom",
+        "Environment",
+        "Building",
+        "Actor"
+    ],
     "resources": [
         {
             "id": 0,
@@ -15,6 +21,7 @@
             "name": "고양이 전사",
             "prefab": "actor",
             "level": 1,
+            "createTime": 10,
             "ability": {
                 "building": 1,
                 "farming": 1,
@@ -35,6 +42,7 @@
             "name": "착한 멍멍이",
             "prefab": "actor",
             "level": 1,
+            "createTime": 20,
             "ability": {
                 "building": 1,
                 "farming": 2,

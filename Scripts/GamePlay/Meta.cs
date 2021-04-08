@@ -40,6 +40,7 @@ public class Meta
         public string name;
         public string prefab;
         public int level;
+        public int createTime;
         public Ability ability;
         public List<ResourceIdAmount> wage;
     }
@@ -57,6 +58,7 @@ public class Meta
         public List<ActorIdMax> actors;
     }
 
+    public List<string> tags;
     public List<IdName> resources;
     public List<Actor> actors;
     public List<Building> buildings;

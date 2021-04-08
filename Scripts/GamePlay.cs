@@ -15,7 +15,15 @@ public class GamePlay : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Context.Instance.Init(ref canvas, "progress_default", "CubeGreen", "CubeRed", "select_ui", OnClickForCreatingActor);
+        Context.Instance.Init(ref canvas, 
+                                "progress_default", 
+                                "CubeGreen", 
+                                "CubeRed", 
+                                "select_ui", 
+                                "select_ui_actor", 
+                                OnClickForCreatingActor,
+                                OnClickForUpgradingActor
+                                );
         
         LoaderPerspective.Instance.SetUI(camera, ref canvas, OnClickButton);
         if(!LoaderPerspective.Instance.LoadJsonFile("ui"))
@@ -89,10 +97,14 @@ public class GamePlay : MonoBehaviour
     */
     void OnClickForCreatingActor(int mapId, int buildingId)
     {
-        Debug.Log(string.Format("{0}-{1}", mapId, buildingId));
+        //Debug.Log(string.Format("{0}-{1}", mapId, buildingId));
         actorLayer.SetActive(true);
         Context.Instance.SetMode(Context.Mode.UI_ACTOR);
         ((ContextCreatingActor)Context.Instance.contexts[Context.Mode.UI_ACTOR]).SetSelectedBuilding(mapId, buildingId);
+    }
+    void OnClickForUpgradingActor(int mapId, int actorId)
+    {
+        Debug.Log(string.Format("OnClickForUpgradingActor {0}-{1}", mapId, actorId));
     }
     void OnClickButton(GameObject obj)
     {
@@ -165,8 +177,15 @@ public class GamePlay : MonoBehaviour
     // UI canceling
     void Update()
     {
+        foreach(KeyValuePair<int, Actor> kv in ActorManager.Instance.actors)
+        {
+            kv.Value.gameObject.GetComponent<Animator>().SetInteger("Speed", 2);
+        }
+        
+
         if(Input.GetMouseButtonUp(0))
         {
+            /*
             time = 0;
             //Astar test
             
@@ -183,7 +202,7 @@ public class GamePlay : MonoBehaviour
                 stack.Pop();
                 //Debug.Log(MapManager.Instance.GetMapPosition(id));
             }
-            
+            */
             //------------------------------
             switch(Context.Instance.mode)
             {
@@ -200,6 +219,7 @@ public class GamePlay : MonoBehaviour
             }
         }
         //a*
+        /*
         time += Time.deltaTime;
         int idx = (int)time;
         if(idx > route.Count - 2)
@@ -229,6 +249,7 @@ public class GamePlay : MonoBehaviour
         
         Vector3 dir = target - actor.transform.position;
         actor.transform.rotation = Quaternion.Lerp(actor.transform.rotation, Quaternion.LookRotation(dir), ratio);
+        */
     }
      GameObject OnCreate(string layerName,string name, string tag, Vector2 position, Vector2 size)
     {

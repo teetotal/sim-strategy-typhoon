@@ -10,7 +10,6 @@ public class Map
     {
         public int cost;
         public int prefabId;
-        public string tag;
     }
     [Serializable]
     public struct Prefab
@@ -55,6 +54,14 @@ public class MapManager
     protected MapManager()
     {
     }
+    //for moving
+    public void Move(int from, int to)
+    {
+        Vector2Int fromPos = GetMapPosition(from);
+        Vector2Int toPos = GetMapPosition(to);
+        map[toPos.x, toPos.y] = map[fromPos.x, fromPos.y];
+        map[fromPos.x, fromPos.y] = mapMeta.defaultVal.cost;
+    }
     //regarding object
     public GameObject GetBuildingObject(int id)
     {
@@ -86,6 +93,16 @@ public class MapManager
     public Vector3 GetVector3FromMapId(int id)
     {
         return defaultGameObjects[id].transform.position;
+    }
+    public bool IsEmptyMapId(int id)
+    {
+        Vector2Int pos = GetMapPosition(id);
+        Debug.Log(string.Format("IsEmptyMapId {0} - {1}", pos, map[pos.x, pos.y]));
+        if(map[pos.x, pos.y] == mapMeta.defaultVal.cost)
+        {
+            return true;
+        }
+        return false;
     }
     public int AssignNearEmptyMapId(int id)
     {
@@ -138,7 +155,7 @@ public class MapManager
                 GameObject defaultPrefab = Resources.Load<GameObject>(prefabInfo.name);
                 defaultPrefab = GameObject.Instantiate(defaultPrefab, new Vector3(j - startPosition.x, -0.1f, i - startPosition.y), Quaternion.identity);
                 defaultPrefab.name = idx++.ToString();
-                defaultPrefab.tag = mapMeta.defaultVal.tag;
+                defaultPrefab.tag = MetaManager.Instance.GetTag(MetaManager.TAG.BOTTOM);
 
                 defaultGameObjects.Add(defaultPrefab);
 
@@ -194,7 +211,7 @@ public class MapManager
         map[position.x, position.y] = mapCost;
         GameObject obj = Resources.Load<GameObject>(prefab);
         obj = GameObject.Instantiate(obj, new Vector3(parent.transform.position.x, parent.transform.position.y + 0.1f, parent.transform.position.z), Quaternion.identity);
-        obj.tag = isBuilding ? "Building" : "Environment";
+        obj.tag = isBuilding ? MetaManager.Instance.GetTag(MetaManager.TAG.BUILDING) : MetaManager.Instance.GetTag(MetaManager.TAG.ENVIRONMENT);
         obj.name = id.ToString();
         obj.transform.SetParent(parent.transform);
         if(buildingObjects.ContainsKey(id) == true)

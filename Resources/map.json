@@ -28,8 +28,7 @@
     },
     "defaultVal": {
         "cost": 0,
-        "prefabId": 0,
-        "tag": "Bottom"
+        "prefabId": 0
     },
     "nodes": [
         {
