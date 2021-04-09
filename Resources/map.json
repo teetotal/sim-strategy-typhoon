@@ -1,20 +1,39 @@
 {   
     "prefabs": [
         {
+            "id": 0,
             "name": "ForestEmpty",
             "cost": 0
         },
         {
+            "id": 1,
             "name": "ForestTreeSpruce_01",
             "cost": -1
         },
         {
+            "id": 2,
             "name": "ForestTreeSpruce_02",
             "cost": -1
         },
         {
+            "id": 3,
             "name": "ForestTreeSpruce_03",
             "cost": -1
+        },
+        {
+            "id": 4,
+            "name": "Grass",
+            "cost": 1
+        },
+        {
+            "id": 5,
+            "name": "ForestLake",
+            "cost": -1
+        },
+        {
+            "id": 6,
+            "name": "Ground",
+            "cost": 0
         }
     ],
     "grid": {
@@ -33,14 +52,14 @@
     "nodes": [
         {
             "prefabId": 1,
-            "positions": [48, 64, 80, 96, 112, 128, 144, 160, 176],
+            "positions": [],
             "range": {
                 "start": 0,
                 "end": 15
             }
         },
         {
-            "prefabId": 1,
+            "prefabId": 4,
             "positions": [],
             "range": {
                 "start": 192,
@@ -56,8 +75,8 @@
             }
         },
         {
-            "prefabId": 3,
-            "positions": [],
+            "prefabId": 5,
+            "positions": [48, 64, 80, 96, 112, 128, 144, 160, 176],
             "range": {
                 "start": 32,
                 "end": 47

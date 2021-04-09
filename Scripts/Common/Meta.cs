@@ -34,6 +34,20 @@ public class Meta
         public int amount; 
     }
     [Serializable]
+    public struct Mob
+    {
+        public int id;
+        public string name;
+        public string prefab;
+        public int level;
+        public int regenTime, probability; //regenTime 간격으로 1/probability 확률로 생성
+        public int max;         //생성가능한 수
+        public int mapCost;
+        public int movingRange; //움직임 범위
+        public Ability ability;
+        public List<ResourceIdAmount> reward;
+    }
+    [Serializable]
     public struct Actor
     {
         public int id;
@@ -60,6 +74,7 @@ public class Meta
 
     public List<string> tags;
     public List<IdName> resources;
+    public List<Mob> mobs;
     public List<Actor> actors;
     public List<Building> buildings;
 }

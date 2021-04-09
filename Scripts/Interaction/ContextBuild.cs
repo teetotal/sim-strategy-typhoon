@@ -82,8 +82,9 @@ public class ContextBuild : IContext
             if(id != -1)
             {
                 Vector3 position = MapManager.Instance.GetVector3FromMapId(id);
+                Vector2Int pos = MapManager.Instance.GetMapPosition(id);
                 GameObject obj = Context.Instance.greenPrefab;
-                if(MapManager.Instance.GetBuildingObject(id) != null)
+                if(MapManager.Instance.map[pos.x, pos.y] != MapManager.Instance.mapMeta.defaultVal.cost)
                 {
                     obj = Context.Instance.redPrefab;
                     ret = false;

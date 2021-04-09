@@ -3,16 +3,48 @@
         "Bottom",
         "Environment",
         "Building",
-        "Actor"
+        "Actor",
+        "Mob"
     ],
     "resources": [
         {
             "id": 0,
-            "name": "나무"
+            "name": "골드"
         },
         {
             "id": 1,
-            "name": "열매"
+            "name": "나무"
+        },
+        {
+            "id": 2,
+            "name": "식량"
+        }
+    ],
+    "mobs": [
+        {
+            "id": 0,
+            "name": "토끼는 깡총깡총",
+            "prefab": "Chicken",
+            "level": 1,
+            "regenTime": 10,
+            "probability": 2,
+            "max": 5,
+            "mapCost": 1,
+            "movingRange": 1,
+            "ability": {
+                "building": 0,
+                "farming": 0,
+                "carring": 0,
+                "attack": 1,
+                "depense": 1,
+                "moving": 1
+            },
+            "reward": [
+                {
+                    "resourceId": 0,
+                    "amount": 1 
+                }
+            ]
         }
     ],
     "actors": [

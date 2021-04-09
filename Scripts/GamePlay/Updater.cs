@@ -30,7 +30,8 @@ public class Updater
         BuildingManager.Instance.Update();
         //actor event 처리
         ActorManager.Instance.Update();
-            
+        //mob
+        MobManager.Instance.Update();
         //일정 주기로 update node resource
     }
 

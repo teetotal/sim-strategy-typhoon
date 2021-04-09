@@ -73,6 +73,11 @@ public class MapManager
         return buildingObjects[id];
     }
     //regarding position
+    public void SetMapId(int mapId, int cost)
+    {
+        Vector2Int pos = GetMapPosition(mapId);
+        map[pos.x, pos.y] = cost;
+    }
     public int GetMapId(Vector2Int pos)
     {
         if(pos.x >= mapMeta.dimension.x || pos.y >= mapMeta.dimension.y)
@@ -104,6 +109,49 @@ public class MapManager
         }
         return false;
     }
+    public int GetEmptyMapId()
+    {
+        int max = mapMeta.dimension.x * mapMeta.dimension.y -1;
+        for(int n = 0; n < 10; n++)
+        {
+            int id = UnityEngine.Random.Range(0, max);
+            Vector2Int pos = GetMapPosition(id);
+            if(map[pos.x, pos.y] == mapMeta.defaultVal.cost)
+            {
+                return id;
+            }
+        }
+        return -1;
+    }
+    public int GetRandomNearEmptyMapId(int id, int range)
+    {
+        List<int> list = new List<int>();
+        Vector2Int pos = GetMapPosition(id);
+        
+        for(int y = pos.y - range; y <= pos.y + range; y++)
+        {
+            if(y < 0 || map.GetLength(1) <= y)
+                continue;
+
+            for(int x = pos.x - range; x <= pos.x + range; x++)
+            {
+                if(x < 0 || map.GetLength(0) <= x)
+                    continue;
+
+                if(map[x,y] == mapMeta.defaultVal.cost)
+                {
+                    list.Add(GetMapId(new Vector2Int(x, y)));
+                }
+            }
+        }
+        if(list.Count == 0)
+            return -1;
+
+        int idx = UnityEngine.Random.Range(0, list.Count);
+        //Debug.Log(string.Format("{0} / {1}", idx, list.Count-1));
+        
+        return list[idx];
+    }
     public int AssignNearEmptyMapId(int id)
     {
         Vector2Int pos = GetMapPosition(id);
@@ -111,12 +159,12 @@ public class MapManager
         while(true)
         {
             int cnt = 0;
-            for(int y = pos.y - range; y < pos.y + range; y++)
+            for(int y = pos.y - range; y <= pos.y + range; y++)
             {
                 if(y < 0 || map.GetLength(1) <= y)
                     continue;
 
-                for(int x = pos.x - range; x < pos.x + range; x++)
+                for(int x = pos.x - range; x <= pos.x + range; x++)
                 {
                     if(x < 0 || map.GetLength(0) <= x)
                         continue;

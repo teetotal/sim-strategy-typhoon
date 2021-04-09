@@ -10,6 +10,7 @@ public class MetaManager
         ENVIRONMENT,
         BUILDING,
         ACTOR,
+        MOB,
         MAX
     }
     public Meta meta;
@@ -66,6 +67,70 @@ public class MetaManager
         return TAG.MAX;
     }
 }
+public class MobManager
+{
+    public Dictionary<int, Mob> mobs = new Dictionary<int, Mob>();
+    private static readonly Lazy<MobManager> hInstance = new Lazy<MobManager>(() => new MobManager());
+    
+    public static MobManager Instance
+    {
+        get {
+            return hInstance.Value;
+        } 
+    }
+    protected MobManager()
+    {
+    }
+    public void Regen()
+    {
+        int[] cnts = new int[MetaManager.Instance.meta.mobs.Count];
+        foreach(KeyValuePair<int, Mob> kv in mobs)
+        {
+            cnts[kv.Value.id]++;
+        }
+
+        for(int n = 0; n < MetaManager.Instance.meta.mobs.Count; n++)
+        {
+            Meta.Mob mob = MetaManager.Instance.meta.mobs[n];
+            if(mob.max <= cnts[n])
+                continue;
+
+            int mapId = MapManager.Instance.GetEmptyMapId(); 
+            if(mapId == -1)
+                return;
+
+            Mob obj = new Mob();
+            if(obj.Create(mapId, n))
+                mobs[obj.mapId] = obj;
+        }
+    }
+    public void Update()
+    {
+        //random gen
+        Regen();
+
+        List<int> keys = new List<int>(mobs.Keys);
+
+        for(int n = 0; n < keys.Count; n++)
+        {
+            Mob mob = mobs[keys[n]];
+            if(mob.actions.Count == 0)
+            {
+                int from = mob.mapId;
+                mob.SetMoving(MapManager.Instance.GetRandomNearEmptyMapId(mob.mapId, MetaManager.Instance.meta.mobs[mob.id].movingRange));
+                int to = mob.mapId;
+
+                MobManager.Instance.mobs[to] = mob;
+                MobManager.Instance.mobs.Remove(from);
+            }
+        }
+
+        foreach(KeyValuePair<int, Mob> kv in mobs)
+        {
+            kv.Value.Update();
+        }
+    }
+}
 
 public class ActorManager
 {
@@ -83,7 +148,6 @@ public class ActorManager
     }
     public void Create(int mapId, int actorId)
     {
-        //화면 처리에 필요한 object 설정
         Actor obj = new Actor();
         if(obj.Create(mapId, actorId))
             actors[obj.mapId] = obj;
