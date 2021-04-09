@@ -10,6 +10,12 @@ public interface IContext
     void OnDrag();
 }
 
+public abstract class IAnimation : MonoBehaviour
+{
+    public abstract void SetIdle();
+    public abstract void SetMoving();
+}
+
 //기본 struct
 public abstract class Object
 {
@@ -21,6 +27,7 @@ public abstract class Object
     public GameObject progress;
     public abstract bool Create(int mapId, int id);
     public abstract void Update();
+    protected bool isMovingStarted;
     protected GameObject Instantiate(int mapId, int id, string prefab, MetaManager.TAG tag)
     {
         Vector3 position = MapManager.Instance.GetVector3FromMapId(mapId);
@@ -30,6 +37,8 @@ public abstract class Object
         obj.name = mapId.ToString();
         GameObject parent = MapManager.Instance.defaultGameObjects[mapId];
         obj.transform.SetParent(parent.transform);
+
+        obj.transform.rotation = Quaternion.Euler(0, 180, 0);
 
         this.id = id;
         this.mapId = mapId;
@@ -69,7 +78,7 @@ public abstract class ActingObject : Object
     {
         if(targetMapId == -1)
             return;
-            
+
         //mapmanager 변경. 
         MapManager.Instance.Move(mapId, targetMapId);
 
@@ -105,6 +114,8 @@ public abstract class ActingObject : Object
         GameObject parent = MapManager.Instance.defaultGameObjects[targetMapId];
         this.gameObject.name = mapId.ToString();
         this.gameObject.transform.SetParent(parent.transform);
+
+        isMovingStarted = false;
     }
     protected int GetCurrentPositionMapId()
     {
@@ -124,28 +135,56 @@ public abstract class ActingObject : Object
 
         GameObject actor = this.gameObject;
         int idx = (int)action.currentTime;
-        if(idx > route.Count - 1)
-        {
-            return false;
-        }
         float ratio = action.currentTime % 1.0f;
-        Vector3 posNext;
-        Vector3 pos = MapManager.Instance.GetVector3FromMapId(route[idx]);//GetRoutePosition(idx);
-        if(idx <= route.Count - 2)
-        {
-            posNext = MapManager.Instance.GetVector3FromMapId(route[idx + 1]);//GetRoutePosition(idx + 1);
-             //Vector3 diff = (posNext - pos) * ratio * 1.0f;
-            actor.transform.position = Vector3.Lerp(pos, posNext, ratio) + new Vector3(0, 0.1f, 0);//pos + diff + new Vector3(0, 0.1f, 0);
 
-            Vector3 target = posNext + new Vector3(0, 0.1f, 0);
-            
-            Vector3 dir = target - actor.transform.position;
-            actor.transform.rotation = Quaternion.Lerp(actor.transform.rotation, Quaternion.LookRotation(dir), ratio);
-        } 
-        else
+        if(!isMovingStarted && ratio > 0.5f) 
+        {
+            SetAnimation(ActionType.ACTOR_MOVING);
+            isMovingStarted = true;
+        }
+
+        if(idx >= route.Count -1 && ratio > 0.5f)
+        {
+            SetAnimation(ActionType.MAX);
+        }
+
+        if(idx == 0)
+            return true;
+
+        if(idx >= route.Count)
         {
             return false;
         }
+
+        
+        Vector3 pos = MapManager.Instance.GetVector3FromMapId(route[idx - 1]) + new Vector3(0, 0.1f, 0);
+        Vector3 posNext = MapManager.Instance.GetVector3FromMapId(route[idx + 0]) + new Vector3(0, 0.1f, 0);
+
+        actor.transform.position = Vector3.Lerp(pos, posNext, ratio);
+
+        Vector3 target = posNext;// + new Vector3(0, 0.1f, 0);
+        
+        Vector3 dir = target - actor.transform.position;
+        actor.transform.rotation = Quaternion.Lerp(actor.transform.rotation, Quaternion.LookRotation(dir), ratio);
+        
         return true;
+    }
+    public void SetAnimation(ActionType type)
+    {
+        //set animation
+        IAnimation p = gameObject.GetComponent<IAnimation>();
+        if(p != null)
+        {
+            switch(type)
+            {
+                case ActionType.ACTOR_MOVING:
+                    p.SetMoving();
+                    break;
+                case ActionType.MAX:
+                    p.SetIdle();
+                    break;
+            }
+            
+        }
     }
 }

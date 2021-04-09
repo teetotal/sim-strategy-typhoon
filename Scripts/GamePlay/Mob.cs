@@ -17,18 +17,6 @@ public class Mob : ActingObject
 
     public override void Update()
     {
-        if(this.actions.Count == 0)
-        {
-            int from = this.mapId;
-            SetMoving(MapManager.Instance.GetRandomNearEmptyMapId(this.mapId, MetaManager.Instance.meta.mobs[this.id].movingRange));
-            int to = this.mapId;
-
-            MobManager.Instance.mobs[to] = this;
-            MobManager.Instance.mobs.Remove(from);
-
-            return;
-        }
-
         List<int> removeActionIds = new List<int>();
         for(int n = 0; n < actions.Count; n++)
         {

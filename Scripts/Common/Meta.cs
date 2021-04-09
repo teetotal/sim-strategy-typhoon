@@ -40,10 +40,10 @@ public class Meta
         public string name;
         public string prefab;
         public int level;
-        public int regenTime, probability; //regenTime 간격으로 1/probability 확률로 생성
+        public int regenTime, regenProbability; //regenTime 간격으로 1/regenProbability 확률로 생성
         public int max;         //생성가능한 수
         public int mapCost;
-        public int movingRange; //움직임 범위
+        public int movingRange, movingProbability; //움직임 범위
         public Ability ability;
         public List<ResourceIdAmount> reward;
     }

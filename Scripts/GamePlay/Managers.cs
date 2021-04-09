@@ -69,7 +69,7 @@ public class MetaManager
 }
 public class MobManager
 {
-    public Dictionary<int, Mob> mobs = new Dictionary<int, Mob>();
+    public List<Mob> mobs = new List<Mob>();
     private static readonly Lazy<MobManager> hInstance = new Lazy<MobManager>(() => new MobManager());
     
     public static MobManager Instance
@@ -84,15 +84,19 @@ public class MobManager
     public void Regen()
     {
         int[] cnts = new int[MetaManager.Instance.meta.mobs.Count];
-        foreach(KeyValuePair<int, Mob> kv in mobs)
+        for(int n = 0; n < mobs.Count; n++)
         {
-            cnts[kv.Value.id]++;
+            cnts[mobs[n].id]++;
         }
 
         for(int n = 0; n < MetaManager.Instance.meta.mobs.Count; n++)
         {
             Meta.Mob mob = MetaManager.Instance.meta.mobs[n];
             if(mob.max <= cnts[n])
+                continue;
+            
+            //probability
+            if(UnityEngine.Random.Range(0, mob.regenProbability) > 0)
                 continue;
 
             int mapId = MapManager.Instance.GetEmptyMapId(); 
@@ -101,7 +105,7 @@ public class MobManager
 
             Mob obj = new Mob();
             if(obj.Create(mapId, n))
-                mobs[obj.mapId] = obj;
+                mobs.Add(obj);
         }
     }
     public void Update()
@@ -109,25 +113,16 @@ public class MobManager
         //random gen
         Regen();
 
-        List<int> keys = new List<int>(mobs.Keys);
-
-        for(int n = 0; n < keys.Count; n++)
+        for(int n = 0; n < mobs.Count; n++)
         {
-            Mob mob = mobs[keys[n]];
+            Mob mob = mobs[n];
             if(mob.actions.Count == 0)
             {
-                int from = mob.mapId;
-                mob.SetMoving(MapManager.Instance.GetRandomNearEmptyMapId(mob.mapId, MetaManager.Instance.meta.mobs[mob.id].movingRange));
-                int to = mob.mapId;
-
-                MobManager.Instance.mobs[to] = mob;
-                MobManager.Instance.mobs.Remove(from);
+                //probability
+                if(UnityEngine.Random.Range(0, MetaManager.Instance.meta.mobs[mob.id].movingProbability) == 0)
+                    mob.SetMoving(MapManager.Instance.GetRandomNearEmptyMapId(mob.mapId, MetaManager.Instance.meta.mobs[mob.id].movingRange));
             }
-        }
-
-        foreach(KeyValuePair<int, Mob> kv in mobs)
-        {
-            kv.Value.Update();
+            mob.Update();
         }
     }
 }

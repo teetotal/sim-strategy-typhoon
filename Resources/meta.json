@@ -23,14 +23,15 @@
     "mobs": [
         {
             "id": 0,
-            "name": "토끼는 깡총깡총",
-            "prefab": "Chicken",
+            "name": "병아리",
+            "prefab": "Chick",
             "level": 1,
             "regenTime": 10,
-            "probability": 2,
+            "regenProbability": 100,
             "max": 5,
             "mapCost": 1,
             "movingRange": 1,
+            "movingProbability": 100,
             "ability": {
                 "building": 0,
                 "farming": 0,
@@ -50,8 +51,8 @@
     "actors": [
         {
             "id": 0,
-            "name": "고양이 전사",
-            "prefab": "actor",
+            "name": "딱히 쓸모 없는 고양이",
+            "prefab": "Cat",
             "level": 1,
             "createTime": 10,
             "ability": {
@@ -93,7 +94,7 @@
         {
             "id": 3,
             "name": "꼬꼬",
-            "prefab": "actor",
+            "prefab": "Chicken",
             "level": 1,
             "createTime": 20,
             "ability": {
