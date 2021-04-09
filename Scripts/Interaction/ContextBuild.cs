@@ -30,12 +30,12 @@ public class ContextBuild : IContext
 
     public void OnTouch()
     {
-        Debug.Log("[ContextBuild] OnTouch");
+        //Debug.Log("[ContextBuild] OnTouch");
     }
     
     public void OnTouchRelease()
     {
-        Debug.Log("[ContextBuild] OnTouchRelease");
+        //Debug.Log("[ContextBuild] OnTouchRelease");
         if(isAvailableChoice)
         {
             Updater.Instance.AddQ(ActionType.BUILDING_CREATE, selectedMapId, selectedBuilding.id, null);

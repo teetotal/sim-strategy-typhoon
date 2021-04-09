@@ -57,13 +57,34 @@
                     "amount": 1 
                 }
             ]
+        },
+        {
+            "id": 3,
+            "name": "꼬꼬",
+            "prefab": "actor",
+            "level": 1,
+            "createTime": 20,
+            "ability": {
+                "building": 1,
+                "farming": 2,
+                "carring": 2,
+                "attack": 1,
+                "depense": 1,
+                "moving": 2
+            },
+            "wage": [
+                {
+                    "resourceId": 1,
+                    "amount": 1 
+                }
+            ]
         }
     ],
     "buildings": [
         {
             "desc": "10초",
             "id": 0,
-            "name": "열매열매 채집장 lv.1",
+            "name": "집 lv.1",
             "prefab": "ForestCabin",
             "level": 1,
             "dimension": {
@@ -86,7 +107,15 @@
             "actors": [
                 {
                     "actorId": 0,
-                    "max": 5
+                    "max": 2
+                },
+                {
+                    "actorId": 1,
+                    "max": 2
+                },
+                {
+                    "actorId": 2,
+                    "max": 2
                 }
             ]
         },
@@ -179,7 +208,12 @@
                 }
             ],
             "output": [],
-            "actors": []
+            "actors": [
+                {
+                    "actorId": 0,
+                    "max": 2
+                }
+            ]
         },
         {
             "id": 5,
@@ -198,7 +232,12 @@
                 }
             ],
             "output": [],
-            "actors": []
+            "actors": [
+                {
+                    "actorId": 1,
+                    "max": 2
+                }
+            ]
         },
         {
             "id": 6,
@@ -217,7 +256,12 @@
                 }
             ],
             "output": [],
-            "actors": []
+            "actors": [
+                {
+                    "actorId": 2,
+                    "max": 2
+                }
+            ]
         },
         {
             "id": 7,

@@ -97,7 +97,7 @@ public class MapManager
     public bool IsEmptyMapId(int id)
     {
         Vector2Int pos = GetMapPosition(id);
-        Debug.Log(string.Format("IsEmptyMapId {0} - {1}", pos, map[pos.x, pos.y]));
+        //Debug.Log(string.Format("IsEmptyMapId {0} - {1}", pos, map[pos.x, pos.y]));
         if(map[pos.x, pos.y] == mapMeta.defaultVal.cost)
         {
             return true;
@@ -219,7 +219,7 @@ public class MapManager
             throw new Exception("Already assigned position. conflict creating building");
         }
         buildingObjects[id] = obj;
-        
+
         return obj;
     }
 }

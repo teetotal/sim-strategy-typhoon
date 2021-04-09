@@ -36,6 +36,18 @@ public abstract class Object
             actions.RemoveAt(removeActionIds[n]);
         }
     }
+    protected void RemoveActionType(ActionType type)
+    {
+        List<int> removeList = new List<int>();
+        for(int n = 0; n < actions.Count; n++)
+        {
+            if(actions[n].type == type)
+            {
+                removeList.Add(n);
+            }
+        }
+        RemoveActions(removeList);
+    }
 }
 //건물 정보
 public class BuildingObject : Object
@@ -143,18 +155,53 @@ public class Actor : Object
 
         return true;
     }
-    public void SetMoving(List<int> route)
+    public void SetMoving(int targetMapId)
     {
         Action action = new Action();
         action.type = ActionType.ACTOR_MOVING;
         action.currentTime = 0;
+
+        //Astar
+        List<int> route = new List<int>();
+        Astar astar = new Astar(MapManager.Instance.map);
+        Vector2Int from = MapManager.Instance.GetMapPosition(GetCurrentPositionMapId());
+        Vector2Int to = MapManager.Instance.GetMapPosition(targetMapId);
+        Stack<Astar.Pos> stack = astar.Search(new Astar.Pos(from.x, from.y), new Astar.Pos(to.x, to.y));
+        if(stack == null)
+            return;
+        
+        while(stack.Count > 0)
+        {
+            int id = MapManager.Instance.GetMapId(new Vector2Int(stack.Peek().x, stack.Peek().y));
+            route.Add(id);
+            stack.Pop();
+        }
         action.totalTime = route.Count;
         action.values = route;
+
+        //이전 이동 액션을 제거
+        RemoveActionType(ActionType.ACTOR_MOVING);
+        //새로운 액션을 추가
         actions.Add(action);
     }
-
+    int GetCurrentPositionMapId()
+    {
+        for(int n = 0; n < actions.Count; n++)
+        {
+            if(actions[n].type == ActionType.ACTOR_MOVING)
+            {
+                int idx = (int)actions[n].currentTime;
+                return actions[n].values[idx];
+            }
+        }
+        return this.mapId;
+    }
     public override void Update()
     {
+        if(progress != null) //progress
+        {
+            progress.transform.position = GetProgressPosition(); //position
+        }
         List<int> removeActionIds = new List<int>();
         for(int n = 0; n < actions.Count; n++)
         {
@@ -166,11 +213,7 @@ public class Actor : Object
             switch(action.type)
             {
                 case ActionType.ACTOR_CREATE:
-                    if(progress != null) //progress
-                    {
-                        progress.transform.position = GetProgressPosition(); //position
-                        progress.GetComponent<Slider>().value = action.currentTime / action.totalTime;
-                    }   
+                    progress.GetComponent<Slider>().value = action.currentTime / action.totalTime;
                     //Debug.Log(string.Format("{0}-{1}/{2}", mapId, action.currentTime, action.totalTime));
                     break;
                 case ActionType.ACTOR_MOVING:
@@ -197,14 +240,14 @@ public class Actor : Object
     bool Moving(Action action)
     {
         List<int> route = action.values;
-        float time = action.currentTime;
+
         GameObject actor = this.gameObject;
-        int idx = (int)time;
+        int idx = (int)action.currentTime;
         if(idx > route.Count - 1)
         {
             return false;
         }
-        float ratio = time % 1.0f;
+        float ratio = action.currentTime % 1.0f;
         Vector3 posNext;
         Vector3 pos = MapManager.Instance.GetVector3FromMapId(route[idx]);//GetRoutePosition(idx);
         if(idx <= route.Count - 2)

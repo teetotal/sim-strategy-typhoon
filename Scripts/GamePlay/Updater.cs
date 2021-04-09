@@ -48,7 +48,7 @@ public class Updater
                 ActorManager.Instance.Create(q.mapId, q.id);
                 break;
             case ActionType.ACTOR_MOVING:
-                ActorManager.Instance.Moving(q);
+                ActorManager.Instance.Moving(q.mapId, q.id); //moving에서는 id를 이동 목표지점 mapid로 사용
                 break;
             default:
                 return;

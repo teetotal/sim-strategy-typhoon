@@ -63,8 +63,7 @@ public class ContextNone : IContext
         GameObject obj = Touch.Instance.GetTouchedObject3D();
         if(obj)
         {
-            Debug.Log(string.Format("{0} - {1}", obj.tag, obj.name));
-
+            //Debug.Log(string.Format("{0} - {1}", obj.tag, obj.name));
             switch(MetaManager.Instance.GetTag(obj.tag))
             {
                 case MetaManager.TAG.BUILDING:

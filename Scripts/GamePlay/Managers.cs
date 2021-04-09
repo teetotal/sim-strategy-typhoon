@@ -88,23 +88,23 @@ public class ActorManager
         if(obj.Create(mapId, actorId))
             actors[obj.mapId] = obj;
     }
-    public void Moving(QNode q)
+    public void Moving(int mapId, int to)
     {
-        Actor actor = ActorManager.Instance.actors[q.mapId];
+        Actor actor = ActorManager.Instance.actors[mapId];
         
-        int to = q.values[q.values.Count -1];
         //mapmanager 변경. 
-        MapManager.Instance.Move(q.mapId, to);
+        MapManager.Instance.Move(mapId, to);
         //actormanager변경
         ActorManager.Instance.actors[to] = actor;
-        ActorManager.Instance.actors.Remove(q.mapId);
+        ActorManager.Instance.actors.Remove(mapId);
+
+        actor.SetMoving(to);
+
         //actor map id변경
         actor.mapId = to;
         GameObject parent = MapManager.Instance.defaultGameObjects[to];
         actor.gameObject.name = actor.mapId.ToString();
         actor.gameObject.transform.SetParent(parent.transform);
-
-        actor.SetMoving(q.values);
     }
     public void Update()
     {

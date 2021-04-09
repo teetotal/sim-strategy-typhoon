@@ -10,8 +10,8 @@ public class GamePlay : MonoBehaviour
 
     //a*
     List<int> route = new List<int>();
-    float time = 0;
-    GameObject actor;
+    //float time = 0;
+    GameObject actor_scrollview;
     // Start is called before the first frame update
     void Start()
     {
@@ -39,12 +39,15 @@ public class GamePlay : MonoBehaviour
             HideLayers();
         }
 
-        actor = GameObject.Find("actor");
+        //actor = GameObject.Find("actor");
     }
     void HideLayers()
     {
         buildingLayer.SetActive(false);
         actorLayer.SetActive(false);
+
+        
+        GameObject.DestroyImmediate(actor_scrollview);
     }
     /*
         Set scroll view 
@@ -54,10 +57,10 @@ public class GamePlay : MonoBehaviour
         switch(obj.name)
         {
             case "scrollview_building":
-                LoaderPerspective.Instance.CreateScrollViewItems(GetBuildingScrollItems(), 15, obj.GetComponent<RectTransform>().sizeDelta, OnClickButton, obj);
+                LoaderPerspective.Instance.CreateScrollViewItems(GetBuildingScrollItems(), 15, OnClickButton, obj);
                 break;
             case "scrollview_actor":
-                LoaderPerspective.Instance.CreateScrollViewItems(GetActorScrollItems(), 15, obj.GetComponent<RectTransform>().sizeDelta, OnClickButton, obj);
+                actor_scrollview = obj;
                 break;
             default:
                 break;
@@ -78,13 +81,14 @@ public class GamePlay : MonoBehaviour
         return list;
     }
 
-    List<GameObject> GetActorScrollItems()
+    List<GameObject> GetActorScrollItems(int buildingId)
     {
         List<GameObject> list = new List<GameObject>();
-        for(int n = 0; n < MetaManager.Instance.meta.actors.Count; n++)
+        for(int n = 0; n < MetaManager.Instance.meta.buildings[buildingId].actors.Count; n++)
         {
             GameObject obj = Resources.Load<GameObject>("button_default");
-            Meta.Actor info = MetaManager.Instance.meta.actors[n];
+            Meta.ActorIdMax actorIdMax = MetaManager.Instance.meta.buildings[buildingId].actors[n];
+            Meta.Actor info = MetaManager.Instance.meta.actors[actorIdMax.actorId];
             obj.GetComponentInChildren<Text>().text = info.name;
             obj.name = string.Format("actor-{0}", info.id);
             list.Add(Instantiate(obj));
@@ -97,7 +101,13 @@ public class GamePlay : MonoBehaviour
     */
     void OnClickForCreatingActor(int mapId, int buildingId)
     {
-        //Debug.Log(string.Format("{0}-{1}", mapId, buildingId));
+        actor_scrollview = LoaderPerspective.Instance.CreateByPrefab("scrollview_default", 
+                                                                        actorLayer.transform, 
+                                                                        actorLayer.GetComponent<RectTransform>().sizeDelta,
+                                                                        actorLayer.transform.position
+                                                                        );
+        LoaderPerspective.Instance.CreateScrollViewItems(GetActorScrollItems(buildingId), 15, OnClickButton, actor_scrollview);
+                
         actorLayer.SetActive(true);
         Context.Instance.SetMode(Context.Mode.UI_ACTOR);
         ((ContextCreatingActor)Context.Instance.contexts[Context.Mode.UI_ACTOR]).SetSelectedBuilding(mapId, buildingId);
@@ -108,7 +118,7 @@ public class GamePlay : MonoBehaviour
     }
     void OnClickButton(GameObject obj)
     {
-        Debug.Log("OnClick " + obj.name);
+        //Debug.Log("OnClick " + obj.name);
         string name = obj.name.Replace("(Clone)", "");
         switch(Context.Instance.mode)
         {

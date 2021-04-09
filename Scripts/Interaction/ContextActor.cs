@@ -57,8 +57,9 @@ public class ContextActor : IContext
             Clear();
             int id = int.Parse(obj.name.Replace("(Clone)", ""));
             Vector3 position = MapManager.Instance.GetVector3FromMapId(id);
+            Vector2Int pos = MapManager.Instance.GetMapPosition(id);
             GameObject prefab = Context.Instance.greenPrefab;
-            if(MapManager.Instance.GetBuildingObject(id) != null)
+            if(MapManager.Instance.map[pos.x, pos.y] != MapManager.Instance.mapMeta.defaultVal.cost)
             {
                 prefab = Context.Instance.redPrefab;
             }
@@ -86,30 +87,10 @@ public class ContextActor : IContext
         if(obj != null && obj.tag == MetaManager.Instance.GetTag(MetaManager.TAG.BOTTOM))
         {
             int target = int.Parse(obj.name.Replace("(Clone)", ""));
-            if(target == selectedMapId || !MapManager.Instance.IsEmptyMapId(target))
+            if(target != selectedMapId && MapManager.Instance.IsEmptyMapId(target))
             {
-                Context.Instance.SetMode(Context.Mode.NONE);
-                return;
+                Updater.Instance.AddQ(ActionType.ACTOR_MOVING, selectedMapId, target, null);
             }
-            Vector2Int from = MapManager.Instance.GetMapPosition(selectedMapId);
-            Vector2Int to = MapManager.Instance.GetMapPosition(target);
-
-            Debug.Log(string.Format("A* from {0} - {1}", from, to));
-
-            //Astar test
-            List<int> route = new List<int>();
-            Astar astar = new Astar(MapManager.Instance.map);
-            Stack<Astar.Pos> stack = astar.Search(new Astar.Pos(from.x, from.y), new Astar.Pos(to.x, to.y));
-            if(stack == null)
-                return;
-            
-            while(stack.Count > 0)
-            {
-                int id = MapManager.Instance.GetMapId(new Vector2Int(stack.Peek().x, stack.Peek().y));
-                route.Add(id);
-                stack.Pop();
-            }
-            Updater.Instance.AddQ(ActionType.ACTOR_MOVING, selectedMapId, -1, route);
         }
         Context.Instance.SetMode(Context.Mode.NONE);
     }
