@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Cat01 : IAnimation
+public class IdleRun : IAnimation
 {
     Animator animator;
     void Awake()

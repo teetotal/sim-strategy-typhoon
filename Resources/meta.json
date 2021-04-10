@@ -117,6 +117,28 @@
         },
         {
             "id": 3,
+            "name": "토끼는 깡총깡총",
+            "prefab": "Rabbit",
+            "flying": false,
+            "level": 1,
+            "createTime": 5,
+            "ability": {
+                "building": 1,
+                "farming": 2,
+                "carring": 2,
+                "attack": 1,
+                "depense": 1,
+                "moving": 2
+            },
+            "wage": [
+                {
+                    "resourceId": 1,
+                    "amount": 1 
+                }
+            ]
+        },
+        {
+            "id": 4,
             "name": "뭔지 모르겠는 로봇",
             "prefab": "actor",
             "flying": false,
@@ -138,7 +160,7 @@
             ]
         },
         {
-            "id": 4,
+            "id": 5,
             "name": "용슌이",
             "prefab": "Dragon",
             "flying": true,
@@ -160,7 +182,7 @@
             ]
         },
         {
-            "id": 5,
+            "id": 6,
             "name": "독수리",
             "prefab": "Condor",
             "flying": true,
@@ -182,7 +204,7 @@
             ]
         },
         {
-            "id": 6,
+            "id": 7,
             "name": "비행닭",
             "prefab": "FlyingChicken",
             "flying": true,
@@ -215,7 +237,7 @@
                 "x": 1,
                 "y": 1
             },
-            "buildTime": 10,
+            "buildTime": 5,
             "costs": [
                 {
                     "resourceId": 0,
@@ -255,6 +277,10 @@
                 },
                 {
                     "actorId": 6,
+                    "max": 2
+                },
+                {
+                    "actorId": 7,
                     "max": 2
                 }
             ]

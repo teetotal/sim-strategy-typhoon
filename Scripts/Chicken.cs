@@ -26,7 +26,7 @@ public class Chicken : IAnimation
         else
         {
             animator.SetBool("Turn Head", false);
-            animator.SetBool("Eat", true);
+            animator.SetBool("Eat", false);
         }
         
     }

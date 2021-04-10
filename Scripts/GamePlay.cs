@@ -90,7 +90,7 @@ public class GamePlay : MonoBehaviour
             GameObject obj = Resources.Load<GameObject>("button_default");
             Meta.ActorIdMax actorIdMax = MetaManager.Instance.meta.buildings[buildingId].actors[n];
             Meta.Actor info = MetaManager.Instance.meta.actors[actorIdMax.actorId];
-            obj.GetComponentInChildren<Text>().text = info.name;
+            obj.GetComponentInChildren<Text>().text = string.Format("{0}\nLv.{1}", info.name, info.level);
             obj.name = string.Format("actor-{0}", info.id);
             list.Add(Instantiate(obj));
         }
@@ -104,7 +104,7 @@ public class GamePlay : MonoBehaviour
     {
         if(actorLayer.activeSelf == true)
             return;
-            
+
         actor_scrollview = LoaderPerspective.Instance.CreateByPrefab("scrollview_default", 
                                                                         actorLayer.transform, 
                                                                         actorLayer.GetComponent<RectTransform>().sizeDelta,
