@@ -170,6 +170,7 @@ public class ActorManager
         foreach(KeyValuePair<int, Actor> kv in actors)
         {
             kv.Value.Update();
+            kv.Value.UpdateUIPosition();
         }
     }
 }

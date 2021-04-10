@@ -32,8 +32,8 @@
         },
         {
             "id": 6,
-            "name": "Ground",
-            "cost": 0
+            "name": "ForestMushroom01",
+            "cost": 2
         }
     ],
     "grid": {
@@ -42,8 +42,8 @@
         "z": 1
     },
     "dimension": {
-        "x": 16,
-        "y": 16
+        "x": 18,
+        "y": 18
     },
     "defaultVal": {
         "cost": 0,
@@ -67,7 +67,7 @@
             }
         },
         {
-            "prefabId": 2,
+            "prefabId": 6,
             "positions": [],
             "range": {
                 "start": 16,

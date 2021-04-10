@@ -24,10 +24,21 @@ public abstract class Object
     public int id;
     public int level;
     public List<Action> actions = new List<Action>(); //현재 겪고 있는 액션 리스트.
-    public GameObject progress;
+    public GameObject progress, ui;
+    protected bool isMovingStarted;
+    //fn
     public abstract bool Create(int mapId, int id);
     public abstract void Update();
-    protected bool isMovingStarted;
+    public void EnableUI(GameObject obj)
+    {
+        ui = obj;
+    }
+    public void DisableUI()
+    {
+        ui = null;
+    }
+    
+    
     protected GameObject Instantiate(int mapId, int id, string prefab, MetaManager.TAG tag)
     {
         Vector3 position = MapManager.Instance.GetVector3FromMapId(mapId);
@@ -48,8 +59,21 @@ public abstract class Object
     }
     protected Vector3 GetProgressPosition()
     {
-        //return Camera.main.WorldToScreenPoint(MapManager.Instance.defaultGameObjects[mapId].transform.position + new Vector3(0, 1.0f, 0));
+        //객체의 크기와 줌 크기에 맞춰 조절
         return Camera.main.WorldToScreenPoint(gameObject.transform.position + new Vector3(0, 1.0f, 0));
+    }
+    public void UpdateUIPosition()
+    {
+        if(ui != null)
+        {
+            if(ui.activeSelf)
+            {
+                //title과 버튼의 위치를 객체의 크기에 맞춰서 싱크해 줘야 함
+                ui.transform.position = Camera.main.WorldToScreenPoint(gameObject.transform.position);
+            }
+            else
+                ui = null;
+        } 
     }
     protected void RemoveActions(List<int> removeActionIds)
     {

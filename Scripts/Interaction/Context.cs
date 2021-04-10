@@ -20,7 +20,7 @@ public class Context
     public Mode mode = Mode.NONE;
     public bool isInitialized = false;
     public Transform canvas;
-    public GameObject greenPrefab, redPrefab, progressPrefab, selectUIPrefab, selectUIActorPrefab;
+    public GameObject greenPrefab, redPrefab, progressPrefab, titlePrefab, selectUIPrefab, selectUIActorPrefab;
     public static Context Instance
     {
         get {
@@ -58,6 +58,7 @@ public class Context
     }
     public void Init(ref Transform canvas, 
                     string progressPrefab, 
+                    string titlePrefab, 
                     string greenCube, 
                     string redCube, 
                     string selectUIPrefab,
@@ -68,6 +69,7 @@ public class Context
     {
         this.canvas = canvas;
         this.progressPrefab = Resources.Load<GameObject>(progressPrefab);
+        this.titlePrefab = Resources.Load<GameObject>(titlePrefab);
         this.greenPrefab = Resources.Load<GameObject>(greenCube);
         this.redPrefab = Resources.Load<GameObject>(redCube);
         this.selectUIPrefab = Resources.Load<GameObject>(selectUIPrefab);

@@ -17,6 +17,7 @@ public class GamePlay : MonoBehaviour
     {
         Context.Instance.Init(ref canvas, 
                                 "progress_default", 
+                                "text_default",
                                 "CubeGreen", 
                                 "CubeRed", 
                                 "select_ui", 

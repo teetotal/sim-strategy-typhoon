@@ -110,12 +110,13 @@ public class ContextNone : IContext
                 break;
             case MetaManager.TAG.ACTOR:
                 selectUIActor.SetActive(true);
-                selectUIActor.transform.position = Camera.main.WorldToScreenPoint(selectedObj.transform.position);
+                //selectUIActor.transform.position = Camera.main.WorldToScreenPoint(selectedObj.transform.position);
                 selectUIActor.GetComponentInChildren<Text>().text = 
                         MetaManager.Instance.actorInfo[GetSelectedActorId()].name;
                 Context.Instance.SetMode(Context.Mode.ACTOR);
                 ((ContextActor)Context.Instance.contexts[Context.Mode.ACTOR]).SetSelectedActor(mapId);
-                    break;
+                ActorManager.Instance.actors[mapId].EnableUI(selectUIActor);
+                break;
         }
     }
     int GetSelectedMapId()
