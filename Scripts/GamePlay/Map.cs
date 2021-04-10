@@ -103,7 +103,7 @@ public class MapManager
     {
         Vector2Int pos = GetMapPosition(id);
         //Debug.Log(string.Format("IsEmptyMapId {0} - {1}", pos, map[pos.x, pos.y]));
-        if(map[pos.x, pos.y] == mapMeta.defaultVal.cost)
+        if(map[pos.x, pos.y] == mapMeta.defaultVal.cost && defaultGameObjects[id].gameObject.transform.childCount == 0)
         {
             return true;
         }
@@ -115,8 +115,7 @@ public class MapManager
         for(int n = 0; n < 10; n++)
         {
             int id = UnityEngine.Random.Range(0, max);
-            Vector2Int pos = GetMapPosition(id);
-            if(map[pos.x, pos.y] == mapMeta.defaultVal.cost)
+            if(IsEmptyMapId(id))
             {
                 return id;
             }
@@ -138,9 +137,10 @@ public class MapManager
                 if(x < 0 || map.GetLength(0) <= x)
                     continue;
 
-                if(map[x,y] == mapMeta.defaultVal.cost)
+                int mapId = GetMapId(new Vector2Int(x, y));
+                if(IsEmptyMapId(mapId))
                 {
-                    list.Add(GetMapId(new Vector2Int(x, y)));
+                    list.Add(mapId);
                 }
             }
         }
@@ -169,10 +169,11 @@ public class MapManager
                     if(x < 0 || map.GetLength(0) <= x)
                         continue;
 
-                    if(map[x,y] == mapMeta.defaultVal.cost)
+                    int mapId = GetMapId(new Vector2Int(x, y));
+                    if(IsEmptyMapId(mapId))
                     {
                         map[x, y] = mapMeta.defaultVal.cost + 1;
-                        return GetMapId(new Vector2Int(x, y));
+                        return mapId;
                     }
                     else
                     {

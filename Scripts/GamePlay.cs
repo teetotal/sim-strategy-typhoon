@@ -102,6 +102,9 @@ public class GamePlay : MonoBehaviour
     */
     void OnClickForCreatingActor(int mapId, int buildingId)
     {
+        if(actorLayer.activeSelf == true)
+            return;
+            
         actor_scrollview = LoaderPerspective.Instance.CreateByPrefab("scrollview_default", 
                                                                         actorLayer.transform, 
                                                                         actorLayer.GetComponent<RectTransform>().sizeDelta,

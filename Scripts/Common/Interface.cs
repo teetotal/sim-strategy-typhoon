@@ -39,11 +39,14 @@ public abstract class Object
     }
     
     
-    protected GameObject Instantiate(int mapId, int id, string prefab, MetaManager.TAG tag)
+    protected GameObject Instantiate(int mapId, int id, string prefab, MetaManager.TAG tag, bool flying = false)
     {
         Vector3 position = MapManager.Instance.GetVector3FromMapId(mapId);
         GameObject obj = Resources.Load<GameObject>(prefab);
-        obj = GameObject.Instantiate(obj, new Vector3(position.x, position.y + 0.1f, position.z), Quaternion.identity);
+
+        Meta.Actor actor = MetaManager.Instance.meta.actors[id];
+
+        obj = GameObject.Instantiate(obj, Util.AdjustY(position, flying), Quaternion.identity);
         obj.tag = MetaManager.Instance.GetTag(tag);
         obj.name = mapId.ToString();
         GameObject parent = MapManager.Instance.defaultGameObjects[mapId];
@@ -103,33 +106,26 @@ public abstract class ActingObject : Object
         if(targetMapId == -1)
             return;
 
+        Action action;
+        if(MetaManager.Instance.meta.actors[this.id].flying)
+        {
+            action = GetFlyingAction(targetMapId);
+        }
+        else 
+        {
+            action = GetMovingAction(targetMapId);
+        }
+        
+        if(action.type == ActionType.MAX)
+            return;
+
         //mapmanager 변경. 
         MapManager.Instance.Move(mapId, targetMapId);
-
-        Action action = new Action();
-        action.type = ActionType.ACTOR_MOVING;
-        action.currentTime = 0;
-
-        //Astar
-        List<int> route = new List<int>();
-        Astar astar = new Astar(MapManager.Instance.map);
-        Vector2Int from = MapManager.Instance.GetMapPosition(GetCurrentPositionMapId());
-        Vector2Int to = MapManager.Instance.GetMapPosition(targetMapId);
-        Stack<Astar.Pos> stack = astar.Search(new Astar.Pos(from.x, from.y), new Astar.Pos(to.x, to.y));
-        if(stack == null)
-            return;
         
-        while(stack.Count > 0)
-        {
-            int id = MapManager.Instance.GetMapId(new Vector2Int(stack.Peek().x, stack.Peek().y));
-            route.Add(id);
-            stack.Pop();
-        }
-        action.totalTime = route.Count;
-        action.values = route;
-
         //이전 이동 액션을 제거
+        RemoveActionType(ActionType.ACTOR_FLYING);
         RemoveActionType(ActionType.ACTOR_MOVING);
+
         //새로운 액션을 추가
         actions.Add(action);
 
@@ -140,6 +136,66 @@ public abstract class ActingObject : Object
         this.gameObject.transform.SetParent(parent.transform);
 
         isMovingStarted = false;
+    }
+    protected Action GetFlyingAction(int targetMapId)
+    {
+        int start = this.mapId;
+        //중도 변경을 처리하기 위해 현재 위치의 mapid를 찾아낸다.
+        RaycastHit hit;
+        Physics.Raycast(this.gameObject.transform.position, Vector3.down, out hit);
+        if (hit.collider != null) 
+        {
+            start = Util.GetIntFromGameObjectName(hit.collider.gameObject.name);
+            //Debug.Log("Current MapId: " + start.ToString());
+        }
+        
+        List<int> route = new List<int>();
+        route.Add(start);
+        route.Add(targetMapId);
+        
+        Action action = new Action();
+        action.type = ActionType.ACTOR_FLYING;
+        action.currentTime = 0;
+
+        Vector2Int from = MapManager.Instance.GetMapPosition(start);
+        Vector2Int to = MapManager.Instance.GetMapPosition(targetMapId);
+
+        Vector2Int diff = from - to;
+
+        action.totalTime = Mathf.Abs(diff.x) + Mathf.Abs(diff.y);
+        action.values = route;
+
+        return action;
+    }
+    protected Action GetMovingAction(int targetMapId)
+    {
+        //Astar
+        List<int> route = new List<int>();
+        Astar astar = new Astar(MapManager.Instance.map);
+        Vector2Int from = MapManager.Instance.GetMapPosition(GetCurrentPositionMapId());
+        Vector2Int to = MapManager.Instance.GetMapPosition(targetMapId);
+        Stack<Astar.Pos> stack = astar.Search(new Astar.Pos(from.x, from.y), new Astar.Pos(to.x, to.y));
+        if(stack == null)
+        {
+            Action a = new Action();
+            a.type = ActionType.MAX;
+            return a;
+        }
+
+        while(stack.Count > 0)
+        {
+            int id = MapManager.Instance.GetMapId(new Vector2Int(stack.Peek().x, stack.Peek().y));
+            route.Add(id);
+            stack.Pop();
+        }
+        Action action = new Action();
+        action.type = ActionType.ACTOR_MOVING;
+        action.currentTime = 0;
+
+        action.totalTime = route.Count;
+        action.values = route;
+
+        return action;
     }
     protected int GetCurrentPositionMapId()
     {
@@ -180,19 +236,47 @@ public abstract class ActingObject : Object
             return false;
         }
 
+        bool flying = MetaManager.Instance.meta.actors[this.id].flying;
         
-        Vector3 pos = MapManager.Instance.GetVector3FromMapId(route[idx - 1]) + new Vector3(0, 0.1f, 0);
-        Vector3 posNext = MapManager.Instance.GetVector3FromMapId(route[idx + 0]) + new Vector3(0, 0.1f, 0);
+        Vector3 pos = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[idx - 1]), flying);
+        Vector3 posNext = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[idx + 0]), flying);
 
         actor.transform.position = Vector3.Lerp(pos, posNext, ratio);
 
-        Vector3 target = posNext;// + new Vector3(0, 0.1f, 0);
+        Vector3 target = posNext;
         
         Vector3 dir = target - actor.transform.position;
         actor.transform.rotation = Quaternion.Lerp(actor.transform.rotation, Quaternion.LookRotation(dir), ratio);
         
         return true;
     }
+    protected bool Flying(Action action)
+    {
+        List<int> route = action.values;
+        GameObject actor = this.gameObject;
+
+        bool flying = MetaManager.Instance.meta.actors[this.id].flying;
+
+        Vector3 from = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[0]), flying);
+        Vector3 to = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[1]), flying);
+
+        float ratio = action.currentTime / action.totalTime;
+
+        actor.transform.position = Vector3.Lerp(from, to, ratio);
+
+        float distance = Vector3.Distance(actor.transform.position, to);
+        if(distance < 0.01f)
+        {
+            actor.transform.position = to;
+            return false;
+        }
+
+        Vector3 dir = to - actor.transform.position;
+        actor.transform.rotation = Quaternion.Lerp(actor.transform.rotation, Quaternion.LookRotation(dir), ratio);
+        
+        return true;
+    }
+   
     public void SetAnimation(ActionType type)
     {
         //set animation

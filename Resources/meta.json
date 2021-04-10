@@ -53,6 +53,7 @@
             "id": 0,
             "name": "딱히 쓸모 없는 고양이",
             "prefab": "Cat",
+            "flying": false,
             "level": 1,
             "createTime": 10,
             "ability": {
@@ -73,7 +74,8 @@
         {
             "id": 1,
             "name": "용맹한 댕댕이 기사",
-            "prefab": "dog",
+            "prefab": "DogPolyart",
+            "flying": false,
             "level": 1,
             "createTime": 20,
             "ability": {
@@ -92,9 +94,32 @@
             ]
         },
         {
-            "id": 3,
+            "id": 2,
             "name": "꼬꼬",
             "prefab": "Chicken",
+            "flying": false,
+            "level": 1,
+            "createTime": 20,
+            "ability": {
+                "building": 1,
+                "farming": 2,
+                "carring": 2,
+                "attack": 1,
+                "depense": 1,
+                "moving": 2
+            },
+            "wage": [
+                {
+                    "resourceId": 1,
+                    "amount": 1 
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "name": "뭔지 모르겠는 로봇",
+            "prefab": "actor",
+            "flying": false,
             "level": 1,
             "createTime": 20,
             "ability": {
@@ -114,8 +139,53 @@
         },
         {
             "id": 4,
-            "name": "뭔지 모르겠는 로봇",
-            "prefab": "actor",
+            "name": "용슌이",
+            "prefab": "Dragon",
+            "flying": true,
+            "level": 1,
+            "createTime": 20,
+            "ability": {
+                "building": 1,
+                "farming": 2,
+                "carring": 2,
+                "attack": 1,
+                "depense": 1,
+                "moving": 2
+            },
+            "wage": [
+                {
+                    "resourceId": 1,
+                    "amount": 1 
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "name": "독수리",
+            "prefab": "Condor",
+            "flying": true,
+            "level": 1,
+            "createTime": 20,
+            "ability": {
+                "building": 1,
+                "farming": 2,
+                "carring": 2,
+                "attack": 1,
+                "depense": 1,
+                "moving": 2
+            },
+            "wage": [
+                {
+                    "resourceId": 1,
+                    "amount": 1 
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "name": "비행닭",
+            "prefab": "FlyingChicken",
+            "flying": true,
             "level": 1,
             "createTime": 20,
             "ability": {
@@ -173,6 +243,18 @@
                 },
                 {
                     "actorId": 3,
+                    "max": 2
+                },
+                {
+                    "actorId": 4,
+                    "max": 2
+                },
+                {
+                    "actorId": 5,
+                    "max": 2
+                },
+                {
+                    "actorId": 6,
                     "max": 2
                 }
             ]
@@ -401,6 +483,34 @@
             "id": 11,
             "name": "동그란 바닥",
             "prefab": "Ground",
+            "level": 1,
+            "dimension": {
+                "x": 1,
+                "y": 1
+            },
+            "buildTime": 1,
+            "costs": [],
+            "output": [],
+            "actors": []
+        },
+        {
+            "id": 12,
+            "name": "브릿지1",
+            "prefab": "ForestBridge_01",
+            "level": 1,
+            "dimension": {
+                "x": 1,
+                "y": 1
+            },
+            "buildTime": 1,
+            "costs": [],
+            "output": [],
+            "actors": []
+        },
+        {
+            "id": 13,
+            "name": "브릿지2",
+            "prefab": "ForestBridge_02",
             "level": 1,
             "dimension": {
                 "x": 1,

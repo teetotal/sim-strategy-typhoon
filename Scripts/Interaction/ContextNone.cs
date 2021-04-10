@@ -121,7 +121,7 @@ public class ContextNone : IContext
     }
     int GetSelectedMapId()
     {
-        return int.Parse(selectedObj.name.Replace("(Clone)", ""));
+        return Util.GetIntFromGameObjectName(selectedObj.name);
     }
     int GetSelectedBuildingId()
     {

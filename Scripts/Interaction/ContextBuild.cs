@@ -23,7 +23,7 @@ public class ContextBuild : IContext
         if(obj != null && obj.tag == MetaManager.Instance.GetTag(MetaManager.TAG.BOTTOM))
         {
             Clear();
-            selectedMapId = int.Parse(obj.name.Replace("(Clone)", ""));
+            selectedMapId = Util.GetIntFromGameObjectName(obj.name);
             isAvailableChoice = CreateAreaCubes(selectedMapId, selectedBuilding.dimension);
         }
     }
@@ -82,9 +82,9 @@ public class ContextBuild : IContext
             if(id != -1)
             {
                 Vector3 position = MapManager.Instance.GetVector3FromMapId(id);
-                Vector2Int pos = MapManager.Instance.GetMapPosition(id);
+                
                 GameObject obj = Context.Instance.greenPrefab;
-                if(MapManager.Instance.map[pos.x, pos.y] != MapManager.Instance.mapMeta.defaultVal.cost)
+                if(!MapManager.Instance.IsEmptyMapId(id))
                 {
                     obj = Context.Instance.redPrefab;
                     ret = false;

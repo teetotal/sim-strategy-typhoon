@@ -10,7 +10,8 @@ public enum ActionType
 
     ACTOR_CREATE,
     ACTOR_MOVING,
+    ACTOR_FLYING,
     ACTOR_ATTACK,
-    
+
     MAX,
 }

@@ -22,8 +22,9 @@ public class Actor : ActingObject
         action.totalTime = MetaManager.Instance.actorInfo[id].createTime;
         actions.Add(action);
 
+        Meta.Actor actor = MetaManager.Instance.actorInfo[id];
         //prefab 생성
-        this.Instantiate(mapId, id, MetaManager.Instance.actorInfo[id].prefab, MetaManager.TAG.ACTOR);
+        this.Instantiate(mapId, id, actor.prefab, MetaManager.TAG.ACTOR, actor.flying);
 
         //progress
         Vector3 pos = GetProgressPosition();
@@ -57,6 +58,9 @@ public class Actor : ActingObject
                     break;
                 case ActionType.ACTOR_MOVING:
                     Moving(action);
+                    break;
+                case ActionType.ACTOR_FLYING:
+                    Flying(action);
                     break;
             }
 

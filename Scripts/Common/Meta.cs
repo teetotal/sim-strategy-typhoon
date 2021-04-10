@@ -53,6 +53,7 @@ public class Meta
         public int id;
         public string name;
         public string prefab;
+        public bool flying;
         public int level;
         public int createTime;
         public Ability ability;

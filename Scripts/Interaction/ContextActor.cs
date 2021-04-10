@@ -55,11 +55,11 @@ public class ContextActor : IContext
         if(obj != null && obj.tag == MetaManager.Instance.GetTag(MetaManager.TAG.BOTTOM))
         {
             Clear();
-            int id = int.Parse(obj.name.Replace("(Clone)", ""));
+            int id = Util.GetIntFromGameObjectName(obj.name);
             Vector3 position = MapManager.Instance.GetVector3FromMapId(id);
             Vector2Int pos = MapManager.Instance.GetMapPosition(id);
             GameObject prefab = Context.Instance.greenPrefab;
-            if(MapManager.Instance.map[pos.x, pos.y] != MapManager.Instance.mapMeta.defaultVal.cost)
+            if(!MapManager.Instance.IsEmptyMapId(id))
             {
                 prefab = Context.Instance.redPrefab;
             }
@@ -82,11 +82,11 @@ public class ContextActor : IContext
     public void OnTouchRelease()
     {
         Clear();
-        //이동중이면 어쩔거야?
+        
         GameObject obj = Touch.Instance.GetTouchedObject3D();
         if(obj != null && obj.tag == MetaManager.Instance.GetTag(MetaManager.TAG.BOTTOM))
         {
-            int target = int.Parse(obj.name.Replace("(Clone)", ""));
+            int target = Util.GetIntFromGameObjectName(obj.name);
             if(target != selectedMapId && MapManager.Instance.IsEmptyMapId(target))
             {
                 Updater.Instance.AddQ(ActionType.ACTOR_MOVING, selectedMapId, target, null);
