@@ -106,7 +106,7 @@
                 "carring": 2,
                 "attack": 1,
                 "depense": 1,
-                "moving": 2
+                "moving": 1
             },
             "wage": [
                 {
@@ -150,7 +150,7 @@
                 "carring": 2,
                 "attack": 1,
                 "depense": 1,
-                "moving": 2
+                "moving": 1.5
             },
             "wage": [
                 {
@@ -194,7 +194,7 @@
                 "carring": 2,
                 "attack": 1,
                 "depense": 1,
-                "moving": 2
+                "moving": 3
             },
             "wage": [
                 {
@@ -216,7 +216,7 @@
                 "carring": 2,
                 "attack": 1,
                 "depense": 1,
-                "moving": 2
+                "moving": 1
             },
             "wage": [
                 {
@@ -544,6 +544,39 @@
             },
             "buildTime": 1,
             "costs": [],
+            "output": [],
+            "actors": []
+        },
+        {
+            "id": 14,
+            "name": "은행",
+            "prefab": "Bank",
+            "level": 1,
+            "dimension": {
+                "x": 1,
+                "y": 1
+            },
+            "buildTime": 1,
+            "costs": [],
+            "output": [],
+            "actors": []
+        },
+        {
+            "id": 15,
+            "name": "불타는 모닥불",
+            "prefab": "ForestFire2",
+            "level": 1,
+            "dimension": {
+                "x": 1,
+                "y": 1
+            },
+            "buildTime": 1,
+            "costs": [
+                {
+                    "resourceId": 3,
+                    "amount": 1
+                }
+            ],
             "output": [],
             "actors": []
         }

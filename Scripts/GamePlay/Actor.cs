@@ -43,12 +43,12 @@ public class Actor : ActingObject
         }
         
         List<int> removeActionIds = new List<int>();
-        for(int n = 0; n < actions.Count; n++)
+        if(actions.Count > 0)
         {
-            Action action = actions[n];
+            Action action = actions[0];
             
             action.currentTime += Time.deltaTime;
-            actions[n] = action;
+            actions[0] = action;
 
             switch(action.type)
             {
@@ -67,7 +67,7 @@ public class Actor : ActingObject
             //finish
             if(action.currentTime >= action.totalTime)
             {
-                removeActionIds.Add(n);
+                //removeActionIds.Add(n);
                 switch(action.type)
                 {
                     case ActionType.ACTOR_CREATE:
@@ -75,9 +75,10 @@ public class Actor : ActingObject
                         progress = null;
                         break;
                 }
+                actions.RemoveAt(0);
             }
         }
 
-        RemoveActions(removeActionIds);
+        //RemoveActions(removeActionIds);
     }
 }

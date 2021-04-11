@@ -44,7 +44,7 @@ public abstract class Object
         Vector3 position = MapManager.Instance.GetVector3FromMapId(mapId);
         GameObject obj = Resources.Load<GameObject>(prefab);
 
-        Meta.Actor actor = MetaManager.Instance.meta.actors[id];
+        Meta.Actor actor = MetaManager.Instance.actorInfo[id];
 
         obj = GameObject.Instantiate(obj, Util.AdjustY(position, flying), Quaternion.identity);
         obj.tag = MetaManager.Instance.GetTag(tag);
@@ -78,6 +78,7 @@ public abstract class Object
                 ui = null;
         } 
     }
+    
     protected void RemoveActions(List<int> removeActionIds)
     {
         for(int n = 0; n < removeActionIds.Count; n++)
@@ -85,6 +86,7 @@ public abstract class Object
             actions.RemoveAt(removeActionIds[n]);
         }
     }
+    
     protected void RemoveActionType(ActionType type)
     {
         List<int> removeList = new List<int>();
@@ -107,7 +109,7 @@ public abstract class ActingObject : Object
             return;
 
         Action action;
-        if(MetaManager.Instance.meta.actors[this.id].flying)
+        if(MetaManager.Instance.actorInfo[this.id].flying)
         {
             action = GetFlyingAction(targetMapId);
         }
@@ -162,7 +164,7 @@ public abstract class ActingObject : Object
 
         Vector2Int diff = from - to;
 
-        action.totalTime = Mathf.Abs(diff.x) + Mathf.Abs(diff.y);
+        action.totalTime = (Mathf.Abs(diff.x) + Mathf.Abs(diff.y)) / MetaManager.Instance.actorInfo[this.id].ability.moving;
         action.values = route;
 
         return action;
@@ -192,7 +194,7 @@ public abstract class ActingObject : Object
         action.type = ActionType.ACTOR_MOVING;
         action.currentTime = 0;
 
-        action.totalTime = route.Count;
+        action.totalTime = route.Count / MetaManager.Instance.actorInfo[this.id].ability.moving;
         action.values = route;
 
         return action;
@@ -214,8 +216,15 @@ public abstract class ActingObject : Object
         List<int> route = action.values;
 
         GameObject actor = this.gameObject;
+
+        float progression = (action.currentTime / action.totalTime) * route.Count; 
+        int idx = (int)progression; 
+        float ratio = progression % 1.0f;
+        /*
         int idx = (int)action.currentTime;
         float ratio = action.currentTime % 1.0f;
+        */
+        bool flying = MetaManager.Instance.actorInfo[this.id].flying;
 
         if(!isMovingStarted && ratio > 0.5f) 
         {
@@ -226,6 +235,8 @@ public abstract class ActingObject : Object
         if(idx >= route.Count -1 && ratio > 0.5f)
         {
             SetAnimation(ActionType.MAX);
+            Vector3 end = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[route.Count-1]), flying);
+            actor.transform.position = end;
         }
 
         if(idx == 0)
@@ -235,8 +246,6 @@ public abstract class ActingObject : Object
         {
             return false;
         }
-
-        bool flying = MetaManager.Instance.meta.actors[this.id].flying;
         
         Vector3 pos = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[idx - 1]), flying);
         Vector3 posNext = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[idx + 0]), flying);
@@ -255,7 +264,7 @@ public abstract class ActingObject : Object
         List<int> route = action.values;
         GameObject actor = this.gameObject;
 
-        bool flying = MetaManager.Instance.meta.actors[this.id].flying;
+        bool flying = MetaManager.Instance.actorInfo[this.id].flying;
 
         Vector3 from = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[0]), flying);
         Vector3 to = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[1]), flying);

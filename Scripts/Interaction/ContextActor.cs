@@ -84,15 +84,23 @@ public class ContextActor : IContext
         Clear();
         
         GameObject obj = Touch.Instance.GetTouchedObject3D();
-        if(obj != null && obj.tag == MetaManager.Instance.GetTag(MetaManager.TAG.BOTTOM))
+        if(obj != null)
         {
-            int target = Util.GetIntFromGameObjectName(obj.name);
-            if(target != selectedMapId && MapManager.Instance.IsEmptyMapId(target))
+            switch(MetaManager.Instance.GetTag(obj.tag))
             {
-                Updater.Instance.AddQ(ActionType.ACTOR_MOVING, selectedMapId, target, null);
+                case MetaManager.TAG.BOTTOM:
+                    int target = Util.GetIntFromGameObjectName(obj.name);
+                    if(target != selectedMapId && MapManager.Instance.IsEmptyMapId(target))
+                    {
+                        Updater.Instance.AddQ(ActionType.ACTOR_MOVING, selectedMapId, target, null);
+                    }
+                    break;
+                case MetaManager.TAG.BUILDING:
+                    Debug.Log("OnTouch Building. " + obj.name); //빌딩에서 뭔가를 하게 한다.
+                    break;
             }
+            Context.Instance.SetMode(Context.Mode.NONE);
         }
-        Context.Instance.SetMode(Context.Mode.NONE);
     }
     public void OnDrag()
     {

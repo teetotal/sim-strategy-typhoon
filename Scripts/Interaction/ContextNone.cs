@@ -164,6 +164,14 @@ public class ContextNone : IContext
     {
         if(selectedObj)
         {
+            /*
+            GameObject obj = Resources.Load<GameObject>("load");
+            obj = GameObject.Instantiate(obj);
+            
+            obj.transform.SetParent(selectedObj.transform);
+            obj.transform.localPosition = new Vector3(0, 0.5f, 0);
+            */
+            //---------
             int mapId = GetSelectedMapId();
             int actorId = GetSelectedActorId();
             Context.Instance.onClickForUpgradingActor(mapId, actorId);

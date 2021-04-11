@@ -41,15 +41,15 @@ public class BuildingObject : Object
     public override void Update()
     {
         List<int> removeActionIds = new List<int>();
-        for(int n = 0; n < actions.Count; n++)
+        if(actions.Count > 0)
         {
-            Action action = actions[n];
+            Action action = actions[0];
             //progress
             if(progress != null)
                 progress.transform.position = GetProgressPosition(); //position
 
             action.currentTime += Time.deltaTime;
-            actions[n] = action;
+            actions[0] = action;
 
             switch(action.type)
             {
@@ -62,7 +62,7 @@ public class BuildingObject : Object
             //finish
             if(action.currentTime >= action.totalTime)
             {
-                removeActionIds.Add(n);
+                //removeActionIds.Add(n);
                 switch(action.type)
                 {
                     case ActionType.BUILDING_CREATE:
@@ -70,10 +70,11 @@ public class BuildingObject : Object
                         progress = null;
                         break;
                 }
+                actions.RemoveAt(0);
             }
         }
 
-        RemoveActions(removeActionIds);
+        //RemoveActions(removeActionIds);
     }
 }
 

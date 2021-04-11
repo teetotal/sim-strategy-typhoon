@@ -20,12 +20,12 @@ public class Meta
     [Serializable]
     public struct Ability
     {
-        public int building;
-        public int farming;
-        public int carring;
-        public int attack;
-        public int depense;
-        public int moving;
+        public float building;
+        public float farming;
+        public float carring;
+        public float attack;
+        public float depense;
+        public float moving;
     }
     [Serializable]
     public struct ResourceIdAmount
