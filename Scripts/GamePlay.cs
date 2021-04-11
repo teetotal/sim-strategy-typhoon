@@ -15,16 +15,6 @@ public class GamePlay : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Context.Instance.Init(ref canvas, 
-                                "progress_default", 
-                                "text_default",
-                                "CubeGreen", 
-                                "CubeRed", 
-                                "select_ui", 
-                                "select_ui_actor", 
-                                OnClickForCreatingActor,
-                                OnClickForUpgradingActor
-                                );
         
         LoaderPerspective.Instance.SetUI(camera, ref canvas, OnClickButton);
         if(!LoaderPerspective.Instance.LoadJsonFile("ui"))
@@ -40,7 +30,38 @@ public class GamePlay : MonoBehaviour
             HideLayers();
         }
 
-        //actor = GameObject.Find("actor");
+        //UI
+        string[] arr = new string[4] {"select_ui_building", "select_ui_actor", "text_title", "text_title"};
+        GameObject[] objs = new GameObject[4];
+        for(int n = 0; n < arr.Length; n++)
+        {
+            objs[n] = GameObject.Instantiate(Resources.Load<GameObject>(arr[n]));
+            objs[n].transform.SetParent(canvas);
+        }
+
+        //for building
+        Button[] btns = objs[0].GetComponentsInChildren<Button>();
+        for(int n = 0; n < btns.Length; n++)
+        {
+            Button obj = btns[n];
+            obj.onClick.AddListener(()=>{ OnClickButton(obj.gameObject); });
+        }
+        
+        //for actor
+        Button btn = objs[1].GetComponentInChildren<Button>();
+        btn.onClick.AddListener(()=>{ OnClickButton(btn.gameObject);});
+
+
+        Context.Instance.Init(ref canvas, 
+                                "progress_default", 
+                                "text_default",
+                                "CubeGreen", 
+                                "CubeRed", 
+                                objs[2],
+                                objs[0],
+                                objs[3],
+                                objs[1]
+                                );
     }
     void HideLayers()
     {
@@ -118,11 +139,19 @@ public class GamePlay : MonoBehaviour
     }
     void OnClickForUpgradingActor(int mapId, int actorId)
     {
+        GameObject selectedObj = ActorManager.Instance.actors[mapId].gameObject;
         Debug.Log(string.Format("OnClickForUpgradingActor {0}-{1}", mapId, actorId));
+        GameObject o = Resources.Load<GameObject>("load");
+        o = GameObject.Instantiate(o);
+        
+        o.transform.SetParent(selectedObj.transform);
+
+        Vector3 size = selectedObj.GetComponent<BoxCollider>().size;
+        o.transform.localPosition = new Vector3(0, size.y, 0);
     }
     void OnClickButton(GameObject obj)
     {
-        //Debug.Log("OnClick " + obj.name);
+        Debug.Log(string.Format("OnClick {0}, {1}", obj.name, Context.Instance.mode));
         string name = obj.name.Replace("(Clone)", "");
         switch(Context.Instance.mode)
         {
@@ -135,6 +164,9 @@ public class GamePlay : MonoBehaviour
             case Context.Mode.UI_ACTOR:
                 OnClick_UI_ACTOR(obj, name);
                 break;
+            case Context.Mode.ACTOR:
+                OnClick_ACTOR(obj, name);
+                break;
             default:
                 break;
         }
@@ -142,6 +174,7 @@ public class GamePlay : MonoBehaviour
 
     void OnClick_NONE(GameObject obj, string name)
     {
+        ContextNone context = (ContextNone)Context.Instance.contexts[Context.Mode.NONE];
         switch(name)
         {
             case "btn_building":
@@ -156,10 +189,99 @@ public class GamePlay : MonoBehaviour
                 if(Camera.main.fieldOfView < 25)
                     Camera.main.fieldOfView += 5;
                 break;
+            case "buttonX":
+                if(context.selectedObj)
+                {
+                    if(BuildingManager.Instance.objects[context.GetSelectedMapId()].actions.Count == 0)
+                        Updater.Instance.AddQ(ActionType.BUILDING_DESTROY, context.GetSelectedMapId(), context.GetSelectedBuildingId(), null);
+                    else
+                        Debug.Log("The Building has actions");
+                }
+                break;
+            case "buttonR":
+                if(context.selectedObj)
+                {
+                    Vector3 angles = context.selectedObj.transform.localEulerAngles;
+                    context.selectedObj.transform.localEulerAngles = new Vector3(angles.x, angles.y + 90, angles.z);
+                }
+                break;
+            case "buttonB":
+                if(context.selectedObj)
+                {
+                    int mapId = context.GetSelectedMapId();
+                    int buildingId = context.GetSelectedBuildingId();
+                    OnClickForCreatingActor(mapId, buildingId);
+                }
+                break;
+            
             default:
                 break;
         }
     }
+    void OnClick_ACTOR(GameObject obj, string name)
+    {
+        ContextNone context = (ContextNone)Context.Instance.contexts[Context.Mode.NONE];
+        switch(name)
+        {
+            case "buttonU":
+                if(context.selectedObj)
+                {
+                    int mapId = context.GetSelectedMapId();
+                    int actorId = context.GetSelectedActorId();
+                    OnClickForUpgradingActor(mapId, actorId);
+                }
+                break;
+        }
+    }
+    /*
+    void OnClickX()
+    {
+        if(selectedObj)
+        {
+            if(BuildingManager.Instance.objects[GetSelectedMapId()].actions.Count == 0)
+                Updater.Instance.AddQ(ActionType.BUILDING_DESTROY, GetSelectedMapId(), GetSelectedBuildingId(), null);
+            else
+                Debug.Log("The Building has actions");
+        }
+    }
+    void OnClickR()
+    {
+        if(selectedObj)
+        {
+            Vector3 angles = selectedObj.transform.localEulerAngles;
+            selectedObj.transform.localEulerAngles = new Vector3(angles.x, angles.y + 90, angles.z);
+        }
+    }
+
+    void OnClickB()
+    {
+        if(selectedObj)
+        {
+            int mapId = GetSelectedMapId();
+            int buildingId = GetSelectedBuildingId();
+            Context.Instance.onClickForCreatingActor(mapId, buildingId);
+        }
+    }
+    void OnClickU()
+    {
+        if(selectedObj)
+        {
+            
+            GameObject obj = Resources.Load<GameObject>("load");
+            obj = GameObject.Instantiate(obj);
+            
+            obj.transform.SetParent(selectedObj.transform);
+
+            Vector3 size = selectedObj.GetComponent<BoxCollider>().size;
+            obj.transform.localPosition = new Vector3(0, size.y, 0);
+            
+            //---------
+            int mapId = GetSelectedMapId();
+            int actorId = GetSelectedActorId();
+            Context.Instance.onClickForUpgradingActor(mapId, actorId);
+        }
+    }
+    */
 
     void OnClick_UI_BUILD(GameObject obj, string name)
     {

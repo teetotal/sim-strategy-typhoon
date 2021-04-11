@@ -213,6 +213,7 @@ public class BuildingManager
         foreach(KeyValuePair<int, Object> kv in objects)
         {
             kv.Value.Update();
+            kv.Value.UpdateUIPosition();
         }
     }
 }

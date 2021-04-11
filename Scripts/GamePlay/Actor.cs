@@ -34,7 +34,8 @@ public class Actor : ActingObject
 
         return true;
     }
-    
+    //동시에 진행 못하고 순차적으로함. 이래야 아래 같은 시퀀스가 가능해짐
+    //창고에 간다 -> 물건을 실는다 -> 시장에 가서 판다.
     public override void Update()
     {
         if(progress != null) //progress
@@ -53,8 +54,7 @@ public class Actor : ActingObject
             switch(action.type)
             {
                 case ActionType.ACTOR_CREATE:
-                    progress.GetComponent<Slider>().value = action.currentTime / action.totalTime;
-                    //Debug.Log(string.Format("{0}-{1}/{2}", mapId, action.currentTime, action.totalTime));
+                    SetProgress(action.currentTime, action.totalTime, true);
                     break;
                 case ActionType.ACTOR_MOVING:
                     Moving(action);

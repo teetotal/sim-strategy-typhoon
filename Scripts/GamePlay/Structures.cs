@@ -54,8 +54,7 @@ public class BuildingObject : Object
             switch(action.type)
             {
                 case ActionType.BUILDING_CREATE:
-                    progress.GetComponent<Slider>().value = action.currentTime / action.totalTime;
-                    //Debug.Log(string.Format("{0}-{1}/{2}", mapId, action.currentTime, action.totalTime));
+                    SetProgress(action.currentTime, action.totalTime, true);
                     break;
             }
 

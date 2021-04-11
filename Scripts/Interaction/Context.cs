@@ -13,14 +13,13 @@ public class Context
         ACTOR,
         MAX
     }
-    public delegate void OnClickForObject(int mapId, int id); //건물, 액터 선택시 이벤트용
-    public OnClickForObject onClickForCreatingActor, onClickForUpgradingActor;
     public Dictionary<Context.Mode, IContext> contexts;
     private static readonly Lazy<Context> hInstance = new Lazy<Context>(() => new Context());
     public Mode mode = Mode.NONE;
     public bool isInitialized = false;
     public Transform canvas;
-    public GameObject greenPrefab, redPrefab, progressPrefab, titlePrefab, selectUIPrefab, selectUIActorPrefab;
+    public GameObject greenPrefab, redPrefab, progressPrefab, titlePrefab;
+    public GameObject selectUIBuildingTop, selectUIBuildingBottom, selectUIActorTop, selectUIActorBottom;
     public static Context Instance
     {
         get {
@@ -61,10 +60,10 @@ public class Context
                     string titlePrefab, 
                     string greenCube, 
                     string redCube, 
-                    string selectUIPrefab,
-                    string selectUIActorPrefab,
-                    OnClickForObject onClickForCreatingActor,
-                    OnClickForObject onClickForUpgradingActor
+                    GameObject selectUIBuildingTop,
+                    GameObject selectUIBuildingBottom,
+                    GameObject selectUIActorTop,
+                    GameObject selectUIActorBottom
                     )
     {
         this.canvas = canvas;
@@ -72,10 +71,10 @@ public class Context
         this.titlePrefab = Resources.Load<GameObject>(titlePrefab);
         this.greenPrefab = Resources.Load<GameObject>(greenCube);
         this.redPrefab = Resources.Load<GameObject>(redCube);
-        this.selectUIPrefab = Resources.Load<GameObject>(selectUIPrefab);
-        this.selectUIActorPrefab = Resources.Load<GameObject>(selectUIActorPrefab);
-        this.onClickForCreatingActor = onClickForCreatingActor;
-        this.onClickForUpgradingActor = onClickForUpgradingActor;
+        this.selectUIBuildingTop = selectUIBuildingTop;
+        this.selectUIBuildingBottom = selectUIBuildingBottom;
+        this.selectUIActorTop = selectUIActorTop;
+        this.selectUIActorBottom = selectUIActorBottom;
 
         //init
         foreach (KeyValuePair<Context.Mode, IContext> kv in contexts)

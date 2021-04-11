@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections.Generic;
 public interface IContext
 {
@@ -24,21 +25,40 @@ public abstract class Object
     public int id;
     public int level;
     public List<Action> actions = new List<Action>(); //현재 겪고 있는 액션 리스트.
-    public GameObject progress, ui;
+    public GameObject progress, uiTop, uiBottom;
     protected bool isMovingStarted;
     //fn
     public abstract bool Create(int mapId, int id);
     public abstract void Update();
-    public void EnableUI(GameObject obj)
+    public void EnableUI(string text, GameObject top, GameObject bottom)
     {
-        ui = obj;
+        if(top)
+        {
+            uiTop = top;
+            uiTop.SetActive(true);
+            uiTop.GetComponentInChildren<Text>().text = text;
+        }
+
+        if(bottom)
+        {
+            uiBottom = bottom;
+            uiBottom.SetActive(true);
+        }
     }
     public void DisableUI()
     {
-        ui = null;
+        if(uiTop)
+        {
+            uiTop.SetActive(false);
+            uiTop = null;
+        }
+
+        if(uiBottom)
+        {
+            uiBottom.SetActive(false);
+            uiBottom = null;
+        }
     }
-    
-    
     protected GameObject Instantiate(int mapId, int id, string prefab, MetaManager.TAG tag, bool flying = false)
     {
         Vector3 position = MapManager.Instance.GetVector3FromMapId(mapId);
@@ -60,22 +80,78 @@ public abstract class Object
 
         return gameObject;
     }
+    protected void SetProgress(float v, float max, bool displayRemainTime)
+    {
+        if(progress)
+        {
+            float value = v / max;
+            progress.GetComponent<Slider>().value = value;
+
+            Text txt = progress.GetComponentInChildren<Text>();
+            if(txt != null)
+            {
+                if(displayRemainTime)
+                {
+                    float t = max - v;
+                    int hour = (int)(t / (60 * 60));
+                    int min = (int)(t / 60);
+                    int sec = (int)(t % 60);
+                    
+                    if(hour == 0)
+                        txt.text = string.Format("{0:D2}:{1:D2}", min, sec);
+                    else
+                        txt.text = string.Format("{0}:{1:D2}:{2:D2}", hour, min, sec);
+                }
+                else
+                {
+                    txt.text = "";
+                }
+            }
+        }
+        
+    }
     protected Vector3 GetProgressPosition()
     {
-        //객체의 크기와 줌 크기에 맞춰 조절
-        return Camera.main.WorldToScreenPoint(gameObject.transform.position + new Vector3(0, 1.0f, 0));
+        Vector3 pos = gameObject.transform.position;
+        return Camera.main.WorldToScreenPoint(new Vector3(pos.x, pos.y + 1, pos.z));
     }
+    /*
+    private Vector3 GetColliderSize()
+    {
+        BoxCollider boxCollider = gameObject.GetComponent<BoxCollider>();
+        if(boxCollider)
+        {
+            return boxCollider.size;
+        }
+        MeshCollider meshCollider = gameObject.GetComponent<MeshCollider>();
+        if(meshCollider)
+        {
+            return meshCollider.bounds.max;
+        }
+        return Vector3.zero;
+    }
+    */
     public void UpdateUIPosition()
     {
-        if(ui != null)
+        if(uiTop != null)
         {
-            if(ui.activeSelf)
+            if(uiTop.activeSelf)
             {
-                //title과 버튼의 위치를 객체의 크기에 맞춰서 싱크해 줘야 함
-                ui.transform.position = Camera.main.WorldToScreenPoint(gameObject.transform.position);
+                Vector3 pos = gameObject.transform.position + new Vector3(0, 0.5f, 0);
+                uiTop.transform.position = Camera.main.WorldToScreenPoint(pos);
             }
             else
-                ui = null;
+                uiTop = null;
+        } 
+        if(uiBottom != null)
+        {
+            if(uiBottom.activeSelf)
+            {
+                //title과 버튼의 위치를 객체의 크기에 맞춰서 싱크해 줘야 함
+                uiBottom.transform.position = Camera.main.WorldToScreenPoint(gameObject.transform.position + new Vector3(0, -0.5f, 0));
+            }
+            else
+                uiBottom = null;
         } 
     }
     

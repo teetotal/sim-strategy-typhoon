@@ -6,39 +6,20 @@ public class ContextNone : IContext
     Vector3 posFirst;
     Quaternion v3Rotation;
     const float weight = 1.5f;
-    GameObject selectUI, selectUIActor;
-    GameObject selectedObj;
+    public GameObject selectedObj;
 
     public void Init()
     {
         v3Rotation = Camera.main.transform.rotation;
-        //set select ui
-        selectUI = GameObject.Instantiate(Context.Instance.selectUIPrefab);
-        selectUI.transform.SetParent(Context.Instance.canvas);
-
-        selectUIActor = GameObject.Instantiate(Context.Instance.selectUIActorPrefab);
-        selectUIActor.transform.SetParent(Context.Instance.canvas);
-
-        //for building
-        Button[] btn = selectUI.GetComponentsInChildren<Button>();
-        // X
-        btn[0].onClick.AddListener(()=>{ OnClickX(); });
-
-        // R
-        btn[1].onClick.AddListener(()=>{ OnClickR(); });
-
-        // B
-        btn[2].onClick.AddListener(()=>{ OnClickB(); });
-
-        //for actor
-        selectUIActor.GetComponentInChildren<Button>().onClick.AddListener(()=>{ OnClickU();});
-
         Reset();
     }
     public void Reset()
     {
-        selectUI.SetActive(false);
-        selectUIActor.SetActive(false);
+        Context.Instance.selectUIActorTop.SetActive(false);
+        Context.Instance.selectUIActorBottom.SetActive(false);
+        Context.Instance.selectUIBuildingTop.SetActive(false);
+        Context.Instance.selectUIBuildingBottom.SetActive(false);
+
         selectedObj = null;
     }
 
@@ -103,78 +84,31 @@ public class ContextNone : IContext
         switch(MetaManager.Instance.GetTag(selectedObj.tag))
         {
             case MetaManager.TAG.BUILDING:
-                selectUI.SetActive(true);
-                selectUI.transform.position = Camera.main.WorldToScreenPoint(selectedObj.transform.position);
-                selectUI.GetComponentInChildren<Text>().text = 
-                        MetaManager.Instance.buildingInfo[GetSelectedBuildingId()].name;
+                BuildingManager.Instance.objects[mapId].EnableUI(
+                    MetaManager.Instance.buildingInfo[GetSelectedBuildingId()].name, 
+                    Context.Instance.selectUIBuildingTop, 
+                    Context.Instance.selectUIBuildingBottom);
                 break;
             case MetaManager.TAG.ACTOR:
-                selectUIActor.SetActive(true);
-                //selectUIActor.transform.position = Camera.main.WorldToScreenPoint(selectedObj.transform.position);
-                selectUIActor.GetComponentInChildren<Text>().text = 
-                        MetaManager.Instance.actorInfo[GetSelectedActorId()].name;
                 Context.Instance.SetMode(Context.Mode.ACTOR);
                 ((ContextActor)Context.Instance.contexts[Context.Mode.ACTOR]).SetSelectedActor(mapId);
-                ActorManager.Instance.actors[mapId].EnableUI(selectUIActor);
+                ActorManager.Instance.actors[mapId].EnableUI(
+                    MetaManager.Instance.actorInfo[GetSelectedActorId()].name,
+                    Context.Instance.selectUIActorTop, 
+                    Context.Instance.selectUIActorBottom);
                 break;
         }
     }
-    int GetSelectedMapId()
+    public int GetSelectedMapId()
     {
         return Util.GetIntFromGameObjectName(selectedObj.name);
     }
-    int GetSelectedBuildingId()
+    public int GetSelectedBuildingId()
     {
         return BuildingManager.Instance.objects[GetSelectedMapId()].id;
     }
-    int GetSelectedActorId()
+    public int GetSelectedActorId()
     {
         return ActorManager.Instance.actors[GetSelectedMapId()].id;
-    }
-
-    void OnClickX()
-    {
-        if(selectedObj)
-        {
-            if(BuildingManager.Instance.objects[GetSelectedMapId()].actions.Count == 0)
-                Updater.Instance.AddQ(ActionType.BUILDING_DESTROY, GetSelectedMapId(), GetSelectedBuildingId(), null);
-            else
-                Debug.Log("The Building has actions");
-        }
-    }
-    void OnClickR()
-    {
-        if(selectedObj)
-        {
-            Vector3 angles = selectedObj.transform.localEulerAngles;
-            selectedObj.transform.localEulerAngles = new Vector3(angles.x, angles.y + 90, angles.z);
-        }
-    }
-
-    void OnClickB()
-    {
-        if(selectedObj)
-        {
-            int mapId = GetSelectedMapId();
-            int buildingId = GetSelectedBuildingId();
-            Context.Instance.onClickForCreatingActor(mapId, buildingId);
-        }
-    }
-    void OnClickU()
-    {
-        if(selectedObj)
-        {
-            /*
-            GameObject obj = Resources.Load<GameObject>("load");
-            obj = GameObject.Instantiate(obj);
-            
-            obj.transform.SetParent(selectedObj.transform);
-            obj.transform.localPosition = new Vector3(0, 0.5f, 0);
-            */
-            //---------
-            int mapId = GetSelectedMapId();
-            int actorId = GetSelectedActorId();
-            Context.Instance.onClickForUpgradingActor(mapId, actorId);
-        }
     }
 }
