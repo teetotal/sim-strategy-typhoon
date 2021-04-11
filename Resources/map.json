@@ -60,31 +60,23 @@
             "positions": [],
             "range": {
                 "start": 0,
-                "end": 15
+                "end": 1
             }
         },
         {
             "prefabId": 4,
             "positions": [],
             "range": {
-                "start": 192,
-                "end": 255
+                "start": 2,
+                "end": 3
             }
         },
         {
             "prefabId": 7,
             "positions": [],
             "range": {
-                "start": 16,
-                "end": 31
-            }
-        },
-        {
-            "prefabId": 5,
-            "positions": [48, 64, 80, 96, 112, 128, 144, 160, 176],
-            "range": {
-                "start": 32,
-                "end": 47
+                "start": 4,
+                "end": 5
             }
         }
     ]

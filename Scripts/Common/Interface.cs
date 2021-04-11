@@ -59,7 +59,7 @@ public abstract class Object
             uiBottom = null;
         }
     }
-    protected GameObject Instantiate(int mapId, int id, string prefab, MetaManager.TAG tag, bool flying = false)
+    protected GameObject Instantiate(int mapId, int id, string prefab, MetaManager.TAG tag, bool flying)
     {
         Vector3 position = MapManager.Instance.GetVector3FromMapId(mapId);
         GameObject obj = Resources.Load<GameObject>(prefab);
@@ -179,19 +179,19 @@ public abstract class Object
 
 public abstract class ActingObject : Object
 {
-    public void SetMoving(int targetMapId)
+    public void SetMoving(int targetMapId, bool flying, Meta.Ability ability)
     {
         if(targetMapId == -1)
             return;
 
         Action action;
-        if(MetaManager.Instance.actorInfo[this.id].flying)
+        if(flying)
         {
-            action = GetFlyingAction(targetMapId);
+            action = GetFlyingAction(targetMapId, ability);
         }
         else 
         {
-            action = GetMovingAction(targetMapId);
+            action = GetMovingAction(targetMapId, ability);
         }
         
         if(action.type == ActionType.MAX)
@@ -215,7 +215,7 @@ public abstract class ActingObject : Object
 
         isMovingStarted = false;
     }
-    protected Action GetFlyingAction(int targetMapId)
+    protected Action GetFlyingAction(int targetMapId, Meta.Ability ability)
     {
         int start = this.mapId;
         //중도 변경을 처리하기 위해 현재 위치의 mapid를 찾아낸다.
@@ -240,12 +240,12 @@ public abstract class ActingObject : Object
 
         Vector2Int diff = from - to;
 
-        action.totalTime = (Mathf.Abs(diff.x) + Mathf.Abs(diff.y)) / MetaManager.Instance.actorInfo[this.id].ability.moving;
+        action.totalTime = (Mathf.Abs(diff.x) + Mathf.Abs(diff.y)) / ability.moving;
         action.values = route;
 
         return action;
     }
-    protected Action GetMovingAction(int targetMapId)
+    protected Action GetMovingAction(int targetMapId, Meta.Ability ability)
     {
         //Astar
         List<int> route = new List<int>();
@@ -270,7 +270,7 @@ public abstract class ActingObject : Object
         action.type = ActionType.ACTOR_MOVING;
         action.currentTime = 0;
 
-        action.totalTime = route.Count / MetaManager.Instance.actorInfo[this.id].ability.moving;
+        action.totalTime = route.Count / ability.moving;
         action.values = route;
 
         return action;
@@ -300,7 +300,7 @@ public abstract class ActingObject : Object
         int idx = (int)action.currentTime;
         float ratio = action.currentTime % 1.0f;
         */
-        bool flying = MetaManager.Instance.actorInfo[this.id].flying;
+        bool flying = false;
 
         if(!isMovingStarted && ratio > 0.5f) 
         {
@@ -335,15 +335,13 @@ public abstract class ActingObject : Object
         
         return true;
     }
-    protected bool Flying(Action action)
+    protected bool Flying(Action action, float height)
     {
         List<int> route = action.values;
         GameObject actor = this.gameObject;
 
-        bool flying = MetaManager.Instance.actorInfo[this.id].flying;
-
-        Vector3 from = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[0]), flying);
-        Vector3 to = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[1]), flying);
+        Vector3 from = Util.GetFlyingPosition(MapManager.Instance.GetVector3FromMapId(route[0]), height);
+        Vector3 to = Util.GetFlyingPosition(MapManager.Instance.GetVector3FromMapId(route[1]), height);
 
         float ratio = action.currentTime / action.totalTime;
 

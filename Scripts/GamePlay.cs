@@ -139,6 +139,7 @@ public class GamePlay : MonoBehaviour
     }
     void OnClickForUpgradingActor(int mapId, int actorId)
     {
+        //짐 싣기 테스트 코드
         GameObject selectedObj = ActorManager.Instance.actors[mapId].gameObject;
         Debug.Log(string.Format("OnClickForUpgradingActor {0}-{1}", mapId, actorId));
         GameObject o = Resources.Load<GameObject>("load");

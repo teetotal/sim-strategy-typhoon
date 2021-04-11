@@ -9,6 +9,10 @@ public class Util
         }
         return new Vector3(pos.x, 1, pos.z);
     }
+    public static Vector3 GetFlyingPosition(Vector3 pos, float height)
+    {
+        return new Vector3(pos.x, height, pos.z);
+    }
     public static int GetIntFromGameObjectName(string name)
     {
         return int.Parse(name.Replace("(Clone)", ""));

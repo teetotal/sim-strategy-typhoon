@@ -120,7 +120,14 @@ public class MobManager
             {
                 //probability
                 if(UnityEngine.Random.Range(0, MetaManager.Instance.meta.mobs[mob.id].movingProbability) == 0)
-                    mob.SetMoving(MapManager.Instance.GetRandomNearEmptyMapId(mob.mapId, MetaManager.Instance.meta.mobs[mob.id].movingRange));
+                {
+                    Meta.Mob meta = MetaManager.Instance.meta.mobs[mob.id];
+                    mob.SetMoving(MapManager.Instance.GetRandomNearEmptyMapId(mob.mapId, MetaManager.Instance.meta.mobs[mob.id].movingRange), 
+                        meta.flyingHeight > 0 ? true: false,
+                        meta.ability
+                    );
+                }
+                    
             }
             mob.Update();
         }
@@ -157,7 +164,9 @@ public class ActorManager
         ActorManager.Instance.actors[to] = actor;
         ActorManager.Instance.actors.Remove(mapId);
 
-        actor.SetMoving(to);
+        Meta.Actor meta = MetaManager.Instance.actorInfo[actor.id];
+
+        actor.SetMoving(to, meta.flying, meta.ability);
 
         //actor map id변경
         actor.mapId = to;

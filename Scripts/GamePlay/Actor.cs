@@ -60,7 +60,7 @@ public class Actor : ActingObject
                     Moving(action);
                     break;
                 case ActionType.ACTOR_FLYING:
-                    Flying(action);
+                    Flying(action, 1);
                     break;
             }
 
