@@ -68,7 +68,7 @@ public class ContextActor : IContext
             
         }
     }
-    private void Clear()
+    public void Clear()
     {
         if(point)
             GameObject.DestroyImmediate(point);

@@ -17,4 +17,14 @@ public class Util
     {
         return int.Parse(name.Replace("(Clone)", ""));
     }
+
+    public static bool Random(int probability)
+    {
+        if(UnityEngine.Random.Range(0, probability) == 0)
+        {
+            return true;
+        }
+
+        return false;
+    }
 }

@@ -23,17 +23,17 @@
         {
             "id": 4,
             "name": "Grass",
-            "cost": 1
+            "cost": 0
         },
         {
             "id": 5,
             "name": "ForestLake",
-            "cost": -1
+            "cost": 0
         },
         {
             "id": 6,
             "name": "ForestMushroom01",
-            "cost": 2
+            "cost": 0
         },
         {
             "id": 7,
@@ -56,27 +56,35 @@
     },
     "nodes": [
         {
-            "prefabId": 1,
-            "positions": [],
+            "prefabId": 4,
+            "positions": [ 1, 12, 120, 33, 22, 44],
             "range": {
                 "start": 0,
-                "end": 1
+                "end": 0
             }
         },
         {
-            "prefabId": 4,
-            "positions": [],
+            "prefabId": 5,
+            "positions": [ 2, 13, 132, 28, 99, 168, 208],
             "range": {
-                "start": 2,
-                "end": 3
+                "start": 0,
+                "end": 0
+            }
+        },
+        {
+            "prefabId": 6,
+            "positions": [ 5, 72, 88, 150, 200, 250],
+            "range": {
+                "start": 0,
+                "end": 0
             }
         },
         {
             "prefabId": 7,
-            "positions": [],
+            "positions": [ 50, 152, 215 ],
             "range": {
-                "start": 4,
-                "end": 5
+                "start": 0,
+                "end": 0
             }
         }
     ],

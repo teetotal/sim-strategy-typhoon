@@ -96,7 +96,7 @@ public class MobManager
         {   
             Meta.Mob meta = MetaManager.Instance.mobInfo[q.id];
             //probability
-            if(UnityEngine.Random.Range(0, meta.regenProbability) > 0)
+            if(!Util.Random(meta.regenProbability))
                 return;
 
             int mapId = MapManager.Instance.GetRandomNearEmptyMapId(q.mapId, meta.movingRange); 
@@ -109,7 +109,14 @@ public class MobManager
             {
                 mobs[obj.mapId] = obj;
             }
-            //routine 
+
+            //routine 추가
+            obj.routine = new List<QNode>()
+            {
+                new QNode(
+                    meta.flyingHeight == 0 ? ActionType.MOB_MOVING : ActionType.MOB_FLYING, 
+                    -1, -1, null)
+            };
         }
         else
         {
@@ -149,34 +156,17 @@ public class MobManager
     }
     public void Update()
     {
+        List<Mob> list = new List<Mob>();
         foreach(KeyValuePair<int, Mob> kv in mobs)
         {
-            kv.Value.Update();
-            kv.Value.UpdateUIPosition();
+            list.Add(kv.Value);
         }
-        /*
-        //random gen
-        Regen();
 
-        for(int n = 0; n < mobs.Count; n++)
+        for(int n = 0; n < list.Count; n++)
         {
-            Mob mob = mobs[n];
-            if(mob.actions.Count == 0)
-            {
-                //probability
-                if(UnityEngine.Random.Range(0, MetaManager.Instance.meta.mobs[mob.id].movingProbability) == 0)
-                {
-                    Meta.Mob meta = MetaManager.Instance.meta.mobs[mob.id];
-                    mob.SetMoving(MapManager.Instance.GetRandomNearEmptyMapId(mob.mapId, MetaManager.Instance.meta.mobs[mob.id].movingRange), 
-                        meta.flyingHeight > 0 ? true: false,
-                        meta.ability
-                    );
-                }
-                    
-            }
-            mob.Update();
+            list[n].Update();
+            list[n].UpdateUIPosition();
         }
-        */
     }
 }
 
@@ -210,10 +200,16 @@ public class ActorManager
     
     public void Update()
     {
+        List<Actor> list = new List<Actor>();
         foreach(KeyValuePair<int, Actor> kv in actors)
         {
-            kv.Value.Update();
-            kv.Value.UpdateUIPosition();
+            list.Add(kv.Value);
+        }
+
+        for(int n = 0; n < list.Count; n++)
+        {
+            list[n].Update();
+            list[n].UpdateUIPosition();
         }
     }
 }

@@ -139,8 +139,10 @@ public class GamePlay : MonoBehaviour
     }
     void OnClickForUpgradingActor(int mapId, int actorId)
     {
+        Actor actor = ActorManager.Instance.actors[mapId];
+        Meta.Actor meta = MetaManager.Instance.actorInfo[actor.id];
         //짐 싣기 테스트 코드
-        GameObject selectedObj = ActorManager.Instance.actors[mapId].gameObject;
+        GameObject selectedObj = actor.gameObject;
         Debug.Log(string.Format("OnClickForUpgradingActor {0}-{1}", mapId, actorId));
         GameObject o = Resources.Load<GameObject>("load");
         o = GameObject.Instantiate(o);
@@ -149,6 +151,16 @@ public class GamePlay : MonoBehaviour
 
         Vector3 size = selectedObj.GetComponent<BoxCollider>().size;
         o.transform.localPosition = new Vector3(0, size.y, 0);
+
+        ActionType type = meta.flying ? ActionType.ACTOR_FLYING: ActionType.ACTOR_MOVING;
+        //routine 추가
+        actor.SetRoutine(new List<QNode>()
+        {
+            new QNode(type, mapId, 0, null),
+            new QNode(type, mapId, 255, null)
+        });
+        ((ContextActor)Context.Instance.contexts[Context.Mode.ACTOR]).Clear();
+        Context.Instance.SetMode(Context.Mode.NONE);
     }
     void OnClickButton(GameObject obj)
     {

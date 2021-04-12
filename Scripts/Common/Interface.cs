@@ -186,58 +186,22 @@ public abstract class ActingObject : Object
 {
     public List<QNode> routine;
     protected bool isMovingStarted;
+    private int routineIdx = 0;
     public void SetRoutine(List<QNode> routine)
     {
         this.routine = routine;
+        routineIdx = 0;
     }
     protected void ApplyRoutine()
     {
         if(actions.Count > 0 || routine == null)
             return;
-        for(int n = 0; n < routine.Count; n++)
-        {
-            AddAction(routine[n]);
-        }
+        AddAction(routine[routineIdx++]);
+        if(routineIdx >= routine.Count)
+            routineIdx = 0;
     }
     public abstract void AddAction(QNode node);
-    /*
-    public Acton GetMovingFlyingAction(int targetMapId, bool flying, Meta.Ability ability)
-    {
-        if(targetMapId == -1)
-            return;
-
-        Action action;
-        if(flying)
-        {
-            action = GetFlyingAction(targetMapId, ability);
-        }
-        else 
-        {
-            action = GetMovingAction(targetMapId, ability);
-        }
-        
-        if(action.type == ActionType.MAX)
-            return;
-
-        //mapmanager 변경. 
-        MapManager.Instance.Move(mapId, targetMapId);
-        
-        //이전 이동 액션을 제거
-        RemoveActionType(ActionType.ACTOR_FLYING);
-        RemoveActionType(ActionType.ACTOR_MOVING);
-
-        //새로운 액션을 추가
-        actions.Add(action);
-
-        //actor map id변경
-        this.mapId = targetMapId;
-        GameObject parent = MapManager.Instance.defaultGameObjects[targetMapId];
-        this.gameObject.name = mapId.ToString();
-        this.gameObject.transform.SetParent(parent.transform);
-
-        isMovingStarted = false;
-    }
-    */
+    
     protected Action GetFlyingAction(int targetMapId, Meta.Ability ability, ActionType type)
     {
         int start = this.mapId;
