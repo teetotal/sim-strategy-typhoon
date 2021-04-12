@@ -26,7 +26,6 @@ public abstract class Object
     public int level;
     public List<Action> actions = new List<Action>(); //현재 겪고 있는 액션 리스트.
     public GameObject progress, uiTop, uiBottom;
-    protected bool isMovingStarted;
     //fn
     public abstract bool Create(int mapId, int id);
     public abstract void Update();
@@ -153,6 +152,12 @@ public abstract class Object
             else
                 uiBottom = null;
         } 
+
+        if(progress != null) //progress
+        {
+            progress.transform.position = GetProgressPosition(); //position
+        }
+        
     }
     
     protected void RemoveActions(List<int> removeActionIds)
@@ -179,7 +184,24 @@ public abstract class Object
 
 public abstract class ActingObject : Object
 {
-    public void SetMoving(int targetMapId, bool flying, Meta.Ability ability)
+    public List<QNode> routine;
+    protected bool isMovingStarted;
+    public void SetRoutine(List<QNode> routine)
+    {
+        this.routine = routine;
+    }
+    protected void ApplyRoutine()
+    {
+        if(actions.Count > 0 || routine == null)
+            return;
+        for(int n = 0; n < routine.Count; n++)
+        {
+            AddAction(routine[n]);
+        }
+    }
+    public abstract void AddAction(QNode node);
+    /*
+    public Acton GetMovingFlyingAction(int targetMapId, bool flying, Meta.Ability ability)
     {
         if(targetMapId == -1)
             return;
@@ -215,7 +237,8 @@ public abstract class ActingObject : Object
 
         isMovingStarted = false;
     }
-    protected Action GetFlyingAction(int targetMapId, Meta.Ability ability)
+    */
+    protected Action GetFlyingAction(int targetMapId, Meta.Ability ability, ActionType type)
     {
         int start = this.mapId;
         //중도 변경을 처리하기 위해 현재 위치의 mapid를 찾아낸다.
@@ -230,22 +253,14 @@ public abstract class ActingObject : Object
         List<int> route = new List<int>();
         route.Add(start);
         route.Add(targetMapId);
-        
-        Action action = new Action();
-        action.type = ActionType.ACTOR_FLYING;
-        action.currentTime = 0;
 
         Vector2Int from = MapManager.Instance.GetMapPosition(start);
         Vector2Int to = MapManager.Instance.GetMapPosition(targetMapId);
 
         Vector2Int diff = from - to;
-
-        action.totalTime = (Mathf.Abs(diff.x) + Mathf.Abs(diff.y)) / ability.moving;
-        action.values = route;
-
-        return action;
+        return new Action(type, (Mathf.Abs(diff.x) + Mathf.Abs(diff.y)) / ability.moving, route);
     }
-    protected Action GetMovingAction(int targetMapId, Meta.Ability ability)
+    protected Action GetMovingAction(int targetMapId, Meta.Ability ability, ActionType type)
     {
         //Astar
         List<int> route = new List<int>();
@@ -266,14 +281,8 @@ public abstract class ActingObject : Object
             route.Add(id);
             stack.Pop();
         }
-        Action action = new Action();
-        action.type = ActionType.ACTOR_MOVING;
-        action.currentTime = 0;
 
-        action.totalTime = route.Count / ability.moving;
-        action.values = route;
-
-        return action;
+        return new Action(type, route.Count / ability.moving, route);
     }
     protected int GetCurrentPositionMapId()
     {

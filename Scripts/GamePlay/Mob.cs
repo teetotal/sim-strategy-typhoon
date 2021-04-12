@@ -5,6 +5,47 @@ using UnityEngine.UI;
 
 public class Mob : ActingObject
 {
+    public int attachedId;
+    public override void AddAction(QNode node)
+    {
+        Meta.Mob meta =  MetaManager.Instance.mobInfo[this.id];
+
+        switch(node.type)
+        {
+            case ActionType.MOB_CREATE:
+                break;
+            case ActionType.ACTOR_MOVING:
+            case ActionType.ACTOR_FLYING:
+            {
+                if(node.id == -1)
+                    return;
+
+                //mapmanager 변경. 
+                MapManager.Instance.Move(mapId, node.id);
+                //actormanager변경
+                MobManager.Instance.mobs[node.id] = this;
+                MobManager.Instance.mobs.Remove(mapId);
+
+                Action  action = (node.type == ActionType.MOB_MOVING) ? GetMovingAction(node.id, meta.ability, node.type) : GetFlyingAction(node.id, meta.ability, node.type);
+                if(action.type == ActionType.MAX)
+                    return;
+
+                RemoveActionType(node.type); //이전 이동 액션을 제거
+                actions.Add(action);
+                isMovingStarted = false;
+
+                //actor map id변경
+                this.mapId = node.id;
+                GameObject parent = MapManager.Instance.defaultGameObjects[node.id];
+                gameObject.name = this.mapId.ToString();
+                gameObject.transform.SetParent(parent.transform);
+
+                break;
+            }
+            case ActionType.ACTOR_ATTACK:
+                break;
+        }
+    }
     
     public override bool Create(int mapId, int id)
     {

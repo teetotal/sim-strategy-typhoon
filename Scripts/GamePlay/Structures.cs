@@ -10,6 +10,14 @@ public struct Action
     public float totalTime;       //Action이 적용되는 총 시간
     public float currentTime;     //현재까지 진행된 시간
     public List<int> values;      //기타 추가 정보. 이동시 A* route같은거 담는 용도
+
+    public Action(ActionType type, float totalTime, List<int> values)
+    {
+        this.type = type;
+        this.currentTime = 0;
+        this.totalTime = totalTime;
+        this.values = values;
+    }
 }
 
 /* --------------------------- */

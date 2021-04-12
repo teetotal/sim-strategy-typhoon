@@ -32,27 +32,24 @@ public class Updater
         ActorManager.Instance.Update();
         //mob
         MobManager.Instance.Update();
+        //mob regen
+        MobManager.Instance.Regen();
         //일정 주기로 update node resource
     }
 
     private void Fetch(QNode q)
     {
-        switch(q.type)
+        if(q.type < ActionType.BUILDING_MAX)
         {
-            case ActionType.BUILDING_CREATE:
-                BuildingManager.Instance.Construct(q.mapId, q.id);
-                break;
-            case ActionType.BUILDING_DESTROY:
-                BuildingManager.Instance.Destroy(q.mapId);
-                break;
-            case ActionType.ACTOR_CREATE:
-                ActorManager.Instance.Create(q.mapId, q.id);
-                break;
-            case ActionType.ACTOR_MOVING:
-                ActorManager.Instance.Moving(q.mapId, q.id); //moving에서는 id를 이동 목표지점 mapid로 사용
-                break;
-            default:
-                return;
+            BuildingManager.Instance.Fetch(q);
+        }
+        else if(q.type < ActionType.ACTOR_MAX)
+        {
+            ActorManager.Instance.Fetch(q);
+        }
+        else if(q.type < ActionType.MOB_MAX)
+        {
+            MobManager.Instance.Fetch(q);
         }
     }
 

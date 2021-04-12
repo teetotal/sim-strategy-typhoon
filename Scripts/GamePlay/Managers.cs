@@ -16,6 +16,7 @@ public class MetaManager
     public Meta meta;
     public Dictionary<int, Meta.Building> buildingInfo = new Dictionary<int, Meta.Building>(); // 빌딩 정보
     public Dictionary<int, Meta.Actor> actorInfo = new Dictionary<int, Meta.Actor>(); // actor 정보
+    public Dictionary<int, Meta.Mob> mobInfo = new Dictionary<int, Meta.Mob>(); // mob 정보
     public Dictionary<int, string> resourceInfo = new Dictionary<int, string>();         
     private static readonly Lazy<MetaManager> hInstance = new Lazy<MetaManager>(() => new MetaManager());
  
@@ -44,6 +45,12 @@ public class MetaManager
             Meta.Actor b = meta.actors[n];
             actorInfo[b.id] = b;
         }
+        //mobInfo
+        for(int n = 0; n < meta.mobs.Count; n++)
+        {
+            Meta.Mob b = meta.mobs[n];
+            mobInfo[b.id] = b;
+        }
         //resourcesInfo
         for(int n = 0; n < meta.resources.Count; n++)
         {
@@ -69,7 +76,9 @@ public class MetaManager
 }
 public class MobManager
 {
-    public List<Mob> mobs = new List<Mob>();
+    float time;
+    int lastRegenTime = 0;
+    public Dictionary<int, Mob> mobs = new Dictionary<int, Mob>();
     private static readonly Lazy<MobManager> hInstance = new Lazy<MobManager>(() => new MobManager());
     
     public static MobManager Instance
@@ -81,35 +90,71 @@ public class MobManager
     protected MobManager()
     {
     }
-    public void Regen()
+    public void Fetch(QNode q)
     {
-        int[] cnts = new int[MetaManager.Instance.meta.mobs.Count];
-        for(int n = 0; n < mobs.Count; n++)
-        {
-            cnts[mobs[n].id]++;
-        }
-
-        for(int n = 0; n < MetaManager.Instance.meta.mobs.Count; n++)
-        {
-            Meta.Mob mob = MetaManager.Instance.meta.mobs[n];
-            if(mob.max <= cnts[n])
-                continue;
-            
+        if(q.type == ActionType.MOB_CREATE)
+        {   
+            Meta.Mob meta = MetaManager.Instance.mobInfo[q.id];
             //probability
-            if(UnityEngine.Random.Range(0, mob.regenProbability) > 0)
-                continue;
+            if(UnityEngine.Random.Range(0, meta.regenProbability) > 0)
+                return;
 
-            int mapId = MapManager.Instance.GetEmptyMapId(); 
+            int mapId = MapManager.Instance.GetRandomNearEmptyMapId(q.mapId, meta.movingRange); 
             if(mapId == -1)
                 return;
 
             Mob obj = new Mob();
-            if(obj.Create(mapId, n))
-                mobs.Add(obj);
+            obj.attachedId = q.mapId;   //소속 위치 
+            if(obj.Create(mapId, q.id))
+            {
+                mobs[obj.mapId] = obj;
+            }
+            //routine 
+        }
+        else
+        {
+            mobs[q.mapId].AddAction(q);
+        }
+    }
+
+    public void Regen()
+    {
+        time += Time.deltaTime;
+        int t = (int)time;
+        if(lastRegenTime == t || t % 2 != 0)
+            return;
+
+        //소속된 위치 정보가 있어야 함
+        Dictionary<int, Dictionary<int, int>> cnts = new Dictionary<int, Dictionary<int, int>>(); //소속 위치, mob id, count
+        foreach(KeyValuePair<int, Mob> kv in mobs)
+        {
+            if(!cnts.ContainsKey(kv.Value.attachedId))
+            {
+                cnts[kv.Value.attachedId] = new Dictionary<int, int>();
+                cnts[kv.Value.attachedId][kv.Value.id] = 0;
+            }
+                
+
+            cnts[kv.Value.attachedId][kv.Value.id]++;
+        }
+
+        for(int n = 0; n < MapManager.Instance.mapMeta.mobs.Count; n++)
+        {
+            Map.Mob meta = MapManager.Instance.mapMeta.mobs[n];
+            if(cnts.ContainsKey(meta.mapId) && cnts[meta.mapId].ContainsKey(meta.id) && meta.max <= cnts[meta.mapId][meta.id])
+                continue;
+
+            Updater.Instance.AddQ(ActionType.MOB_CREATE, meta.mapId, meta.id, null);
         }
     }
     public void Update()
     {
+        foreach(KeyValuePair<int, Mob> kv in mobs)
+        {
+            kv.Value.Update();
+            kv.Value.UpdateUIPosition();
+        }
+        /*
         //random gen
         Regen();
 
@@ -131,6 +176,7 @@ public class MobManager
             }
             mob.Update();
         }
+        */
     }
 }
 
@@ -148,32 +194,20 @@ public class ActorManager
     protected ActorManager()
     {
     }
-    public void Create(int mapId, int actorId)
+    public void Fetch(QNode q)
     {
-        Actor obj = new Actor();
-        if(obj.Create(mapId, actorId))
-            actors[obj.mapId] = obj;
+        int mapId = q.mapId;
+        if(q.type == ActionType.ACTOR_CREATE)
+        {
+            Actor obj = new Actor();
+            if(obj.Create(mapId, q.id))
+                actors[obj.mapId] = obj;
+
+            mapId = obj.mapId; // 빈 공간으로 생성시킨다.
+        }
+        actors[mapId].AddAction(q);
     }
-    public void Moving(int mapId, int to)
-    {
-        Actor actor = ActorManager.Instance.actors[mapId];
-        
-        //mapmanager 변경. 
-        MapManager.Instance.Move(mapId, to);
-        //actormanager변경
-        ActorManager.Instance.actors[to] = actor;
-        ActorManager.Instance.actors.Remove(mapId);
-
-        Meta.Actor meta = MetaManager.Instance.actorInfo[actor.id];
-
-        actor.SetMoving(to, meta.flying, meta.ability);
-
-        //actor map id변경
-        actor.mapId = to;
-        GameObject parent = MapManager.Instance.defaultGameObjects[to];
-        actor.gameObject.name = actor.mapId.ToString();
-        actor.gameObject.transform.SetParent(parent.transform);
-    }
+    
     public void Update()
     {
         foreach(KeyValuePair<int, Actor> kv in actors)
@@ -198,6 +232,21 @@ public class BuildingManager
     protected BuildingManager()
     {
     }
+
+    public void Fetch(QNode q)
+    {
+        switch(q.type)
+        {
+            case ActionType.BUILDING_CREATE:
+                Construct(q.mapId, q.id);
+                break;
+            case ActionType.BUILDING_DESTROY:
+                Destroy(q.mapId);
+                break;
+            default:
+                return;
+        }
+    }
     
     public void Construct(int mapId, int buildingId)
     {
@@ -210,7 +259,6 @@ public class BuildingManager
         {
             objects[obj.mapId] = obj;
         }
-        
     }
     public void Destroy(int mapId)
     {

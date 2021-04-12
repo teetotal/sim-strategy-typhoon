@@ -5,10 +5,54 @@ using UnityEngine.UI;
 
 public class Actor : ActingObject
 {
+    /*
     public BuildingObject attachedBuilding; //소속된 건물 정보
     //전투의 경우, 수량 정보도 필요할 수 있음.
     public int currentHeadcount; //현재 인원. 전체 인원은 type과 level로 파악
+    */
+    public override void AddAction(QNode node)
+    {
+        Meta.Actor meta =  MetaManager.Instance.actorInfo[this.id];
 
+        switch(node.type)
+        {
+            case ActionType.ACTOR_CREATE:
+                actions.Add(new Action(ActionType.ACTOR_CREATE, MetaManager.Instance.actorInfo[id].createTime, null));
+                break;
+            case ActionType.ACTOR_MOVING:
+            case ActionType.ACTOR_FLYING:
+            {
+                if(node.id == -1)
+                    return;
+
+                //mapmanager 변경. 
+                MapManager.Instance.Move(mapId, node.id);
+                //actormanager변경
+                ActorManager.Instance.actors[node.id] = this;
+                ActorManager.Instance.actors.Remove(mapId);
+
+                Action  action = (node.type == ActionType.ACTOR_MOVING) ? 
+                        GetMovingAction(node.id, meta.ability, node.type) : GetFlyingAction(node.id, meta.ability, node.type);
+                if(action.type == ActionType.MAX)
+                    return;
+
+                RemoveActionType(node.type); //이전 이동 액션을 제거
+                actions.Add(action);
+                isMovingStarted = false;
+
+                //actor map id변경
+                this.mapId = node.id;
+                GameObject parent = MapManager.Instance.defaultGameObjects[node.id];
+                gameObject.name = this.mapId.ToString();
+                gameObject.transform.SetParent(parent.transform);
+
+                break;
+            }
+            case ActionType.ACTOR_ATTACK:
+                break;
+        }
+    }
+    
     public override bool Create(int mapId, int id)
     {
         //생성 위치 찾기.
@@ -16,19 +60,12 @@ public class Actor : ActingObject
         if(mapId == -1)
             return false;
         
-        Action action = new Action();
-        action.type = ActionType.ACTOR_CREATE;
-        action.currentTime = 0;
-        action.totalTime = MetaManager.Instance.actorInfo[id].createTime;
-        actions.Add(action);
-
         Meta.Actor actor = MetaManager.Instance.actorInfo[id];
         //prefab 생성
         this.Instantiate(mapId, id, actor.prefab, MetaManager.TAG.ACTOR, actor.flying);
 
         //progress
-        Vector3 pos = GetProgressPosition();
-        progress = GameObject.Instantiate(Context.Instance.progressPrefab, pos, Quaternion.identity);
+        progress = GameObject.Instantiate(Context.Instance.progressPrefab, GetProgressPosition(), Quaternion.identity);
         progress.name = string.Format("progress-{0}-{1}", mapId, this.id);
         progress.transform.SetParent(Context.Instance.canvas);
 
@@ -38,11 +75,8 @@ public class Actor : ActingObject
     //창고에 간다 -> 물건을 실는다 -> 시장에 가서 판다.
     public override void Update()
     {
-        if(progress != null) //progress
-        {
-            progress.transform.position = GetProgressPosition(); //position
-        }
-        
+        ApplyRoutine();
+
         List<int> removeActionIds = new List<int>();
         if(actions.Count > 0)
         {
@@ -67,7 +101,6 @@ public class Actor : ActingObject
             //finish
             if(action.currentTime >= action.totalTime)
             {
-                //removeActionIds.Add(n);
                 switch(action.type)
                 {
                     case ActionType.ACTOR_CREATE:
@@ -78,7 +111,5 @@ public class Actor : ActingObject
                 actions.RemoveAt(0);
             }
         }
-
-        //RemoveActions(removeActionIds);
     }
 }

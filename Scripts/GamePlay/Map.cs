@@ -30,11 +30,20 @@ public class Map
         public Range range;
         public int prefabId;
     }
+    [Serializable]
+    public struct Mob
+    {
+        public int id;
+        public int mapId;
+        public int max;
+    }
+
     public List<Prefab> prefabs;
     public Vector3Int grid;
     public Vector2Int dimension;
     public Value defaultVal;
     public List<Node> nodes;
+    public List<Mob> mobs;
 }
 
 public class MapManager

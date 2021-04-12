@@ -42,7 +42,6 @@ public class Meta
         public float flyingHeight;
         public int level;
         public int regenTime, regenProbability; //regenTime 간격으로 1/regenProbability 확률로 생성
-        public int max;         //생성가능한 수
         public int mapCost;
         public int movingRange, movingProbability; //움직임 범위
         public Ability ability;
