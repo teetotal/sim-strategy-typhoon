@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class Mob : ActingObject
 {
     public int attachedId;
-    public override void AddAction(QNode node)
+    public override bool AddAction(QNode node)
     {
         switch(node.type)
         {
@@ -15,12 +15,20 @@ public class Mob : ActingObject
             case ActionType.MOB_MOVING:
             case ActionType.MOB_FLYING:
             {
-                actions.Add(GetMovingFlyingAction(node.type, node.id));
-                break;
+                Action action = GetMovingFlyingAction(node.type, node.id);
+                if(action.type != ActionType.MAX)
+                {
+                    actions.Add(action);
+                    return true;
+                }
+                
+                return false;
             }
             case ActionType.MOB_ATTACK:
                 break;
         }
+
+        return true;
     }
     public Action GetMovingFlyingAction(ActionType type, int targetMapId)
     {

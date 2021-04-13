@@ -10,7 +10,7 @@ public class Actor : ActingObject
     //전투의 경우, 수량 정보도 필요할 수 있음.
     public int currentHeadcount; //현재 인원. 전체 인원은 type과 level로 파악
     */
-    public override void AddAction(QNode node)
+    public override bool AddAction(QNode node)
     {
         Meta.Actor meta =  MetaManager.Instance.actorInfo[this.id];
 
@@ -22,8 +22,8 @@ public class Actor : ActingObject
             case ActionType.ACTOR_MOVING:
             case ActionType.ACTOR_FLYING:
             {
-                if(node.id == -1)
-                    return;
+                if(node.id == -1 || MapManager.Instance.GetCost(node.id) != MapManager.Instance.mapMeta.defaultVal.cost)
+                    return false;
 
                 //mapmanager 변경. 
                 MapManager.Instance.Move(mapId, node.id);
@@ -34,7 +34,7 @@ public class Actor : ActingObject
                 Action  action = (node.type == ActionType.ACTOR_MOVING) ? 
                         GetMovingAction(node.id, meta.ability, node.type) : GetFlyingAction(node.id, meta.ability, node.type);
                 if(action.type == ActionType.MAX)
-                    return;
+                    return false;
 
                 RemoveActionType(node.type); //이전 이동 액션을 제거
                 actions.Add(action);
@@ -51,6 +51,7 @@ public class Actor : ActingObject
             case ActionType.ACTOR_ATTACK:
                 break;
         }
+        return true;
     }
     
     public override bool Create(int mapId, int id)

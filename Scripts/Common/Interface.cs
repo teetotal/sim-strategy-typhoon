@@ -196,11 +196,15 @@ public abstract class ActingObject : Object
     {
         if(actions.Count > 0 || routine == null)
             return;
-        AddAction(routine[routineIdx++]);
-        if(routineIdx >= routine.Count)
-            routineIdx = 0;
+        if(AddAction(routine[routineIdx]))
+        {
+            routineIdx++;
+            if(routineIdx >= routine.Count)
+                routineIdx = 0;
+        }
+        
     }
-    public abstract void AddAction(QNode node);
+    public abstract bool AddAction(QNode node);
     
     protected Action GetFlyingAction(int targetMapId, Meta.Ability ability, ActionType type)
     {

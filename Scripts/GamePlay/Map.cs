@@ -196,6 +196,11 @@ public class MapManager
             range++;
         }
     }
+    public int GetCost(int mapId)
+    {
+        Vector2Int pos = GetMapPosition(mapId);
+        return map[pos.x, pos.y];
+    }
     public void Load()
     {
         mapMeta = Json.LoadJsonFile<Map>("map");
