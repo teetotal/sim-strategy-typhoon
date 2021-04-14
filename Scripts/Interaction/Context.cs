@@ -13,6 +13,8 @@ public class Context
         ACTOR,
         MAX
     }
+    public delegate void OnActorEvent(Actor actor, string targetTag, int targetMapId);
+    public OnActorEvent onActorEvent;
     public Dictionary<Context.Mode, IContext> contexts;
     private static readonly Lazy<Context> hInstance = new Lazy<Context>(() => new Context());
     public Mode mode = Mode.NONE;
@@ -55,7 +57,9 @@ public class Context
         
         contexts[mode].OnMove();
     }
-    public void Init(ref Transform canvas, 
+    public void Init(
+                    OnActorEvent onActorEvent,
+                    ref Transform canvas, 
                     string progressPrefab, 
                     string titlePrefab, 
                     string greenCube, 
@@ -66,6 +70,7 @@ public class Context
                     GameObject selectUIActorBottom
                     )
     {
+        this.onActorEvent = onActorEvent;
         this.canvas = canvas;
         this.progressPrefab = Resources.Load<GameObject>(progressPrefab);
         this.titlePrefab = Resources.Load<GameObject>(titlePrefab);

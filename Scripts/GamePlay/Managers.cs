@@ -216,7 +216,7 @@ public class ActorManager
 
 public class BuildingManager
 {
-    public Dictionary<int, Object> objects = new Dictionary<int, Object>();
+    public Dictionary<int, BuildingObject> objects = new Dictionary<int, BuildingObject>();
     private static readonly Lazy<BuildingManager> hInstance = new Lazy<BuildingManager>(() => new BuildingManager());
     
     public static BuildingManager Instance
@@ -263,7 +263,7 @@ public class BuildingManager
     }
     public void Update()
     {
-        foreach(KeyValuePair<int, Object> kv in objects)
+        foreach(KeyValuePair<int, BuildingObject> kv in objects)
         {
             kv.Value.Update();
             kv.Value.UpdateUIPosition();

@@ -89,25 +89,24 @@ public class ContextActor : IContext
             Actor actor = ActorManager.Instance.actors[selectedMapId];
             Meta.Actor meta = MetaManager.Instance.actorInfo[actor.id];
 
-            switch(MetaManager.Instance.GetTag(obj.tag))
+            int target = Util.GetIntFromGameObjectName(obj.name);
+            if(MetaManager.Instance.GetTag(obj.tag) == MetaManager.TAG.BOTTOM)
             {
-                case MetaManager.TAG.BOTTOM:
+                
+                if(target != selectedMapId && MapManager.Instance.IsEmptyMapId(target))
                 {
-                    int target = Util.GetIntFromGameObjectName(obj.name);
-                    if(target != selectedMapId && MapManager.Instance.IsEmptyMapId(target))
-                    {
-                        Updater.Instance.AddQ(
-                            meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
-                            selectedMapId, 
-                            target, 
-                            null);
-                    }
-                    break;
+                    Updater.Instance.AddQ(
+                        meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
+                        selectedMapId, 
+                        target, 
+                        null);
                 }
-                case MetaManager.TAG.BUILDING:
-                    Debug.Log("OnTouch Building. " + obj.name); //빌딩에서 뭔가를 하게 한다.
-                    break;
-            }
+            } 
+            Context.Instance.SetMode(Context.Mode.NONE);
+            Context.Instance.onActorEvent(actor, obj.tag, target);
+        } 
+        else
+        {
             Context.Instance.SetMode(Context.Mode.NONE);
         }
     }

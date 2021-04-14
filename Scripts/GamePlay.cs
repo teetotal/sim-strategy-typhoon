@@ -52,7 +52,8 @@ public class GamePlay : MonoBehaviour
         btn.onClick.AddListener(()=>{ OnClickButton(btn.gameObject);});
 
 
-        Context.Instance.Init(ref canvas, 
+        Context.Instance.Init( OnActorEvent,
+                                ref canvas, 
                                 "progress_default", 
                                 "text_default",
                                 "CubeGreen", 
@@ -246,56 +247,6 @@ public class GamePlay : MonoBehaviour
                 break;
         }
     }
-    /*
-    void OnClickX()
-    {
-        if(selectedObj)
-        {
-            if(BuildingManager.Instance.objects[GetSelectedMapId()].actions.Count == 0)
-                Updater.Instance.AddQ(ActionType.BUILDING_DESTROY, GetSelectedMapId(), GetSelectedBuildingId(), null);
-            else
-                Debug.Log("The Building has actions");
-        }
-    }
-    void OnClickR()
-    {
-        if(selectedObj)
-        {
-            Vector3 angles = selectedObj.transform.localEulerAngles;
-            selectedObj.transform.localEulerAngles = new Vector3(angles.x, angles.y + 90, angles.z);
-        }
-    }
-
-    void OnClickB()
-    {
-        if(selectedObj)
-        {
-            int mapId = GetSelectedMapId();
-            int buildingId = GetSelectedBuildingId();
-            Context.Instance.onClickForCreatingActor(mapId, buildingId);
-        }
-    }
-    void OnClickU()
-    {
-        if(selectedObj)
-        {
-            
-            GameObject obj = Resources.Load<GameObject>("load");
-            obj = GameObject.Instantiate(obj);
-            
-            obj.transform.SetParent(selectedObj.transform);
-
-            Vector3 size = selectedObj.GetComponent<BoxCollider>().size;
-            obj.transform.localPosition = new Vector3(0, size.y, 0);
-            
-            //---------
-            int mapId = GetSelectedMapId();
-            int actorId = GetSelectedActorId();
-            Context.Instance.onClickForUpgradingActor(mapId, actorId);
-        }
-    }
-    */
-
     void OnClick_UI_BUILD(GameObject obj, string name)
     {
         string[] arr = name.Split('-');
@@ -322,8 +273,29 @@ public class GamePlay : MonoBehaviour
             HideLayers();
         }
     }
+    void OnActorEvent(Actor actor, string targetTag, int targetMapId)
+    {
+        //Debug.Log(string.Format("OnActorEvent {0} -> {1}, {2}", actor.mapId, targetTag, targetMapId));
+        switch(targetTag)
+        {
+            case "Environment":
+            break;
+            case "Building":
+            GameSystem.Instance.OnTargetingBuilding(actor, targetMapId);
+            break;
+            case "Actor":
+            break;
+            case "Mob":
+            break;
+            case "Bottom":
+            break;
+            default:
+            break;
+        }
+    }
 
     // UI canceling
+    
     void Update()
     {
         if(Input.GetMouseButtonUp(0))
@@ -332,7 +304,6 @@ public class GamePlay : MonoBehaviour
             switch(Context.Instance.mode)
             {
                 case Context.Mode.UI_BUILD:
-                case Context.Mode.UI_ACTOR:
                     if(!EventSystem.current.IsPointerOverGameObject()) //UI가 클릭되지 않은 경우
                     {
                         HideLayers();
@@ -344,6 +315,7 @@ public class GamePlay : MonoBehaviour
             }
         }
     }
+    
      GameObject OnCreate(string layerName,string name, string tag, Vector2 position, Vector2 size)
     {
         return null;
