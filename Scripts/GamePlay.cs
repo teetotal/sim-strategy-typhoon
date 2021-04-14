@@ -15,7 +15,9 @@ public class GamePlay : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        GameObject o = GameObject.Find("Dragon");
+        o.GetComponentInChildren<Renderer>().material.color = Color.grey;
+
         LoaderPerspective.Instance.SetUI(camera, ref canvas, OnClickButton);
         if(!LoaderPerspective.Instance.LoadJsonFile("ui"))
         {

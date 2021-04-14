@@ -62,6 +62,7 @@ public class Meta
     [Serializable]
     public struct Building
     {
+        public int type;
         public int id;
         public string name;
         public string prefab;

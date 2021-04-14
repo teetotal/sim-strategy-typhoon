@@ -1,0 +1,25 @@
+{
+    "neutral":
+    [
+        {
+            "mapId": 0,
+            "buildingId": 0
+        }
+    ],
+    "tribes": [
+        {
+            "buildings": [
+                {
+                    "mapId": 1,
+                    "buildingId": 1,
+                    "actors": [
+                        {
+                            "mapId": 2,
+                            "actorId": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

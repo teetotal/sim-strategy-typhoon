@@ -1,7 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+public enum BuildingType
+{
+    FACTORY = 0,
+    DECORATION,
+    MARKET,
+    MAX
+}
 public enum ActionType : int
 {
     BUILDING_CREATE = 0,

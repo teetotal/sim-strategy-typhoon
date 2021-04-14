@@ -256,8 +256,8 @@
     ],
     "buildings": [
         {
-            "desc": "10초",
             "id": 0,
+            "type": 0,
             "name": "집 lv.1",
             "prefab": "ForestCabin",
             "level": 1,
@@ -315,6 +315,7 @@
         },
         {
             "id": 1,
+            "type": 1,
             "name": "호수",
             "prefab": "ForestLake",
             "level": 2,
@@ -339,6 +340,7 @@
         },
         {
             "id": 2,
+            "type": 1,
             "name": "강 직선",
             "prefab": "ForestRiverStraight",
             "level": 2,
@@ -363,6 +365,7 @@
         },
         {
             "id": 3,
+            "type": 1,
             "name": "강 커브",
             "prefab": "ForestRiverCurve",
             "level": 2,
@@ -387,6 +390,7 @@
         },
         {
             "id": 4,
+            "type": 0,
             "name": "텐트 1",
             "prefab": "ForestTent_01",
             "level": 1,
@@ -411,6 +415,7 @@
         },
         {
             "id": 5,
+            "type": 0,
             "name": "텐트 2",
             "prefab": "ForestTent_02",
             "level": 1,
@@ -435,6 +440,7 @@
         },
         {
             "id": 6,
+            "type": 0,
             "name": "텐트 3",
             "prefab": "ForestTent_03",
             "level": 1,
@@ -459,6 +465,7 @@
         },
         {
             "id": 7,
+            "type": 1,
             "name": "언덕",
             "prefab": "ForestEmptyCube",
             "level": 1,
@@ -478,6 +485,7 @@
         },
         {
             "id": 8,
+            "type": 1,
             "name": "과실수 1",
             "prefab": "ForestTree_01",
             "level": 1,
@@ -497,6 +505,7 @@
         },
         {
             "id": 9,
+            "type": 1,
             "name": "과실수 2",
             "prefab": "ForestTree_02",
             "level": 1,
@@ -516,6 +525,7 @@
         },
         {
             "id": 10,
+            "type": 1,
             "name": "모닥불",
             "prefab": "ForestFire",
             "level": 1,
@@ -535,6 +545,7 @@
         },
         {
             "id": 11,
+            "type": 1,
             "name": "동그란 바닥",
             "prefab": "Ground",
             "level": 1,
@@ -549,6 +560,7 @@
         },
         {
             "id": 12,
+            "type": 1,
             "name": "브릿지1",
             "prefab": "ForestBridge_01",
             "level": 1,
@@ -563,6 +575,7 @@
         },
         {
             "id": 13,
+            "type": 1,
             "name": "브릿지2",
             "prefab": "ForestBridge_02",
             "level": 1,
@@ -577,7 +590,8 @@
         },
         {
             "id": 14,
-            "name": "은행",
+            "type": 2,
+            "name": "시장",
             "prefab": "Bank",
             "level": 1,
             "dimension": {
@@ -591,6 +605,7 @@
         },
         {
             "id": 15,
+            "type": 1,
             "name": "불타는 모닥불",
             "prefab": "ForestFire2",
             "level": 1,
@@ -610,6 +625,7 @@
         },
         {
             "id": 16,
+            "type": 2,
             "name": "파란성",
             "prefab": "ForestCastle_Blue",
             "level": 1,
@@ -629,6 +645,7 @@
         },
         {
             "id": 17,
+            "type": 2,
             "name": "빨간성",
             "prefab": "ForestCastle_Red",
             "level": 1,
