@@ -1,17 +1,22 @@
 {
     "standardResourceId": 0,
-    "exchanges": [
+    "markets": [
         {
-            "resourceId": 0,
-            "rate": 1
-        },
-        {
-            "resourceId": 1,
-            "rate": 2.1
-        },
-        {
-            "resourceId": 2,
-            "rate": 3.2
+            "mapId": 0,
+            "exchanges": [
+                {
+                    "resourceId": 0,
+                    "rate": 1
+                },
+                {
+                    "resourceId": 1,
+                    "rate": 2.1
+                },
+                {
+                    "resourceId": 2,
+                    "rate": 3.2
+                }
+            ]
         }
     ]
 }

@@ -17,7 +17,7 @@ public class Actor : ActingObject
         switch(node.type)
         {
             case ActionType.ACTOR_CREATE:
-                actions.Add(new Action(ActionType.ACTOR_CREATE, MetaManager.Instance.actorInfo[id].createTime, null));
+                actions.Add(new Action(ActionType.ACTOR_CREATE, node.immediately ? 0 : MetaManager.Instance.actorInfo[id].createTime, null));
                 break;
             case ActionType.ACTOR_MOVING:
             case ActionType.ACTOR_FLYING:

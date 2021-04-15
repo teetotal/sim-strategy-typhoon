@@ -15,8 +15,7 @@ public class GamePlay : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GameObject o = GameObject.Find("Dragon");
-        o.GetComponentInChildren<Renderer>().material.color = Color.grey;
+        GameSystem.Instance.Init();
 
         LoaderPerspective.Instance.SetUI(camera, ref canvas, OnClickButton);
         if(!LoaderPerspective.Instance.LoadJsonFile("ui"))
@@ -53,7 +52,18 @@ public class GamePlay : MonoBehaviour
         Button btn = objs[1].GetComponentInChildren<Button>();
         btn.onClick.AddListener(()=>{ OnClickButton(btn.gameObject);});
 
-
+        //Load save game status
+        foreach(KeyValuePair<int, GameStatus.Building> kv in GameSystem.Instance.gameStatus.buildingInfo)
+        {
+            Updater.Instance.AddQ(ActionType.BUILDING_CREATE, kv.Key, kv.Value.buildingId, null, true);
+            for(int n = 0; n < kv.Value.actors.Count; n++)
+            {
+                GameStatus.MapIdActorId p = kv.Value.actors[n];
+                Updater.Instance.AddQ(ActionType.ACTOR_CREATE, p.mapId, p.actorId, null, true);
+            }
+        }
+        
+        //Context
         Context.Instance.Init( OnActorEvent,
                                 ref canvas, 
                                 "progress_default", 
@@ -86,6 +96,21 @@ public class GamePlay : MonoBehaviour
                 break;
             case "scrollview_actor":
                 actor_scrollview = obj;
+                break;
+            case "resource1":
+                obj.GetComponentInChildren<Text>().text = string.Format("{0} {1}", 
+                    MetaManager.Instance.resourceInfo[0], 
+                    GameSystem.Instance.gameStatus.GetResource(0, 0));
+                break;
+            case "resource2":
+                obj.GetComponentInChildren<Text>().text = string.Format("{0} {1}", 
+                    MetaManager.Instance.resourceInfo[1], 
+                    GameSystem.Instance.gameStatus.GetResource(0, 1));
+                break;
+            case "resource3":
+                obj.GetComponentInChildren<Text>().text = string.Format("{0} {1}", 
+                    MetaManager.Instance.resourceInfo[2], 
+                    GameSystem.Instance.gameStatus.GetResource(0, 2));
                 break;
             default:
                 break;
@@ -159,8 +184,8 @@ public class GamePlay : MonoBehaviour
         //routine 추가
         actor.SetRoutine(new List<QNode>()
         {
-            new QNode(type, mapId, 0, null),
-            new QNode(type, mapId, 255, null)
+            new QNode(type, mapId, 0, null, false),
+            new QNode(type, mapId, 255, null, false)
         });
         ((ContextActor)Context.Instance.contexts[Context.Mode.ACTOR]).Clear();
         Context.Instance.SetMode(Context.Mode.NONE);
@@ -209,7 +234,7 @@ public class GamePlay : MonoBehaviour
                 if(context.selectedObj)
                 {
                     if(BuildingManager.Instance.objects[context.GetSelectedMapId()].actions.Count == 0)
-                        Updater.Instance.AddQ(ActionType.BUILDING_DESTROY, context.GetSelectedMapId(), context.GetSelectedBuildingId(), null);
+                        Updater.Instance.AddQ(ActionType.BUILDING_DESTROY, context.GetSelectedMapId(), context.GetSelectedBuildingId(), null, true);
                     else
                         Debug.Log("The Building has actions");
                 }
@@ -270,7 +295,7 @@ public class GamePlay : MonoBehaviour
             //actor에 대한 cost 처리
             int mapId = ((ContextCreatingActor)Context.Instance.contexts[Context.Mode.UI_ACTOR]).selectedMapId;
 
-            Updater.Instance.AddQ(ActionType.ACTOR_CREATE, mapId, id, null);
+            Updater.Instance.AddQ(ActionType.ACTOR_CREATE, mapId, id, null, false);
             Context.Instance.SetMode(Context.Mode.NONE);
             HideLayers();
         }

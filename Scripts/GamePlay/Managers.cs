@@ -115,7 +115,7 @@ public class MobManager
             {
                 new QNode(
                     meta.flyingHeight == 0 ? ActionType.MOB_MOVING : ActionType.MOB_FLYING, 
-                    -1, -1, null)
+                    -1, -1, null, false)
             };
         }
         else
@@ -151,7 +151,7 @@ public class MobManager
             if(cnts.ContainsKey(meta.mapId) && cnts[meta.mapId].ContainsKey(meta.id) && meta.max <= cnts[meta.mapId][meta.id])
                 continue;
 
-            Updater.Instance.AddQ(ActionType.MOB_CREATE, meta.mapId, meta.id, null);
+            Updater.Instance.AddQ(ActionType.MOB_CREATE, meta.mapId, meta.id, null, true);
         }
     }
     public void Update()
@@ -234,7 +234,7 @@ public class BuildingManager
         switch(q.type)
         {
             case ActionType.BUILDING_CREATE:
-                Construct(q.mapId, q.id);
+                Construct(q);
                 break;
             case ActionType.BUILDING_DESTROY:
                 Destroy(q.mapId);
@@ -244,15 +244,16 @@ public class BuildingManager
         }
     }
     
-    public void Construct(int mapId, int buildingId)
+    public void Construct(QNode q)
     {
         //화면 처리에 필요한 object 설정
         BuildingObject obj = new BuildingObject();
         //map에 설정 & prefab생성. environment object를 map에 적절히 assign해야 해서 mapmanager에서 처리함
-        obj.gameObject = MapManager.Instance.CreateBuilding(mapId, MetaManager.Instance.buildingInfo[buildingId].prefab); //건물의 a* cost는 -1. 지나가지 못함
+        obj.gameObject = MapManager.Instance.CreateBuilding(q.mapId, MetaManager.Instance.buildingInfo[q.id].prefab); //건물의 a* cost는 -1. 지나가지 못함
             
-        if(obj.Create(mapId, buildingId))
+        if(obj.Create(q.mapId, q.id))
         {
+            obj.actions.Add(new Action(ActionType.BUILDING_CREATE, q.immediately ? 0 : MetaManager.Instance.buildingInfo[q.id].buildTime, null));   
             objects[obj.mapId] = obj;
         }
     }

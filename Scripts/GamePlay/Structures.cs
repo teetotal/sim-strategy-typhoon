@@ -31,12 +31,6 @@ public class BuildingObject : Object
         this.mapId = mapId;
         this.id = id;
 
-        Action action = new Action();
-        action.type = ActionType.BUILDING_CREATE;
-        action.currentTime = 0;
-        action.totalTime = MetaManager.Instance.buildingInfo[this.id].buildTime;
-        actions.Add(action);
-
         //progress
         Vector3 pos = GetProgressPosition();
         progress = GameObject.Instantiate(Context.Instance.progressPrefab, pos, Quaternion.identity);
@@ -91,14 +85,16 @@ public struct QNode
     public ActionType type;
     public int mapId; //mapid
     public int id;
+    public bool immediately;
     public List<int> values;    //caller쪽과 protocol을 맞춰야 한다.
 
-    public QNode(ActionType type, int mapId, int id, List<int> values)
+    public QNode(ActionType type, int mapId, int id, List<int> values, bool immediately)
     {
         this.type = type;
         this.mapId = mapId;
         this.id = id;
         this.values = values;
+        this.immediately = immediately;
     }
 }
 /* --------------------------- */

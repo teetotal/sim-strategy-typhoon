@@ -38,7 +38,7 @@ public class ContextBuild : IContext
         //Debug.Log("[ContextBuild] OnTouchRelease");
         if(isAvailableChoice)
         {
-            Updater.Instance.AddQ(ActionType.BUILDING_CREATE, selectedMapId, selectedBuilding.id, null);
+            Updater.Instance.AddQ(ActionType.BUILDING_CREATE, selectedMapId, selectedBuilding.id, null, false);
             Context.Instance.SetMode(Context.Mode.NONE);
             Clear();
         }

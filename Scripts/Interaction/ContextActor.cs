@@ -99,7 +99,8 @@ public class ContextActor : IContext
                         meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
                         selectedMapId, 
                         target, 
-                        null);
+                        null,
+                        false);
                 }
             } 
             Context.Instance.SetMode(Context.Mode.NONE);

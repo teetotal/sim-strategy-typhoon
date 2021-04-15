@@ -3,6 +3,8 @@ using UnityEngine;
 using System;
 public class GameSystem
 {
+    public MarketStatus marketStatus;
+    public GameStatus gameStatus;
     private static readonly Lazy<GameSystem> hInstance = new Lazy<GameSystem>(() => new GameSystem());
     public static GameSystem Instance
     {
@@ -13,7 +15,12 @@ public class GameSystem
     protected GameSystem()
     {
     }
+    public void Init()
+    {
+        gameStatus = GameStatus.Load("map_played");
+        marketStatus = MarketStatus.Load("market_price");
 
+    }
     public void OnTargetingBuilding(Actor actor, int targetMapId)
     {
         Meta.Actor metaActor = MetaManager.Instance.actorInfo[actor.id];

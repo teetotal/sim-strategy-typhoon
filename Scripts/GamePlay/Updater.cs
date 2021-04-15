@@ -54,8 +54,8 @@ public class Updater
     }
 
     /* ---------------------------------------------------------------------------- */
-    public void AddQ(ActionType type, int mapId, int id, List<int> values)
+    public void AddQ(ActionType type, int mapId, int id, List<int> values, bool immediately)
     {
-        queue.Enqueue(new QNode(type, mapId, id, values));
+        queue.Enqueue(new QNode(type, mapId, id, values, immediately));
     }
 }

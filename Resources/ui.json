@@ -9,15 +9,39 @@
         {
             "_Name": "top",
             "_BGColor": [1, 1 , 1, 0],
-            "_From": {"x": 0, "y": 28},
+            "_From": {"x": 0, "y": 26},
             "_To": {"x": 0, "y": 29},
-            "_GridDim":{"x":12,"y":1},
+            "_GridDim":{"x":12,"y":4},
             "_Margin":{"x":10, "y":10},
             "_InnerMargin":{"x":0.0,"y":0},
             "_DrawGridLine": false,
             "_Objects":[
                 {
-                    "position":{"x":10,"y":0},
+                    "position":{"x":9,"y":3},
+                    "name":"resource1",
+                    "tag":"UI",
+                    "prefab": "text_title",
+                    "ui": true,
+                    "text": "100"
+                },
+                {
+                    "position":{"x":10,"y":3},
+                    "name":"resource2",
+                    "tag":"UI",
+                    "prefab": "text_title",
+                    "ui": true,
+                    "text": "90"
+                },
+                {
+                    "position":{"x":11,"y":3},
+                    "name":"resource3",
+                    "tag":"UI",
+                    "prefab": "text_title",
+                    "ui": true,
+                    "text": "80"
+                },
+                {
+                    "position":{"x":11,"y":1},
                     "name":"zoomin",
                     "tag":"UI",
                     "prefab": "button_default",
