@@ -90,9 +90,10 @@ public class ContextActor : IContext
             Meta.Actor meta = MetaManager.Instance.actorInfo[actor.id];
 
             int target = Util.GetIntFromGameObjectName(obj.name);
-            if(MetaManager.Instance.GetTag(obj.tag) == MetaManager.TAG.BOTTOM)
+            MetaManager.TAG tag = MetaManager.Instance.GetTag(obj.tag);
+
+            if(tag == MetaManager.TAG.BOTTOM)
             {
-                
                 if(target != selectedMapId && MapManager.Instance.IsEmptyMapId(target))
                 {
                     Updater.Instance.AddQ(
@@ -102,9 +103,13 @@ public class ContextActor : IContext
                         null,
                         false);
                 }
+                Context.Instance.SetMode(Context.Mode.NONE);
             } 
-            Context.Instance.SetMode(Context.Mode.NONE);
-            Context.Instance.onActorEvent(actor, obj.tag, target);
+            else
+            {
+                Context.Instance.SetMode(Context.Mode.NONE);
+                Context.Instance.onAction(selectedMapId, actor.id, tag, target);
+            }
         } 
         else
         {

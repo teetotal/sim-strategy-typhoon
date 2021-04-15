@@ -29,6 +29,7 @@ public abstract class Object
     //fn
     public abstract bool Create(int mapId, int id);
     public abstract void Update();
+    /*
     public void EnableUI(string text, GameObject top, GameObject bottom)
     {
         if(top)
@@ -58,6 +59,7 @@ public abstract class Object
             uiBottom = null;
         }
     }
+    */
     protected GameObject Instantiate(int mapId, int id, string prefab, MetaManager.TAG tag, bool flying)
     {
         Vector3 position = MapManager.Instance.GetVector3FromMapId(mapId);

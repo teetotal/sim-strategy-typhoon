@@ -34,6 +34,8 @@ public class Updater
         MobManager.Instance.Update();
         //mob regen
         MobManager.Instance.Regen();
+        //객체 선택 ui
+        SelectionUI.Instance.Update();
         //일정 주기로 update node resource
     }
 

@@ -13,15 +13,19 @@ public class Context
         ACTOR,
         MAX
     }
-    public delegate void OnActorEvent(Actor actor, string targetTag, int targetMapId);
-    public OnActorEvent onActorEvent;
+    public delegate void OnSelectionEvent(MetaManager.TAG tag, int mapId, int id);
+    public OnSelectionEvent onSelectEvent;
+    public delegate void OnAction(int mapId, int id, MetaManager.TAG targetTag, int targetMapId);
+    public OnAction onAction;
+    public delegate void OnCreationEvent(ActionType type, MetaManager.TAG tag, int mapId, int id);
+    public OnCreationEvent onCreationEvent;
+
     public Dictionary<Context.Mode, IContext> contexts;
     private static readonly Lazy<Context> hInstance = new Lazy<Context>(() => new Context());
     public Mode mode = Mode.NONE;
     public bool isInitialized = false;
     public Transform canvas;
     public GameObject greenPrefab, redPrefab, progressPrefab, titlePrefab;
-    public GameObject selectUIBuildingTop, selectUIBuildingBottom, selectUIActorTop, selectUIActorBottom;
     public static Context Instance
     {
         get {
@@ -58,28 +62,25 @@ public class Context
         contexts[mode].OnMove();
     }
     public void Init(
-                    OnActorEvent onActorEvent,
+                    OnCreationEvent onCreationEvent,
+                    OnSelectionEvent onSelectEvent,
+                    OnAction onAction,
                     ref Transform canvas, 
                     string progressPrefab, 
                     string titlePrefab, 
                     string greenCube, 
-                    string redCube, 
-                    GameObject selectUIBuildingTop,
-                    GameObject selectUIBuildingBottom,
-                    GameObject selectUIActorTop,
-                    GameObject selectUIActorBottom
+                    string redCube
                     )
     {
-        this.onActorEvent = onActorEvent;
+        this.onCreationEvent = onCreationEvent;
+        this.onSelectEvent = onSelectEvent;
+        this.onAction = onAction;
+
         this.canvas = canvas;
         this.progressPrefab = Resources.Load<GameObject>(progressPrefab);
         this.titlePrefab = Resources.Load<GameObject>(titlePrefab);
         this.greenPrefab = Resources.Load<GameObject>(greenCube);
         this.redPrefab = Resources.Load<GameObject>(redCube);
-        this.selectUIBuildingTop = selectUIBuildingTop;
-        this.selectUIBuildingBottom = selectUIBuildingBottom;
-        this.selectUIActorTop = selectUIActorTop;
-        this.selectUIActorBottom = selectUIActorBottom;
 
         //init
         foreach (KeyValuePair<Context.Mode, IContext> kv in contexts)

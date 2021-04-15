@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 public class GamePlay : MonoBehaviour
 {
-    public Camera camera;
     public Transform canvas;
     private GameObject buildingLayer, actorLayer;
 
@@ -17,7 +16,7 @@ public class GamePlay : MonoBehaviour
     {
         GameSystem.Instance.Init();
 
-        LoaderPerspective.Instance.SetUI(camera, ref canvas, OnClickButton);
+        LoaderPerspective.Instance.SetUI(Camera.main, ref canvas, OnClickButton);
         if(!LoaderPerspective.Instance.LoadJsonFile("ui"))
         {
             Debug.LogError("ui.json loading failure");
@@ -31,26 +30,7 @@ public class GamePlay : MonoBehaviour
             HideLayers();
         }
 
-        //UI
-        string[] arr = new string[4] {"select_ui_building", "select_ui_actor", "text_title", "text_title"};
-        GameObject[] objs = new GameObject[4];
-        for(int n = 0; n < arr.Length; n++)
-        {
-            objs[n] = GameObject.Instantiate(Resources.Load<GameObject>(arr[n]));
-            objs[n].transform.SetParent(canvas);
-        }
-
-        //for building
-        Button[] btns = objs[0].GetComponentsInChildren<Button>();
-        for(int n = 0; n < btns.Length; n++)
-        {
-            Button obj = btns[n];
-            obj.onClick.AddListener(()=>{ OnClickButton(obj.gameObject); });
-        }
-        
-        //for actor
-        Button btn = objs[1].GetComponentInChildren<Button>();
-        btn.onClick.AddListener(()=>{ OnClickButton(btn.gameObject);});
+        InitSelectionUI();
 
         //Load save game status
         foreach(KeyValuePair<int, GameStatus.Building> kv in GameSystem.Instance.gameStatus.buildingInfo)
@@ -64,23 +44,51 @@ public class GamePlay : MonoBehaviour
         }
         
         //Context
-        Context.Instance.Init( OnActorEvent,
+        Context.Instance.Init(  OnCreationEvent,
+                                OnSelected,
+                                OnAction,
                                 ref canvas, 
                                 "progress_default", 
                                 "text_default",
                                 "CubeGreen", 
-                                "CubeRed", 
-                                objs[2],
-                                objs[0],
-                                objs[3],
-                                objs[1]
+                                "CubeRed"
                                 );
+    }
+    void InitSelectionUI()
+    {
+        //UI
+        string[] arr = new string[4] {"text_title", "select_ui_building", "text_title", "select_ui_actor"};
+        GameObject[] uiObjs = new GameObject[4];
+        for(int n = 0; n < arr.Length; n++)
+        {
+            uiObjs[n] = GameObject.Instantiate(Resources.Load<GameObject>(arr[n]));
+            uiObjs[n].transform.SetParent(canvas);
+        }
+
+        //for building
+        Button[] btns = uiObjs[1].GetComponentsInChildren<Button>();
+        for(int n = 0; n < btns.Length; n++)
+        {
+            Button obj = btns[n];
+            obj.onClick.AddListener(()=>{ OnClickButton(obj.gameObject); });
+        }
+        
+        //for actor
+        Button btn = uiObjs[3].GetComponentInChildren<Button>();
+        btn.onClick.AddListener(()=>{ OnClickButton(btn.gameObject);});
+
+        SelectionUI.Instance.Init(
+            new List<SelectionUI.UI>(){
+                new SelectionUI.UI(MetaManager.TAG.BUILDING, uiObjs[0], uiObjs[1]),
+                new SelectionUI.UI(MetaManager.TAG.ACTOR, uiObjs[2], uiObjs[3]),
+                new SelectionUI.UI(MetaManager.TAG.MOB, uiObjs[2], null)
+            }
+        );
     }
     void HideLayers()
     {
         buildingLayer.SetActive(false);
         actorLayer.SetActive(false);
-
         
         GameObject.DestroyImmediate(actor_scrollview);
     }
@@ -149,6 +157,122 @@ public class GamePlay : MonoBehaviour
     /*
         OnClick 처리
     */
+    void OnClickButton(GameObject obj)
+    {
+        //Debug.Log(string.Format("OnClick {0}, {1}", obj.name, Context.Instance.mode));
+        string name = Util.GetObjectName(obj);
+        switch(Context.Instance.mode)
+        {
+            case Context.Mode.NONE:
+                OnClick_NONE(obj, name);
+                break;
+            case Context.Mode.UI_BUILD:
+                OnClick_UI_BUILD(obj, name);
+                break;
+            case Context.Mode.UI_ACTOR:
+                OnClick_UI_ACTOR(obj, name);
+                break;
+            case Context.Mode.ACTOR:
+                OnClick_ACTOR(obj, name);
+                break;
+            default:
+                break;
+        }
+    }
+
+    void OnClick_NONE(GameObject obj, string name)
+    {
+        ContextNone context = (ContextNone)Context.Instance.contexts[Context.Mode.NONE];
+        switch(name)
+        {
+            case "btn_building":
+                buildingLayer.SetActive(true);
+                Context.Instance.SetMode(Context.Mode.UI_BUILD);
+                break;
+            case "zoomin":
+                if(Camera.main.fieldOfView > 5)
+                    Camera.main.fieldOfView -= 5;
+                break;
+            case "zoomout":
+                if(Camera.main.fieldOfView < 25)
+                    Camera.main.fieldOfView += 5;
+                break;
+            case "buttonX":
+                if(SelectionUI.Instance.selectedObject != null)
+                {
+                    int mapId = SelectionUI.Instance.GetSelectedMapId();
+                    if(BuildingManager.Instance.objects[mapId].actions.Count == 0)
+                        Updater.Instance.AddQ(ActionType.BUILDING_DESTROY, mapId, -1, null, true);
+                    else
+                        Debug.Log("The Building has actions");
+                }
+                SelectionUI.Instance.Hide();
+                break;
+            case "buttonR":
+                if(SelectionUI.Instance.selectedObject != null)
+                {
+                    Vector3 angles = SelectionUI.Instance.selectedObject.transform.localEulerAngles;
+                    SelectionUI.Instance.selectedObject .transform.localEulerAngles = new Vector3(angles.x, angles.y + 90, angles.z);
+                }
+                SelectionUI.Instance.Hide();
+                break;
+            case "buttonB":
+                {
+                    int mapId = SelectionUI.Instance.GetSelectedMapId();
+                    if(mapId != -1)
+                    {
+                        int buildingId = BuildingManager.Instance.objects[mapId].id;
+                        OnClickForCreatingActor(mapId, buildingId);
+                    }
+                    SelectionUI.Instance.Hide();
+                }
+                break;
+            
+            default:
+                break;
+        }
+    }
+    void OnClick_ACTOR(GameObject obj, string name)
+    {
+        switch(name)
+        {
+            case "buttonU":
+                if(SelectionUI.Instance.selectedObject != null)
+                {
+                    int mapId = SelectionUI.Instance.GetSelectedMapId();
+                    int actorId = ActorManager.Instance.actors[mapId].id;
+                    OnClickForUpgradingActor(mapId, actorId);
+                }
+                break;
+        }
+    }
+    void OnClick_UI_BUILD(GameObject obj, string name)
+    {
+        string[] arr = name.Split('-');
+        if(arr.Length >= 2 && arr[0] == "building")
+        {
+            int id = int.Parse(arr[1]);
+            Context.Instance.SetMode(Context.Mode.BUILD);
+            ((ContextBuild)Context.Instance.contexts[Context.Mode.BUILD]).SetBuildingId(id);
+            HideLayers();
+        }
+    }
+
+    void OnClick_UI_ACTOR(GameObject obj, string name)
+    {
+        string[] arr = name.Split('-');
+        if(arr.Length >= 2 && arr[0] == "actor")
+        {
+            int id = int.Parse(arr[1]);
+            //actor에 대한 cost 처리
+            int mapId = ((ContextCreatingActor)Context.Instance.contexts[Context.Mode.UI_ACTOR]).selectedMapId;
+
+            Updater.Instance.AddQ(ActionType.ACTOR_CREATE, mapId, id, null, false);
+            Context.Instance.SetMode(Context.Mode.NONE);
+            HideLayers();
+        }
+    }
+    
     void OnClickForCreatingActor(int mapId, int buildingId)
     {
         if(actorLayer.activeSelf == true)
@@ -190,139 +314,49 @@ public class GamePlay : MonoBehaviour
         ((ContextActor)Context.Instance.contexts[Context.Mode.ACTOR]).Clear();
         Context.Instance.SetMode(Context.Mode.NONE);
     }
-    void OnClickButton(GameObject obj)
-    {
-        Debug.Log(string.Format("OnClick {0}, {1}", obj.name, Context.Instance.mode));
-        string name = obj.name.Replace("(Clone)", "");
-        switch(Context.Instance.mode)
-        {
-            case Context.Mode.NONE:
-                OnClick_NONE(obj, name);
-                break;
-            case Context.Mode.UI_BUILD:
-                OnClick_UI_BUILD(obj, name);
-                break;
-            case Context.Mode.UI_ACTOR:
-                OnClick_UI_ACTOR(obj, name);
-                break;
-            case Context.Mode.ACTOR:
-                OnClick_ACTOR(obj, name);
-                break;
-            default:
-                break;
-        }
-    }
 
-    void OnClick_NONE(GameObject obj, string name)
+    // 모든 선택 이벤트 통합.
+    void OnSelected(MetaManager.TAG tag, int mapId, int id)
     {
-        ContextNone context = (ContextNone)Context.Instance.contexts[Context.Mode.NONE];
-        switch(name)
+        //Debug.Log(string.Format("OnSelected {0} {1} {2}", tag, mapId, id));
+        GameObject gameObject = null;
+        string[] sz = new string[1];
+        switch(tag)
         {
-            case "btn_building":
-                buildingLayer.SetActive(true);
-                Context.Instance.SetMode(Context.Mode.UI_BUILD);
+            case MetaManager.TAG.BUILDING:
+                gameObject = BuildingManager.Instance.objects[mapId].gameObject;
+                sz[0] = MetaManager.Instance.buildingInfo[id].name;
                 break;
-            case "zoomin":
-                if(Camera.main.fieldOfView > 5)
-                    Camera.main.fieldOfView -= 5;
+            case MetaManager.TAG.ACTOR:
+                gameObject = ActorManager.Instance.actors[mapId].gameObject;
+                sz[0] = MetaManager.Instance.actorInfo[id].name;
                 break;
-            case "zoomout":
-                if(Camera.main.fieldOfView < 25)
-                    Camera.main.fieldOfView += 5;
+            case MetaManager.TAG.MOB:
+                gameObject = MobManager.Instance.mobs[mapId].gameObject;
+                sz[0] = MetaManager.Instance.mobInfo[id].name;
                 break;
-            case "buttonX":
-                if(context.selectedObj)
-                {
-                    if(BuildingManager.Instance.objects[context.GetSelectedMapId()].actions.Count == 0)
-                        Updater.Instance.AddQ(ActionType.BUILDING_DESTROY, context.GetSelectedMapId(), context.GetSelectedBuildingId(), null, true);
-                    else
-                        Debug.Log("The Building has actions");
-                }
-                break;
-            case "buttonR":
-                if(context.selectedObj)
-                {
-                    Vector3 angles = context.selectedObj.transform.localEulerAngles;
-                    context.selectedObj.transform.localEulerAngles = new Vector3(angles.x, angles.y + 90, angles.z);
-                }
-                break;
-            case "buttonB":
-                if(context.selectedObj)
-                {
-                    int mapId = context.GetSelectedMapId();
-                    int buildingId = context.GetSelectedBuildingId();
-                    OnClickForCreatingActor(mapId, buildingId);
-                }
-                break;
-            
-            default:
+        }
+        SelectionUI.Instance.Activate(tag, gameObject, sz);
+    }
+    //모든 행동 이벤트
+    void OnAction(int mapId, int id, MetaManager.TAG tag, int targetMapId)
+    {
+        switch(tag)
+        {
+            case MetaManager.TAG.BUILDING:
+                GameStatus.Building building = GameSystem.Instance.gameStatus.buildingInfo[targetMapId];
+                Debug.Log(string.Format("tribe {0}, {1}", building.tribeId, building.buildingId));
                 break;
         }
     }
-    void OnClick_ACTOR(GameObject obj, string name)
+    //생성, 소멸등의 이벤트
+    void OnCreationEvent(ActionType type, MetaManager.TAG tag, int mapId, int id)
     {
-        ContextNone context = (ContextNone)Context.Instance.contexts[Context.Mode.NONE];
-        switch(name)
-        {
-            case "buttonU":
-                if(context.selectedObj)
-                {
-                    int mapId = context.GetSelectedMapId();
-                    int actorId = context.GetSelectedActorId();
-                    OnClickForUpgradingActor(mapId, actorId);
-                }
-                break;
-        }
-    }
-    void OnClick_UI_BUILD(GameObject obj, string name)
-    {
-        string[] arr = name.Split('-');
-        if(arr.Length >= 2 && arr[0] == "building")
-        {
-            int id = int.Parse(arr[1]);
-            Context.Instance.SetMode(Context.Mode.BUILD);
-            ((ContextBuild)Context.Instance.contexts[Context.Mode.BUILD]).SetBuildingId(id);
-            HideLayers();
-        }
-    }
-
-    void OnClick_UI_ACTOR(GameObject obj, string name)
-    {
-        string[] arr = name.Split('-');
-        if(arr.Length >= 2 && arr[0] == "actor")
-        {
-            int id = int.Parse(arr[1]);
-            //actor에 대한 cost 처리
-            int mapId = ((ContextCreatingActor)Context.Instance.contexts[Context.Mode.UI_ACTOR]).selectedMapId;
-
-            Updater.Instance.AddQ(ActionType.ACTOR_CREATE, mapId, id, null, false);
-            Context.Instance.SetMode(Context.Mode.NONE);
-            HideLayers();
-        }
-    }
-    void OnActorEvent(Actor actor, string targetTag, int targetMapId)
-    {
-        //Debug.Log(string.Format("OnActorEvent {0} -> {1}, {2}", actor.mapId, targetTag, targetMapId));
-        switch(targetTag)
-        {
-            case "Environment":
-            break;
-            case "Building":
-            GameSystem.Instance.OnTargetingBuilding(actor, targetMapId);
-            break;
-            case "Actor":
-            break;
-            case "Mob":
-            break;
-            case "Bottom":
-            break;
-            default:
-            break;
-        }
+        Debug.Log(string.Format("OnCreationEvent {0}, {1}, {2}, {3}", type, tag, mapId, id));
+        //game system과 연결 시켜 줘야함
     }
 
     // UI canceling
-    
     void Update()
     {
         if(Input.GetMouseButtonUp(0))

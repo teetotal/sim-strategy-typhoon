@@ -5,7 +5,7 @@ public enum BuildingType
     MARKET,
     MAX
 }
-public enum ActionType : int
+public enum ActionType
 {
     BUILDING_CREATE = 0,
     BUILDING_DESTROY,
@@ -25,3 +25,5 @@ public enum ActionType : int
     MOB_MAX,
     MAX,
 }
+
+

@@ -15,10 +15,12 @@ public class ContextNone : IContext
     }
     public void Reset()
     {
+        /*
         Context.Instance.selectUIActorTop.SetActive(false);
         Context.Instance.selectUIActorBottom.SetActive(false);
         Context.Instance.selectUIBuildingTop.SetActive(false);
         Context.Instance.selectUIBuildingBottom.SetActive(false);
+        */
 
         selectedObj = null;
     }
@@ -41,21 +43,36 @@ public class ContextNone : IContext
     
     public void OnTouchRelease()
     {
-        GameObject obj = Touch.Instance.GetTouchedObject3D();
-        if(obj)
+        selectedObj = Touch.Instance.GetTouchedObject3D();
+        if(selectedObj)
         {
+            MetaManager.TAG tag = MetaManager.Instance.GetTag(selectedObj.tag);
+            int mapId = GetSelectedMapId(); 
+            int id = -1;
             //Debug.Log(string.Format("{0} - {1}", obj.tag, obj.name));
-            switch(MetaManager.Instance.GetTag(obj.tag))
+            switch(tag)
             {
                 case MetaManager.TAG.BUILDING:
-                case MetaManager.TAG.ACTOR:
-                    selectedObj = obj;
-                    SetUI();
+                    id = GetSelectedBuildingId();
                     break;
-                default:
-                    Reset();
+                case MetaManager.TAG.ACTOR:
+                    id = GetSelectedActorId();
+                    Context.Instance.SetMode(Context.Mode.ACTOR);
+                    ((ContextActor)Context.Instance.contexts[Context.Mode.ACTOR]).SetSelectedActor(mapId);
+                    //SetUI();
+                    break;
+                case MetaManager.TAG.BOTTOM:
+                    id = mapId;
+                    break;
+                case MetaManager.TAG.MOB:
+                    id = GetSelectedMobId();
+                    break;
+                case MetaManager.TAG.ENVIRONMENT:
+                    //요거 처리해야함
                     break;
             }
+            Context.Instance.onSelectEvent(tag, mapId, id);
+            Reset();
         }
         else
         {
@@ -78,6 +95,7 @@ public class ContextNone : IContext
         posFirst = Touch.Instance.GetTouchedPosition();
     }
     //---------------------
+    /*
     private void SetUI()
     {
         int mapId = GetSelectedMapId();
@@ -99,16 +117,21 @@ public class ContextNone : IContext
                 break;
         }
     }
-    public int GetSelectedMapId()
+    */
+    private int GetSelectedMapId()
     {
         return Util.GetIntFromGameObjectName(selectedObj.name);
     }
-    public int GetSelectedBuildingId()
+    private int GetSelectedBuildingId()
     {
         return BuildingManager.Instance.objects[GetSelectedMapId()].id;
     }
-    public int GetSelectedActorId()
+    private int GetSelectedActorId()
     {
         return ActorManager.Instance.actors[GetSelectedMapId()].id;
+    }
+    private int GetSelectedMobId()
+    {
+        return MobManager.Instance.mobs[GetSelectedMapId()].id;
     }
 }

@@ -117,6 +117,7 @@ public class MobManager
                     meta.flyingHeight == 0 ? ActionType.MOB_MOVING : ActionType.MOB_FLYING, 
                     -1, -1, null, false)
             };
+            Context.Instance.onCreationEvent(q.type, MetaManager.TAG.MOB, obj.mapId, obj.id);
         }
         else
         {
@@ -194,8 +195,13 @@ public class ActorManager
                 actors[obj.mapId] = obj;
 
             mapId = obj.mapId; // 빈 공간으로 생성시킨다.
+            actors[mapId].AddAction(q);
+            Context.Instance.onCreationEvent(q.type, MetaManager.TAG.ACTOR, obj.mapId, obj.id);
         }
-        actors[mapId].AddAction(q);
+        else
+        {
+            actors[mapId].AddAction(q);
+        }
     }
     
     public void Update()
@@ -242,6 +248,7 @@ public class BuildingManager
             default:
                 return;
         }
+        Context.Instance.onCreationEvent(q.type, MetaManager.TAG.BUILDING, q.mapId, q.id);
     }
     
     public void Construct(QNode q)

@@ -17,6 +17,10 @@ public class Util
     {
         return int.Parse(name.Replace("(Clone)", ""));
     }
+    public static string GetObjectName(GameObject obj)
+    {
+        return obj.name.Replace("(Clone)", "");
+    }
 
     public static bool Random(int probability)
     {
