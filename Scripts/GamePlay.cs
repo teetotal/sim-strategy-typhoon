@@ -89,7 +89,7 @@ public class GamePlay : MonoBehaviour
     {
         buildingLayer.SetActive(false);
         actorLayer.SetActive(false);
-        
+
         GameObject.DestroyImmediate(actor_scrollview);
     }
     /*
@@ -341,13 +341,15 @@ public class GamePlay : MonoBehaviour
     //모든 행동 이벤트
     void OnAction(int mapId, int id, MetaManager.TAG tag, int targetMapId)
     {
+        Debug.Log(string.Format("OnAction {0}, {1}, {2}, {3}", mapId, id, tag, targetMapId));
         switch(tag)
         {
             case MetaManager.TAG.BUILDING:
                 GameStatus.Building building = GameSystem.Instance.gameStatus.buildingInfo[targetMapId];
-                Debug.Log(string.Format("tribe {0}, {1}", building.tribeId, building.buildingId));
+                //Debug.Log(string.Format("tribe {0}, {1}", building.tribeId, building.buildingId));
                 break;
         }
+        SelectionUI.Instance.Hide();
     }
     //생성, 소멸등의 이벤트
     void OnCreationEvent(ActionType type, MetaManager.TAG tag, int mapId, int id)
