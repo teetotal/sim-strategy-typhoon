@@ -37,6 +37,13 @@ public class Map
         public int mapId;
         public int max;
     }
+    [Serializable]
+    public struct Neutral
+    {
+        public int id;
+        public int mapId;
+        public int rotation;
+    }
 
     public List<Prefab> prefabs;
     public Vector3Int grid;
@@ -44,6 +51,7 @@ public class Map
     public Value defaultVal;
     public List<Node> nodes;
     public List<Mob> mobs;
+    public List<Neutral> neutrals;
 }
 
 public class MapManager
@@ -218,7 +226,7 @@ public class MapManager
                 GameObject defaultPrefab = Resources.Load<GameObject>(prefabInfo.name);
                 defaultPrefab = GameObject.Instantiate(defaultPrefab, new Vector3(j - startPosition.x, -0.1f, i - startPosition.y), Quaternion.identity);
                 defaultPrefab.name = idx++.ToString();
-                defaultPrefab.tag = MetaManager.Instance.GetTag(MetaManager.TAG.BOTTOM);
+                defaultPrefab.tag = MetaManager.Instance.GetTag(TAG.BOTTOM);
 
                 defaultGameObjects.Add(defaultPrefab);
 
@@ -227,6 +235,7 @@ public class MapManager
         }
 
         SetSpecificObject();
+        SetNeutrals();
     }
     private void SetSpecificObject()
     {
@@ -252,6 +261,14 @@ public class MapManager
             }
         }
     }
+    private void SetNeutrals()
+    {
+        for(int n = 0; n < mapMeta.neutrals.Count; n++)
+        {
+            Map.Neutral ne = mapMeta.neutrals[n];
+            Updater.Instance.AddQ(ActionType.NEUTRAL_CREATE, ne.mapId, ne.id, new List<int>() { ne.rotation }, true);
+        }
+    }
     public void DestroyBuilding(int mapId)
     {
         Vector2Int pos = GetMapPosition(mapId);
@@ -259,22 +276,26 @@ public class MapManager
         GameObject.DestroyImmediate(buildingObjects[mapId]);
         buildingObjects.Remove(mapId);
     }
+    public GameObject CreateNeutral(int id, string prefab)
+    {
+        return Construct(id, prefab, -1, TAG.NEUTRAL);
+    }
     public GameObject CreateBuilding(int id, string prefab)
     {
-        return Construct(id, prefab, -1, true);
+        return Construct(id, prefab, -1, TAG.BUILDING);
     }
     private GameObject CreateEnvironment(int id, string prefab, int mapCost)
     {
-        return Construct(id, prefab, mapCost, false);
+        return Construct(id, prefab, mapCost, TAG.ENVIRONMENT);
     }
-    private GameObject Construct(int id, string prefab, int mapCost, bool isBuilding)
+    private GameObject Construct(int id, string prefab, int mapCost, TAG tag)
     {
         GameObject parent = defaultGameObjects[id];
         Vector2Int position = GetMapPosition(id);
         map[position.x, position.y] = mapCost;
         GameObject obj = Resources.Load<GameObject>(prefab);
         obj = GameObject.Instantiate(obj, new Vector3(parent.transform.position.x, parent.transform.position.y + 0.1f, parent.transform.position.z), Quaternion.identity);
-        obj.tag = isBuilding ? MetaManager.Instance.GetTag(MetaManager.TAG.BUILDING) : MetaManager.Instance.GetTag(MetaManager.TAG.ENVIRONMENT);
+        obj.tag = MetaManager.Instance.GetTag(tag);
         obj.name = id.ToString();
         obj.transform.SetParent(parent.transform);
         if(buildingObjects.ContainsKey(id) == true)

@@ -1,11 +1,4 @@
 {
-    "neutral":
-    [
-        {
-            "mapId": 0,
-            "buildingId": 0
-        }
-    ],
     "tribes": [
         {
             "resources": [
@@ -26,6 +19,7 @@
                 {
                     "mapId": 0,
                     "buildingId": 0,
+                    "rotation": 0,
                     "actors": [
                         {
                             "mapId": 2,
@@ -36,6 +30,7 @@
                 {
                     "mapId": 10,
                     "buildingId": 0,
+                    "rotation": 0,
                     "actors": [
                         {
                             "mapId": 2,

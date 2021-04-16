@@ -6,21 +6,21 @@ using UnityEngine.UI;
 public class SelectionUI 
 {
     public GameObject selectedObject;
-    MetaManager.TAG selectedTag;
+    TAG selectedTag;
 
     public struct UI
     {
-        public MetaManager.TAG tag;
+        public TAG tag;
         public GameObject top;
         public GameObject bottom;  
-        public UI(MetaManager.TAG tag, GameObject top, GameObject bottom)
+        public UI(TAG tag, GameObject top, GameObject bottom)
         {
             this.tag = tag;
             this.top = top;
             this.bottom = bottom;
         }
     }
-    Dictionary<MetaManager.TAG, UI> uiInfo = new Dictionary<MetaManager.TAG, UI>();
+    Dictionary<TAG, UI> uiInfo = new Dictionary<TAG, UI>();
     
     private static readonly Lazy<SelectionUI> hInstance = new Lazy<SelectionUI>(() => new SelectionUI());
     public static SelectionUI Instance
@@ -41,7 +41,7 @@ public class SelectionUI
         Hide();
     }
 
-    public void Activate(MetaManager.TAG tag, GameObject obj, string[] topTexts = null, string[] bottomTexts = null)
+    public void Activate(TAG tag, GameObject obj, string[] topTexts = null, string[] bottomTexts = null)
     {
         Hide();
 
@@ -78,7 +78,7 @@ public class SelectionUI
     public void Hide()
     {
         selectedObject = null;
-        foreach(KeyValuePair<MetaManager.TAG, UI> kv in uiInfo)
+        foreach(KeyValuePair<TAG, UI> kv in uiInfo)
         {
             if(kv.Value.top != null)
                 kv.Value.top.SetActive(false);

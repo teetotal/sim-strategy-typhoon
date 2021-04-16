@@ -1,3 +1,13 @@
+public enum TAG
+{
+    BOTTOM = 0,
+    ENVIRONMENT,
+    BUILDING,
+    ACTOR,
+    MOB,
+    NEUTRAL,
+    MAX
+}
 public enum BuildingType
 {
     FACTORY = 0,
@@ -23,6 +33,11 @@ public enum ActionType
     MOB_FLYING,
     MOB_ATTACK,
     MOB_MAX,
+
+    NEUTRAL_CREATE,
+    NEUTRAL_DESTROY,
+    NEUTRAL_UPGRADE,
+    NEUTRAL_MAX,
     MAX,
 }
 

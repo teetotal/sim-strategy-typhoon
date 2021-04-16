@@ -73,11 +73,23 @@ public class Meta
         public List<ResourceIdAmount> output;
         public List<ActorIdMax> actors;
     }
+    [Serializable]
+    public struct Neutral
+    {
+        public int type;
+        public int id;
+        public string name;
+        public string prefab;
+        public int level;
+        public Vector2Int dimension;
+        public List<ActorIdMax> actors;
+    }
 
     public List<string> tags;
     public List<IdName> resources;
     public List<Mob> mobs;
     public List<Actor> actors;
     public List<Building> buildings;
+    public List<Neutral> neutrals;
 }
 

@@ -63,7 +63,7 @@ public class Actor : ActingObject
         
         Meta.Actor actor = MetaManager.Instance.actorInfo[id];
         //prefab 생성
-        this.Instantiate(mapId, id, actor.prefab, MetaManager.TAG.ACTOR, actor.flying);
+        this.Instantiate(mapId, id, actor.prefab, TAG.ACTOR, actor.flying);
 
         //progress
         progress = GameObject.Instantiate(Context.Instance.progressPrefab, GetProgressPosition(), Quaternion.identity);

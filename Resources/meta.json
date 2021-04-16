@@ -4,7 +4,8 @@
         "Environment",
         "Building",
         "Actor",
-        "Mob"
+        "Mob",
+        "Neutral"
     ],
     "resources": [
         {
@@ -589,21 +590,6 @@
             "actors": []
         },
         {
-            "id": 14,
-            "type": 2,
-            "name": "시장",
-            "prefab": "Bank",
-            "level": 1,
-            "dimension": {
-                "x": 1,
-                "y": 1
-            },
-            "buildTime": 1,
-            "costs": [],
-            "output": [],
-            "actors": []
-        },
-        {
             "id": 15,
             "type": 1,
             "name": "불타는 모닥불",
@@ -622,9 +608,23 @@
             ],
             "output": [],
             "actors": []
+        }
+    ],
+    "neutrals": [
+        {
+            "id": 0,
+            "type": 2,
+            "name": "시장",
+            "prefab": "Bank",
+            "level": 1,
+            "dimension": {
+                "x": 1,
+                "y": 1
+            },
+            "actors": []
         },
         {
-            "id": 16,
+            "id": 1,
             "type": 2,
             "name": "파란성",
             "prefab": "ForestCastle_Blue",
@@ -633,18 +633,10 @@
                 "x": 1,
                 "y": 1
             },
-            "buildTime": 10,
-            "costs": [
-                {
-                    "resourceId": 3,
-                    "amount": 1
-                }
-            ],
-            "output": [],
             "actors": []
         },
         {
-            "id": 17,
+            "id": 2,
             "type": 2,
             "name": "빨간성",
             "prefab": "ForestCastle_Red",
@@ -653,14 +645,6 @@
                 "x": 1,
                 "y": 1
             },
-            "buildTime": 10,
-            "costs": [
-                {
-                    "resourceId": 3,
-                    "amount": 1
-                }
-            ],
-            "output": [],
             "actors": []
         }
     ]

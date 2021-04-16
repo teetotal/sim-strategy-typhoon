@@ -25,42 +25,12 @@ public abstract class Object
     public int id;
     public int level;
     public List<Action> actions = new List<Action>(); //현재 겪고 있는 액션 리스트.
-    public GameObject progress, uiTop, uiBottom;
+    public GameObject progress; 
     //fn
     public abstract bool Create(int mapId, int id);
     public abstract void Update();
-    /*
-    public void EnableUI(string text, GameObject top, GameObject bottom)
-    {
-        if(top)
-        {
-            uiTop = top;
-            uiTop.SetActive(true);
-            uiTop.GetComponentInChildren<Text>().text = text;
-        }
-
-        if(bottom)
-        {
-            uiBottom = bottom;
-            uiBottom.SetActive(true);
-        }
-    }
-    public void DisableUI()
-    {
-        if(uiTop)
-        {
-            uiTop.SetActive(false);
-            uiTop = null;
-        }
-
-        if(uiBottom)
-        {
-            uiBottom.SetActive(false);
-            uiBottom = null;
-        }
-    }
-    */
-    protected GameObject Instantiate(int mapId, int id, string prefab, MetaManager.TAG tag, bool flying)
+    
+    protected GameObject Instantiate(int mapId, int id, string prefab, TAG tag, bool flying)
     {
         Vector3 position = MapManager.Instance.GetVector3FromMapId(mapId);
         GameObject obj = Resources.Load<GameObject>(prefab);
@@ -134,32 +104,10 @@ public abstract class Object
     */
     public void UpdateUIPosition()
     {
-        if(uiTop != null)
-        {
-            if(uiTop.activeSelf)
-            {
-                Vector3 pos = gameObject.transform.position + new Vector3(0, 0.5f, 0);
-                uiTop.transform.position = Camera.main.WorldToScreenPoint(pos);
-            }
-            else
-                uiTop = null;
-        } 
-        if(uiBottom != null)
-        {
-            if(uiBottom.activeSelf)
-            {
-                //title과 버튼의 위치를 객체의 크기에 맞춰서 싱크해 줘야 함
-                uiBottom.transform.position = Camera.main.WorldToScreenPoint(gameObject.transform.position + new Vector3(0, -0.5f, 0));
-            }
-            else
-                uiBottom = null;
-        } 
-
         if(progress != null) //progress
         {
             progress.transform.position = GetProgressPosition(); //position
         }
-        
     }
     
     protected void RemoveActions(List<int> removeActionIds)

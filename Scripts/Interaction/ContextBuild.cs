@@ -20,7 +20,7 @@ public class ContextBuild : IContext
     public void OnMove()
     {
         GameObject obj = Touch.Instance.GetTouchedObject3D();
-        if(obj != null && obj.tag == MetaManager.Instance.GetTag(MetaManager.TAG.BOTTOM))
+        if(obj != null && obj.tag == MetaManager.Instance.GetTag(TAG.BOTTOM))
         {
             Clear();
             selectedMapId = Util.GetIntFromGameObjectName(obj.name);

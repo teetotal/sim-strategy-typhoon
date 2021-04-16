@@ -52,7 +52,7 @@ public class ContextActor : IContext
     public void OnMove()
     {
         GameObject obj = Touch.Instance.GetTouchedObject3D();
-        if(obj != null && obj.tag == MetaManager.Instance.GetTag(MetaManager.TAG.BOTTOM))
+        if(obj != null && obj.tag == MetaManager.Instance.GetTag(TAG.BOTTOM))
         {
             Clear();
             int id = Util.GetIntFromGameObjectName(obj.name);
@@ -90,9 +90,9 @@ public class ContextActor : IContext
             Meta.Actor meta = MetaManager.Instance.actorInfo[actor.id];
 
             int target = Util.GetIntFromGameObjectName(obj.name);
-            MetaManager.TAG tag = MetaManager.Instance.GetTag(obj.tag);
+            TAG tag = MetaManager.Instance.GetTag(obj.tag);
 
-            if(tag == MetaManager.TAG.BOTTOM)
+            if(tag == TAG.BOTTOM)
             {
                 if(target != selectedMapId && MapManager.Instance.IsEmptyMapId(target))
                 {

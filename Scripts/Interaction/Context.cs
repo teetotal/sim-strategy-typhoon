@@ -13,11 +13,11 @@ public class Context
         ACTOR,
         MAX
     }
-    public delegate void OnSelectionEvent(MetaManager.TAG tag, int mapId, int id);
+    public delegate void OnSelectionEvent(TAG tag, int mapId, int id, GameObject gameObject);
     public OnSelectionEvent onSelectEvent;
-    public delegate void OnAction(int mapId, int id, MetaManager.TAG targetTag, int targetMapId);
+    public delegate void OnAction(int mapId, int id, TAG targetTag, int targetMapId);
     public OnAction onAction;
-    public delegate void OnCreationEvent(ActionType type, MetaManager.TAG tag, int mapId, int id);
+    public delegate void OnCreationEvent(ActionType type, TAG tag, int mapId, int id);
     public OnCreationEvent onCreationEvent;
 
     public Dictionary<Context.Mode, IContext> contexts;

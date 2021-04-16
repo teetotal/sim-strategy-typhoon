@@ -31,4 +31,21 @@ public class Util
 
         return false;
     }
+    public static string GetNameInGame(TAG tag, int id)
+    {
+       
+        switch(tag)
+        {
+            case TAG.BUILDING:
+                return MetaManager.Instance.buildingInfo[id].name;
+            case TAG.ACTOR:
+                return MetaManager.Instance.actorInfo[id].name;
+            case TAG.MOB:
+                return MetaManager.Instance.mobInfo[id].name;
+            case TAG.NEUTRAL:
+                return MetaManager.Instance.neutralInfo[id].name;
+        }
+
+        return string.Empty;
+    }
 }

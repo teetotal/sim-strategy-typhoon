@@ -4,19 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 public class MetaManager
 {
-    public enum TAG
-    {
-        BOTTOM = 0,
-        ENVIRONMENT,
-        BUILDING,
-        ACTOR,
-        MOB,
-        MAX
-    }
     public Meta meta;
     public Dictionary<int, Meta.Building> buildingInfo = new Dictionary<int, Meta.Building>(); // 빌딩 정보
     public Dictionary<int, Meta.Actor> actorInfo = new Dictionary<int, Meta.Actor>(); // actor 정보
     public Dictionary<int, Meta.Mob> mobInfo = new Dictionary<int, Meta.Mob>(); // mob 정보
+    public Dictionary<int, Meta.Neutral> neutralInfo = new Dictionary<int, Meta.Neutral>(); // 중립 건물 정보
     public Dictionary<int, string> resourceInfo = new Dictionary<int, string>();         
     private static readonly Lazy<MetaManager> hInstance = new Lazy<MetaManager>(() => new MetaManager());
  
@@ -56,6 +48,12 @@ public class MetaManager
         {
             Meta.IdName r = meta.resources[n];
             resourceInfo[r.id] = r.name;
+        }
+        //neutralInfo
+        for(int n = 0; n < meta.neutrals.Count; n++)
+        {
+            Meta.Neutral nu = meta.neutrals[n];
+            neutralInfo[nu.id] = nu;
         }
     }
     public string GetTag(TAG tag)
@@ -117,7 +115,7 @@ public class MobManager
                     meta.flyingHeight == 0 ? ActionType.MOB_MOVING : ActionType.MOB_FLYING, 
                     -1, -1, null, false)
             };
-            Context.Instance.onCreationEvent(q.type, MetaManager.TAG.MOB, obj.mapId, obj.id);
+            Context.Instance.onCreationEvent(q.type, TAG.MOB, obj.mapId, obj.id);
         }
         else
         {
@@ -196,7 +194,7 @@ public class ActorManager
 
             mapId = obj.mapId; // 빈 공간으로 생성시킨다.
             actors[mapId].AddAction(q);
-            Context.Instance.onCreationEvent(q.type, MetaManager.TAG.ACTOR, obj.mapId, obj.id);
+            Context.Instance.onCreationEvent(q.type, TAG.ACTOR, obj.mapId, obj.id);
         }
         else
         {
@@ -248,7 +246,7 @@ public class BuildingManager
             default:
                 return;
         }
-        Context.Instance.onCreationEvent(q.type, MetaManager.TAG.BUILDING, q.mapId, q.id);
+        Context.Instance.onCreationEvent(q.type, TAG.BUILDING, q.mapId, q.id);
     }
     
     public void Construct(QNode q)
@@ -262,6 +260,12 @@ public class BuildingManager
         {
             obj.actions.Add(new Action(ActionType.BUILDING_CREATE, q.immediately ? 0 : MetaManager.Instance.buildingInfo[q.id].buildTime, null));   
             objects[obj.mapId] = obj;
+
+            //roatation
+            if(q.values != null && q.values.Count == 1)
+            {
+                obj.gameObject.transform.localEulerAngles += new Vector3(0, q.values[0], 0);
+            }
         }
     }
     public void Destroy(int mapId)
@@ -272,6 +276,72 @@ public class BuildingManager
     public void Update()
     {
         foreach(KeyValuePair<int, BuildingObject> kv in objects)
+        {
+            kv.Value.Update();
+            kv.Value.UpdateUIPosition();
+        }
+    }
+}
+
+
+public class NeutralManager
+{
+    public Dictionary<int, NeutralBuilding> objects = new Dictionary<int, NeutralBuilding>();
+    private static readonly Lazy<NeutralManager> hInstance = new Lazy<NeutralManager>(() => new NeutralManager());
+    
+    public static NeutralManager Instance
+    {
+        get {
+            return hInstance.Value;
+        } 
+    }
+    protected NeutralManager()
+    {
+    }
+
+    public void Fetch(QNode q)
+    {
+        switch(q.type)
+        {
+            case ActionType.NEUTRAL_CREATE:
+                Construct(q);
+                break;
+            case ActionType.NEUTRAL_DESTROY:
+                Destroy(q.mapId);
+                break;
+            default:
+                return;
+        }
+        Context.Instance.onCreationEvent(q.type, TAG.NEUTRAL, q.mapId, q.id);
+    }
+    
+    public void Construct(QNode q)
+    {
+        //화면 처리에 필요한 object 설정
+        NeutralBuilding obj = new NeutralBuilding();
+        //map에 설정 & prefab생성. environment object를 map에 적절히 assign해야 해서 mapmanager에서 처리함
+        obj.gameObject = MapManager.Instance.CreateNeutral(q.mapId, MetaManager.Instance.neutralInfo[q.id].prefab); //건물의 a* cost는 -1. 지나가지 못함
+            
+        if(obj.Create(q.mapId, q.id))
+        {
+            obj.actions.Add(new Action(ActionType.NEUTRAL_CREATE, 0, null));   
+            objects[obj.mapId] = obj;
+
+            //roatation
+            if(q.values != null && q.values.Count == 1)
+            {
+                obj.gameObject.transform.localEulerAngles += new Vector3(0, q.values[0], 0);
+            }
+        }
+    }
+    public void Destroy(int mapId)
+    {
+        MapManager.Instance.DestroyBuilding(mapId);
+        objects.Remove(mapId);
+    }
+    public void Update()
+    {
+        foreach(KeyValuePair<int, NeutralBuilding> kv in objects)
         {
             kv.Value.Update();
             kv.Value.UpdateUIPosition();

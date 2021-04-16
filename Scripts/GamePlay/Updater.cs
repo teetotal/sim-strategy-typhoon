@@ -53,6 +53,10 @@ public class Updater
         {
             MobManager.Instance.Fetch(q);
         }
+        else if(q.type < ActionType.NEUTRAL_MAX)
+        {
+            NeutralManager.Instance.Fetch(q);
+        }
     }
 
     /* ---------------------------------------------------------------------------- */

@@ -31,18 +31,8 @@ public class GamePlay : MonoBehaviour
         }
 
         InitSelectionUI();
-
-        //Load save game status
-        foreach(KeyValuePair<int, GameStatus.Building> kv in GameSystem.Instance.gameStatus.buildingInfo)
-        {
-            Updater.Instance.AddQ(ActionType.BUILDING_CREATE, kv.Key, kv.Value.buildingId, null, true);
-            for(int n = 0; n < kv.Value.actors.Count; n++)
-            {
-                GameStatus.MapIdActorId p = kv.Value.actors[n];
-                Updater.Instance.AddQ(ActionType.ACTOR_CREATE, p.mapId, p.actorId, null, true);
-            }
-        }
-        
+        LoadSavedPlay();
+    
         //Context
         Context.Instance.Init(  OnCreationEvent,
                                 OnSelected,
@@ -53,6 +43,19 @@ public class GamePlay : MonoBehaviour
                                 "CubeGreen", 
                                 "CubeRed"
                                 );
+    }
+    void LoadSavedPlay()
+    {
+        //Load save game status
+        foreach(KeyValuePair<int, GameStatus.Building> kv in GameSystem.Instance.gameStatus.buildingInfo)
+        {
+            Updater.Instance.AddQ(ActionType.BUILDING_CREATE, kv.Key, kv.Value.buildingId, new List<int>() {  (int)kv.Value.rotation }, true);
+            for(int n = 0; n < kv.Value.actors.Count; n++)
+            {
+                GameStatus.MapIdActorId p = kv.Value.actors[n];
+                Updater.Instance.AddQ(ActionType.ACTOR_CREATE, p.mapId, p.actorId, null, true);
+            }
+        }
     }
     void InitSelectionUI()
     {
@@ -79,9 +82,10 @@ public class GamePlay : MonoBehaviour
 
         SelectionUI.Instance.Init(
             new List<SelectionUI.UI>(){
-                new SelectionUI.UI(MetaManager.TAG.BUILDING, uiObjs[0], uiObjs[1]),
-                new SelectionUI.UI(MetaManager.TAG.ACTOR, uiObjs[2], uiObjs[3]),
-                new SelectionUI.UI(MetaManager.TAG.MOB, uiObjs[2], null)
+                new SelectionUI.UI(TAG.BUILDING, uiObjs[0], uiObjs[1]),
+                new SelectionUI.UI(TAG.ACTOR, uiObjs[2], uiObjs[3]),
+                new SelectionUI.UI(TAG.MOB, uiObjs[2], null),
+                new SelectionUI.UI(TAG.NEUTRAL, uiObjs[2], null)
             }
         );
     }
@@ -212,7 +216,7 @@ public class GamePlay : MonoBehaviour
                 if(SelectionUI.Instance.selectedObject != null)
                 {
                     Vector3 angles = SelectionUI.Instance.selectedObject.transform.localEulerAngles;
-                    SelectionUI.Instance.selectedObject .transform.localEulerAngles = new Vector3(angles.x, angles.y + 90, angles.z);
+                    SelectionUI.Instance.selectedObject.transform.localEulerAngles = new Vector3(angles.x, angles.y + 90, angles.z);
                 }
                 SelectionUI.Instance.Hide();
                 break;
@@ -316,35 +320,18 @@ public class GamePlay : MonoBehaviour
     }
 
     // 모든 선택 이벤트 통합.
-    void OnSelected(MetaManager.TAG tag, int mapId, int id)
+    void OnSelected(TAG tag, int mapId, int id, GameObject gameObject)
     {
-        //Debug.Log(string.Format("OnSelected {0} {1} {2}", tag, mapId, id));
-        GameObject gameObject = null;
-        string[] sz = new string[1];
-        switch(tag)
-        {
-            case MetaManager.TAG.BUILDING:
-                gameObject = BuildingManager.Instance.objects[mapId].gameObject;
-                sz[0] = MetaManager.Instance.buildingInfo[id].name;
-                break;
-            case MetaManager.TAG.ACTOR:
-                gameObject = ActorManager.Instance.actors[mapId].gameObject;
-                sz[0] = MetaManager.Instance.actorInfo[id].name;
-                break;
-            case MetaManager.TAG.MOB:
-                gameObject = MobManager.Instance.mobs[mapId].gameObject;
-                sz[0] = MetaManager.Instance.mobInfo[id].name;
-                break;
-        }
-        SelectionUI.Instance.Activate(tag, gameObject, sz);
+        Debug.Log(string.Format("OnSelected {0} {1} {2}", tag, mapId, id));
+        SelectionUI.Instance.Activate(tag, gameObject, new string[1] { Util.GetNameInGame(tag, id) });
     }
     //모든 행동 이벤트
-    void OnAction(int mapId, int id, MetaManager.TAG tag, int targetMapId)
+    void OnAction(int mapId, int id, TAG tag, int targetMapId)
     {
         Debug.Log(string.Format("OnAction {0}, {1}, {2}, {3}", mapId, id, tag, targetMapId));
         switch(tag)
         {
-            case MetaManager.TAG.BUILDING:
+            case TAG.BUILDING:
                 GameStatus.Building building = GameSystem.Instance.gameStatus.buildingInfo[targetMapId];
                 //Debug.Log(string.Format("tribe {0}, {1}", building.tribeId, building.buildingId));
                 break;
@@ -352,7 +339,7 @@ public class GamePlay : MonoBehaviour
         SelectionUI.Instance.Hide();
     }
     //생성, 소멸등의 이벤트
-    void OnCreationEvent(ActionType type, MetaManager.TAG tag, int mapId, int id)
+    void OnCreationEvent(ActionType type, TAG tag, int mapId, int id)
     {
         Debug.Log(string.Format("OnCreationEvent {0}, {1}, {2}, {3}", type, tag, mapId, id));
         //game system과 연결 시켜 줘야함

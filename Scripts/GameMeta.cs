@@ -10,6 +10,7 @@ public class GameStatus
     {
         public int mapId;
         public int buildingId;
+        public float rotation;
     }
     [Serializable]
     public class MapIdActorId
@@ -35,8 +36,6 @@ public class GameStatus
         public List<ResourceIdAmount> resources;
         public List<Building> buildings;
     }
-
-    public List<MapIdBuildingId> neutral;
     public List<Tribe> tribes;
 
     /*
@@ -53,7 +52,7 @@ public class GameStatus
     public static GameStatus Load(string jsonFileName)
     {
         GameStatus gameStatus = Json.LoadJsonFile<GameStatus>(jsonFileName);
-        //resource
+        //tribes
         for(int n = 0; n < gameStatus.tribes.Count; n++)
         {
             

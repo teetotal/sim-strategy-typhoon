@@ -19,8 +19,29 @@ public struct Action
         this.values = values;
     }
 }
-
 /* --------------------------- */
+//중립 지역 건물 정보
+public class NeutralBuilding: Object
+{
+    public override bool Create(int mapId, int id)
+    {
+        this.mapId = mapId;
+        this.id = id;
+
+        //progress
+        Vector3 pos = GetProgressPosition();
+        progress = GameObject.Instantiate(Context.Instance.progressPrefab, pos, Quaternion.identity);
+        progress.name = string.Format("progress-{0}-{1}", mapId, this.id);
+        progress.transform.SetParent(Context.Instance.canvas);
+        progress.SetActive(false);
+
+        return true;
+    }
+
+    public override void Update()
+    {
+    }
+}
 //건물 정보
 public class BuildingObject : Object
 {   
