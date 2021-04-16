@@ -11,12 +11,22 @@ public struct Action
     public float currentTime;     //현재까지 진행된 시간
     public List<int> values;      //기타 추가 정보. 이동시 A* route같은거 담는 용도
 
-    public Action(ActionType type, float totalTime, List<int> values)
+    public Action(ActionType type, float totalTime = 0, List<int> values = null)
     {
         this.type = type;
         this.currentTime = 0;
         this.totalTime = totalTime;
         this.values = values;
+    }
+
+    public float GetProgression()
+    {
+        if(this.totalTime == 0)
+            return 0;
+        if(this.currentTime > this.totalTime)
+            return this.values[this.values.Count - 1];
+
+        return (this.currentTime / this.totalTime) * this.values.Count;
     }
 }
 /* --------------------------- */

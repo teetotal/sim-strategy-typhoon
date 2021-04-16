@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class Mob : ActingObject
 {
     public int attachedId;
-    public override bool AddAction(QNode node)
+    public override bool AddAction(QNode node, int insertIndex = -1)
     {
         switch(node.type)
         {
@@ -38,6 +38,8 @@ public class Mob : ActingObject
         if(to == -1)
         {
             to = MapManager.Instance.GetRandomNearEmptyMapId(this.mapId, meta.movingRange);
+            if(to == -1)
+                return new Action(ActionType.MAX, 0);
         }
 
         //MapManager 변경. 
@@ -105,5 +107,6 @@ public class Mob : ActingObject
                 actions.RemoveAt(0);
             }
         }
+        SetCurrentMapId();
     }
 }

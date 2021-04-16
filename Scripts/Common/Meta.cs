@@ -24,6 +24,7 @@ public class Meta
         public float farming;
         public float carring;
         public float attack;
+        public float attackDistance;
         public float depense;
         public float moving;
     }

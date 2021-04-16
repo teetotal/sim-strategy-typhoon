@@ -36,7 +36,7 @@ public class GamePlay : MonoBehaviour
         //Context
         Context.Instance.Init(  OnCreationEvent,
                                 OnSelected,
-                                OnAction,
+                                OnActorAction,
                                 ref canvas, 
                                 "progress_default", 
                                 "text_default",
@@ -338,8 +338,8 @@ public class GamePlay : MonoBehaviour
         Debug.Log(string.Format("OnSelected {0} {1} {2}", tag, mapId, id));
         SelectionUI.Instance.Activate(tag, gameObject, new string[1] { Util.GetNameInGame(tag, id) });
     }
-    //모든 행동 이벤트
-    void OnAction(int mapId, int id, TAG tag, int targetMapId)
+    //Actor 모든 행동 이벤트
+    void OnActorAction(int mapId, int id, TAG tag, int targetMapId)
     {
         Debug.Log(string.Format("OnAction {0}, {1}, {2}, {3}", mapId, id, tag, targetMapId));
         switch(tag)
@@ -347,6 +347,10 @@ public class GamePlay : MonoBehaviour
             case TAG.BUILDING:
                 GameStatus.Building building = GameSystem.Instance.gameStatus.buildingInfo[targetMapId];
                 //Debug.Log(string.Format("tribe {0}, {1}", building.tribeId, building.buildingId));
+                break;
+            case TAG.ACTOR:
+            case TAG.MOB:
+                Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, mapId, targetMapId, new List<int>() { (int)tag }, false);
                 break;
         }
         SelectionUI.Instance.Hide();

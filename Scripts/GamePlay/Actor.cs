@@ -10,14 +10,15 @@ public class Actor : ActingObject
     //전투의 경우, 수량 정보도 필요할 수 있음.
     public int currentHeadcount; //현재 인원. 전체 인원은 type과 level로 파악
     */
-    public override bool AddAction(QNode node)
+    public override bool AddAction(QNode node, int insertIndex = -1)
     {
         Meta.Actor meta =  MetaManager.Instance.actorInfo[this.id];
+        Action action = new Action();
 
         switch(node.type)
         {
             case ActionType.ACTOR_CREATE:
-                actions.Add(new Action(ActionType.ACTOR_CREATE, node.immediately ? 0 : MetaManager.Instance.actorInfo[id].createTime, null));
+                action = new Action(ActionType.ACTOR_CREATE, node.immediately ? 0 : MetaManager.Instance.actorInfo[id].createTime, null);
                 break;
             case ActionType.ACTOR_MOVING:
             case ActionType.ACTOR_FLYING:
@@ -31,14 +32,15 @@ public class Actor : ActingObject
                 ActorManager.Instance.actors[node.id] = this;
                 ActorManager.Instance.actors.Remove(mapId);
 
-                Action  action = (node.type == ActionType.ACTOR_MOVING) ? 
+                Debug.Log(string.Format("current id: {0}, map id {1}", this.currentMapId, this.mapId));
+
+                action = (node.type == ActionType.ACTOR_MOVING) ? 
                         GetMovingAction(node.id, meta.ability, node.type) : GetFlyingAction(node.id, meta.ability, node.type);
                 if(action.type == ActionType.MAX)
                     return false;
 
                 RemoveActionType(node.type); //이전 이동 액션을 제거
-                actions.Add(action);
-                isMovingStarted = false;
+                //actions.Add(action);
 
                 //actor map id변경
                 this.mapId = node.id;
@@ -49,8 +51,27 @@ public class Actor : ActingObject
                 break;
             }
             case ActionType.ACTOR_ATTACK:
+            {
+                TAG tag = (TAG)node.values[0];
+                action = new Action(ActionType.ACTOR_ATTACK);
+                
+                switch(tag)
+                {
+                    case TAG.ACTOR:
+                        this.followObject = ActorManager.Instance.actors[node.id];
+                        break;
+                    case TAG.MOB:
+                        this.followObject = MobManager.Instance.mobs[node.id];
+                        break;
+                }
+                //actions.Add(action);
                 break;
+            }
         }
+        if(insertIndex != -1)
+            actions.Insert(insertIndex, action);
+        else
+            actions.Add(action);
         return true;
     }
     
@@ -77,6 +98,7 @@ public class Actor : ActingObject
     public override void Update()
     {
         ApplyRoutine();
+        SetCurrentMapId();
 
         List<int> removeActionIds = new List<int>();
         if(actions.Count > 0)
@@ -97,6 +119,22 @@ public class Actor : ActingObject
                 case ActionType.ACTOR_FLYING:
                     Flying(action, 1);
                     break;
+                case ActionType.ACTOR_ATTACK:
+                {
+                    Meta.Actor meta = MetaManager.Instance.actorInfo[this.id];
+                    //거리 측정해서 공격 거리보다 멀면 
+                    if(CheckAttacking(meta.ability))
+                    {
+                        //attack
+                    } 
+                    else 
+                    {
+                        //따라가기 설정
+                        AddAction(new QNode(meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, this.mapId, followObject.GetCurrentMapId(), null, false), 0); 
+                    }
+                    return;
+                }
+                    
             }
 
             //finish

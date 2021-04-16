@@ -22,10 +22,12 @@ public abstract class Object
 {
     public GameObject gameObject;
     public int mapId;     //이동시 업데이트 필요
+    public int currentMapId;
     public int id;
     public int level;
     public List<Action> actions = new List<Action>(); //현재 겪고 있는 액션 리스트.
     public GameObject progress; 
+    
     //fn
     public abstract bool Create(int mapId, int id);
     public abstract void Update();
@@ -130,11 +132,71 @@ public abstract class Object
         }
         RemoveActions(removeList);
     }
+    private bool CheckMovableObject(TAG tag)
+    {
+        switch(tag)
+        {
+            case TAG.ACTOR:
+            case TAG.MOB:
+                return true;
+            default:
+                return false;
+        }
+
+    }
+    protected void SetCurrentMapId()
+    {
+        RaycastHit hit;
+
+        if(actions.Count > 0)
+        {
+            Action action = actions[0];
+            switch(action.type)
+            {
+                case ActionType.ACTOR_FLYING:
+                case ActionType.MOB_FLYING:
+                {
+                    Physics.Raycast(this.gameObject.transform.position, Vector3.down, out hit);
+                    if (hit.collider != null && !CheckMovableObject(MetaManager.Instance.GetTag(hit.collider.gameObject.tag)))
+                    {
+                        this.currentMapId = Util.GetIntFromGameObjectName(hit.collider.gameObject.name);
+                    }
+                    return;
+                }
+                case ActionType.ACTOR_MOVING:
+                case ActionType.MOB_MOVING:
+                {
+                    float progression = action.GetProgression(); 
+                    int idx = (int)progression;
+                    float ratio = progression % 1.0f;
+                    if(ratio < 0.5f && idx > 0)
+                        idx --;
+                    this.currentMapId = action.values[idx];
+                    return;
+                }
+                default:
+                    this.currentMapId = this.mapId;
+                    return;
+            }
+        }
+        this.currentMapId = this.mapId;
+    }
+    public int GetCurrentMapId()
+    {
+        if(this.currentMapId == -1)
+        {
+            Debug.Log("Current MapId is -1");
+            return this.mapId;
+        }
+            
+        return this.currentMapId;
+    }
 }
 
 public abstract class ActingObject : Object
 {
     public List<QNode> routine;
+    protected ActingObject followObject; // 쫒을 actingobject
     protected bool isMovingStarted;
     private int routineIdx = 0;
     public void SetRoutine(List<QNode> routine)
@@ -152,22 +214,22 @@ public abstract class ActingObject : Object
             if(routineIdx >= routine.Count)
                 routineIdx = 0;
         }
-        
     }
-    public abstract bool AddAction(QNode node);
+    protected bool CheckAttacking(Meta.Ability ability)
+    {
+        if(this.followObject == null)
+            return false;
+        float distance = MapManager.Instance.GetDistance(GetCurrentMapId(), this.followObject.GetCurrentMapId());
+        if(ability.attackDistance >= distance)
+            return true;
+        return false;
+    }
+    
+    public abstract bool AddAction(QNode node, int insertIndex = -1);
     
     protected Action GetFlyingAction(int targetMapId, Meta.Ability ability, ActionType type)
     {
-        int start = this.mapId;
-        //중도 변경을 처리하기 위해 현재 위치의 mapid를 찾아낸다.
-        RaycastHit hit;
-        Physics.Raycast(this.gameObject.transform.position, Vector3.down, out hit);
-        if (hit.collider != null) 
-        {
-            start = Util.GetIntFromGameObjectName(hit.collider.gameObject.name);
-            //Debug.Log("Current MapId: " + start.ToString());
-        }
-        
+        int start = GetCurrentMapId();
         List<int> route = new List<int>();
         route.Add(start);
         route.Add(targetMapId);
@@ -180,10 +242,11 @@ public abstract class ActingObject : Object
     }
     protected Action GetMovingAction(int targetMapId, Meta.Ability ability, ActionType type)
     {
+        isMovingStarted = false;
         //Astar
         List<int> route = new List<int>();
         Astar astar = new Astar(MapManager.Instance.map);
-        Vector2Int from = MapManager.Instance.GetMapPosition(GetCurrentPositionMapId());
+        Vector2Int from = MapManager.Instance.GetMapPosition(GetCurrentMapId());
         Vector2Int to = MapManager.Instance.GetMapPosition(targetMapId);
         Stack<Astar.Pos> stack = astar.Search(new Astar.Pos(from.x, from.y), new Astar.Pos(to.x, to.y));
         if(stack == null)
@@ -202,25 +265,13 @@ public abstract class ActingObject : Object
 
         return new Action(type, route.Count / ability.moving, route);
     }
-    protected int GetCurrentPositionMapId()
-    {
-        for(int n = 0; n < actions.Count; n++)
-        {
-            if(actions[n].type == ActionType.ACTOR_MOVING)
-            {
-                int idx = (int)actions[n].currentTime;
-                return actions[n].values[idx];
-            }
-        }
-        return this.mapId;
-    }
     protected bool Moving(Action action)
     {
         List<int> route = action.values;
 
         GameObject actor = this.gameObject;
 
-        float progression = (action.currentTime / action.totalTime) * route.Count; 
+        float progression = action.GetProgression(); 
         int idx = (int)progression; 
         float ratio = progression % 1.0f;
         /*

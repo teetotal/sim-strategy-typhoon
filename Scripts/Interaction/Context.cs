@@ -15,8 +15,8 @@ public class Context
     }
     public delegate void OnSelectionEvent(TAG tag, int mapId, int id, GameObject gameObject);
     public OnSelectionEvent onSelectEvent;
-    public delegate void OnAction(int mapId, int id, TAG targetTag, int targetMapId);
-    public OnAction onAction;
+    public delegate void OnActorAction(int mapId, int id, TAG targetTag, int targetMapId);
+    public OnActorAction onAction;
     public delegate void OnCreationEvent(ActionType type, TAG tag, int mapId, int id);
     public OnCreationEvent onCreationEvent;
 
@@ -64,7 +64,7 @@ public class Context
     public void Init(
                     OnCreationEvent onCreationEvent,
                     OnSelectionEvent onSelectEvent,
-                    OnAction onAction,
+                    OnActorAction onAction,
                     ref Transform canvas, 
                     string progressPrefab, 
                     string titlePrefab, 

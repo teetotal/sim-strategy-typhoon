@@ -204,6 +204,10 @@ public class MapManager
             range++;
         }
     }
+    public float GetDistance(int from, int to)
+    {
+        return Vector2Int.Distance(GetMapPosition(from), GetMapPosition(to));
+    }
     public int GetCost(int mapId)
     {
         Vector2Int pos = GetMapPosition(mapId);
