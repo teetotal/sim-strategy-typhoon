@@ -60,7 +60,7 @@ public class GamePlay : MonoBehaviour
     void InitSelectionUI()
     {
         //UI
-        string[] arr = new string[4] {"text_title", "select_ui_building", "text_title", "select_ui_actor"};
+        string[] arr = new string[4] {"text_title", "select_ui_building", "select_ui_actor", "select_ui"};
         GameObject[] uiObjs = new GameObject[4];
         for(int n = 0; n < arr.Length; n++)
         {
@@ -77,15 +77,20 @@ public class GamePlay : MonoBehaviour
         }
         
         //for actor
-        Button btn = uiObjs[3].GetComponentInChildren<Button>();
+        Button btn = uiObjs[2].GetComponentInChildren<Button>();
         btn.onClick.AddListener(()=>{ OnClickButton(btn.gameObject);});
+
+        //for neutral
+        Button btnNeutral = uiObjs[3].GetComponentInChildren<Button>();
+        btnNeutral.onClick.AddListener(()=>{ OnClickButton(btnNeutral.gameObject);});
+
 
         SelectionUI.Instance.Init(
             new List<SelectionUI.UI>(){
                 new SelectionUI.UI(TAG.BUILDING, uiObjs[0], uiObjs[1]),
-                new SelectionUI.UI(TAG.ACTOR, uiObjs[2], uiObjs[3]),
-                new SelectionUI.UI(TAG.MOB, uiObjs[2], null),
-                new SelectionUI.UI(TAG.NEUTRAL, uiObjs[2], null)
+                new SelectionUI.UI(TAG.ACTOR, uiObjs[0], uiObjs[2]),
+                new SelectionUI.UI(TAG.MOB, uiObjs[0], uiObjs[3]),
+                new SelectionUI.UI(TAG.NEUTRAL, uiObjs[0], uiObjs[3])
             }
         );
     }
@@ -231,7 +236,15 @@ public class GamePlay : MonoBehaviour
                     SelectionUI.Instance.Hide();
                 }
                 break;
-            
+            case "buttonI":
+                {
+                    TAG tag = MetaManager.Instance.GetTag(SelectionUI.Instance.selectedObject.tag);
+                    int mapId = SelectionUI.Instance.GetSelectedMapId();
+                    int id = Util.GetIdInGame(tag, mapId);
+                    Debug.Log(string.Format("buttonI {0} {1} {2}", tag, mapId, id));
+                    SelectionUI.Instance.Hide();
+                    break;
+                }
             default:
                 break;
         }
