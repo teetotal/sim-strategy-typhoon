@@ -107,13 +107,13 @@
             "prefab": "DogPolyart",
             "flying": false,
             "level": 1,
-            "createTime": 20,
+            "createTime": 1,
             "ability": {
                 "building": 1,
                 "farming": 1,
                 "carring": 1,
                 "attack": 10,
-                "attackDistance": 2,
+                "attackDistance": 1,
                 "depense": 10,
                 "moving": 1
             },

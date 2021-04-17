@@ -16,6 +16,10 @@ public abstract class IAnimation : MonoBehaviour
     public abstract void SetIdle();
     public abstract void SetMoving();
 }
+public abstract class IAttacking : IAnimation
+{
+    public abstract void SetAttack();
+}
 
 //기본 struct
 public abstract class Object
@@ -337,7 +341,12 @@ public abstract class ActingObject : Object
         
         return true;
     }
-   
+    protected bool Attacking()
+    {
+        this.gameObject.transform.LookAt(followObject.gameObject.transform.position);
+        SetAnimation(ActionType.ACTOR_ATTACK);
+        return true;
+    }
     public void SetAnimation(ActionType type)
     {
         //set animation
@@ -352,6 +361,13 @@ public abstract class ActingObject : Object
                 case ActionType.MAX:
                     p.SetIdle();
                     break;
+                case ActionType.ACTOR_ATTACK:
+                    {
+                        IAttacking a = gameObject.GetComponent<IAttacking>();
+                        if(a != null)
+                            a.SetAttack();
+                    }
+                    break;    
             }
             
         }

@@ -32,7 +32,7 @@ public class Actor : ActingObject
                 ActorManager.Instance.actors[node.id] = this;
                 ActorManager.Instance.actors.Remove(mapId);
 
-                Debug.Log(string.Format("current id: {0}, map id {1}", this.currentMapId, this.mapId));
+                //Debug.Log(string.Format("current id: {0}, map id {1}", this.currentMapId, this.mapId));
 
                 action = (node.type == ActionType.ACTOR_MOVING) ? 
                         GetMovingAction(node.id, meta.ability, node.type) : GetFlyingAction(node.id, meta.ability, node.type);
@@ -126,11 +126,17 @@ public class Actor : ActingObject
                     if(CheckAttacking(meta.ability))
                     {
                         //attack
+                        //죽었는지 확인
+                        //안죽었으면 계속 공격
+                        Attacking();
                     } 
                     else 
                     {
                         //따라가기 설정
-                        AddAction(new QNode(meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, this.mapId, followObject.GetCurrentMapId(), null, false), 0); 
+                        AddAction(new QNode(meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
+                            this.mapId, 
+                            MapManager.Instance.GetRandomNearEmptyMapId(followObject.GetCurrentMapId(), (int)meta.ability.attackDistance), 
+                            null, false), 0); 
                     }
                     return;
                 }
