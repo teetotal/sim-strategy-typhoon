@@ -87,7 +87,7 @@ public class BuildingObject : Object
             switch(action.type)
             {
                 case ActionType.BUILDING_CREATE:
-                    SetProgress(action.currentTime, action.totalTime, true);
+                    ShowProgress(action.currentTime, action.totalTime, true);
                     break;
             }
 
@@ -118,14 +118,16 @@ public struct QNode
     public int id;
     public bool immediately;
     public List<int> values;    //caller쪽과 protocol을 맞춰야 한다.
+    public int insertIndex;
 
-    public QNode(ActionType type, int mapId, int id, List<int> values, bool immediately)
+    public QNode(ActionType type, int mapId, int id, List<int> values, bool immediately, int insertIndex)
     {
         this.type = type;
         this.mapId = mapId;
         this.id = id;
         this.values = values;
         this.immediately = immediately;
+        this.insertIndex = insertIndex;
     }
 }
 /* --------------------------- */

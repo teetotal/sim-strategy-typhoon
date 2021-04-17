@@ -113,7 +113,7 @@ public class MobManager
             {
                 new QNode(
                     meta.flyingHeight == 0 ? ActionType.MOB_MOVING : ActionType.MOB_FLYING, 
-                    -1, -1, null, false)
+                    -1, -1, null, false, -1)
             };
             Context.Instance.onCreationEvent(q.type, TAG.MOB, obj.mapId, obj.id);
         }
@@ -193,8 +193,12 @@ public class ActorManager
                 actors[obj.mapId] = obj;
 
             mapId = obj.mapId; // 빈 공간으로 생성시킨다.
-            actors[mapId].AddAction(q);
             Context.Instance.onCreationEvent(q.type, TAG.ACTOR, obj.mapId, obj.id);
+        }
+        
+        if(actors.ContainsKey(mapId) == false)
+        {
+            Debug.Log("Invalid mapId");
         }
         else
         {

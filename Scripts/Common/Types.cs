@@ -26,6 +26,7 @@ public enum ActionType
     ACTOR_MOVING,
     ACTOR_FLYING,
     ACTOR_ATTACK,
+    ACTOR_UNDER_ATTACK,
     ACTOR_MAX,
 
     MOB_CREATE,

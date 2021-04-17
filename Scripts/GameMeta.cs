@@ -13,10 +13,11 @@ public class GameStatus
         public float rotation;
     }
     [Serializable]
-    public class MapIdActorId
+    public class MapIdActorIdHP
     {
         public int mapId;
         public int actorId;
+        public int HP;
     }
     [Serializable]
     public class ResourceIdAmount
@@ -27,7 +28,7 @@ public class GameStatus
     [Serializable]
     public class Building : MapIdBuildingId
     {
-        public List<MapIdActorId> actors;
+        public List<MapIdActorIdHP> actors;
         public int tribeId; //json에서 로드되지 않고 load 시점에 할당 됨
     }
     [Serializable]

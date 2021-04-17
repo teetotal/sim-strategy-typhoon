@@ -92,24 +92,8 @@ public class ContextActor : IContext
             int target = Util.GetIntFromGameObjectName(obj.name);
             TAG tag = MetaManager.Instance.GetTag(obj.tag);
 
-            if(tag == TAG.BOTTOM)
-            {
-                if(target != selectedMapId && MapManager.Instance.IsEmptyMapId(target))
-                {
-                    Updater.Instance.AddQ(
-                        meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
-                        selectedMapId, 
-                        target, 
-                        null,
-                        false);
-                }
-                Context.Instance.SetMode(Context.Mode.NONE);
-            } 
-            else
-            {
-                Context.Instance.SetMode(Context.Mode.NONE);
-                Context.Instance.onAction(selectedMapId, actor.id, tag, target);
-            }
+            Context.Instance.SetMode(Context.Mode.NONE);
+            Context.Instance.onAction(actor, tag, target);
         } 
         else
         {

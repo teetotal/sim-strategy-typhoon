@@ -20,10 +20,11 @@ public class Meta
     [Serializable]
     public struct Ability
     {
+        public int HP;
         public float building;
         public float farming;
         public float carring;
-        public float attack;
+        public int attack;
         public float attackDistance;
         public float depense;
         public float moving;
@@ -49,16 +50,21 @@ public class Meta
         public List<ResourceIdAmount> reward;
     }
     [Serializable]
+    public struct ActorLevelInfo
+    {
+        public string prefab;
+        public int createTime;
+        public Ability ability;
+        public List<ResourceIdAmount> wage;
+    }
+    [Serializable]
     public struct Actor
     {
         public int id;
         public string name;
-        public string prefab;
         public bool flying;
-        public int level;
-        public int createTime;
-        public Ability ability;
-        public List<ResourceIdAmount> wage;
+        public List<ActorLevelInfo> level;
+        
     }
     [Serializable]
     public struct Building

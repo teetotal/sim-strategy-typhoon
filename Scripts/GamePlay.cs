@@ -52,8 +52,8 @@ public class GamePlay : MonoBehaviour
             Updater.Instance.AddQ(ActionType.BUILDING_CREATE, kv.Key, kv.Value.buildingId, new List<int>() {  (int)kv.Value.rotation }, true);
             for(int n = 0; n < kv.Value.actors.Count; n++)
             {
-                GameStatus.MapIdActorId p = kv.Value.actors[n];
-                Updater.Instance.AddQ(ActionType.ACTOR_CREATE, p.mapId, p.actorId, null, true);
+                GameStatus.MapIdActorIdHP p = kv.Value.actors[n];
+                Updater.Instance.AddQ(ActionType.ACTOR_CREATE, p.mapId, p.actorId, new List<int>() { p.HP}, true);
             }
         }
     }
@@ -156,7 +156,14 @@ public class GamePlay : MonoBehaviour
             GameObject obj = Resources.Load<GameObject>("button_default");
             Meta.ActorIdMax actorIdMax = MetaManager.Instance.meta.buildings[buildingId].actors[n];
             Meta.Actor info = MetaManager.Instance.meta.actors[actorIdMax.actorId];
-            obj.GetComponentInChildren<Text>().text = string.Format("{0}\nLv.{1}", info.name, info.level);
+
+            string wage = "";
+            for(int m = 0; m < info.level[0].wage.Count; m++)
+            {
+                Meta.ResourceIdAmount r = info.level[0].wage[m];
+                wage += string.Format("\n{0} {1}", MetaManager.Instance.resourceInfo[r.resourceId], r.amount);
+            }
+            obj.GetComponentInChildren<Text>().text = info.name + "\n" + wage;
             obj.name = string.Format("actor-{0}", info.id);
             list.Add(Instantiate(obj));
         }
@@ -312,7 +319,7 @@ public class GamePlay : MonoBehaviour
         Meta.Actor meta = MetaManager.Instance.actorInfo[actor.id];
         //짐 싣기 테스트 코드
         GameObject selectedObj = actor.gameObject;
-        Debug.Log(string.Format("OnClickForUpgradingActor {0}-{1}", mapId, actorId));
+        //Debug.Log(string.Format("OnClickForUpgradingActor {0}-{1}", mapId, actorId));
         GameObject o = Resources.Load<GameObject>("load");
         o = GameObject.Instantiate(o);
         
@@ -325,8 +332,8 @@ public class GamePlay : MonoBehaviour
         //routine 추가
         actor.SetRoutine(new List<QNode>()
         {
-            new QNode(type, mapId, 0, null, false),
-            new QNode(type, mapId, 255, null, false)
+            new QNode(type, mapId, 0, null, false, -1),
+            new QNode(type, mapId, 255, null, false, -1)
         });
         ((ContextActor)Context.Instance.contexts[Context.Mode.ACTOR]).Clear();
         Context.Instance.SetMode(Context.Mode.NONE);
@@ -335,13 +342,14 @@ public class GamePlay : MonoBehaviour
     // 모든 선택 이벤트 통합.
     void OnSelected(TAG tag, int mapId, int id, GameObject gameObject)
     {
-        Debug.Log(string.Format("OnSelected {0} {1} {2}", tag, mapId, id));
+        //Debug.Log(string.Format("OnSelected {0} {1} {2}", tag, mapId, id));
         SelectionUI.Instance.Activate(tag, gameObject, new string[1] { Util.GetNameInGame(tag, id) });
     }
     //Actor 모든 행동 이벤트
-    void OnActorAction(int mapId, int id, TAG tag, int targetMapId)
+    void OnActorAction(Actor actor, TAG tag, int targetMapId)
     {
-        Debug.Log(string.Format("OnAction {0}, {1}, {2}, {3}", mapId, id, tag, targetMapId));
+        //Debug.Log(string.Format("OnAction {0}, {1}, {2}, {3}", mapId, id, tag, targetMapId));
+        Meta.Actor meta = MetaManager.Instance.actorInfo[actor.id];
         switch(tag)
         {
             case TAG.BUILDING:
@@ -349,8 +357,25 @@ public class GamePlay : MonoBehaviour
                 //Debug.Log(string.Format("tribe {0}, {1}", building.tribeId, building.buildingId));
                 break;
             case TAG.ACTOR:
+                actor.followObject = ActorManager.Instance.actors[targetMapId];
+                Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.mapId, -1, null, false);
+                break;
             case TAG.MOB:
-                Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, mapId, targetMapId, new List<int>() { (int)tag }, false);
+                actor.followObject = MobManager.Instance.mobs[targetMapId];
+                Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.mapId, -1, null, false);
+                break;
+            case TAG.BOTTOM:
+                if(actor.mapId != targetMapId && MapManager.Instance.IsEmptyMapId(targetMapId))
+                {
+                    //이전 모든 행위 취소
+                    actor.Clear();
+                    Updater.Instance.AddQ(
+                        meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
+                        actor.mapId, 
+                        targetMapId, 
+                        null,
+                        false);
+                }
                 break;
         }
         SelectionUI.Instance.Hide();
@@ -358,7 +383,7 @@ public class GamePlay : MonoBehaviour
     //생성, 소멸등의 이벤트
     void OnCreationEvent(ActionType type, TAG tag, int mapId, int id)
     {
-        Debug.Log(string.Format("OnCreationEvent {0}, {1}, {2}, {3}", type, tag, mapId, id));
+        //Debug.Log(string.Format("OnCreationEvent {0}, {1}, {2}, {3}", type, tag, mapId, id));
         //game system과 연결 시켜 줘야함
     }
 

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class Mob : ActingObject
 {
     public int attachedId;
-    public override bool AddAction(QNode node, int insertIndex = -1)
+    public override bool AddAction(QNode node)
     {
         switch(node.type)
         {

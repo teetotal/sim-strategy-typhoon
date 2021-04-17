@@ -15,7 +15,11 @@ public class Util
     }
     public static int GetIntFromGameObjectName(string name)
     {
-        return int.Parse(name.Replace("(Clone)", ""));
+        string sz = name.Replace("(Clone)", "");
+        int n = -1;
+        if(int.TryParse(sz,  out n))
+            return n;
+        return -1;
     }
     public static string GetObjectName(GameObject obj)
     {

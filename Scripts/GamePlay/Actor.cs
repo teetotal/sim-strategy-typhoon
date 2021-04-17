@@ -10,7 +10,7 @@ public class Actor : ActingObject
     //전투의 경우, 수량 정보도 필요할 수 있음.
     public int currentHeadcount; //현재 인원. 전체 인원은 type과 level로 파악
     */
-    public override bool AddAction(QNode node, int insertIndex = -1)
+    public override bool AddAction(QNode node)
     {
         Meta.Actor meta =  MetaManager.Instance.actorInfo[this.id];
         Action action = new Action();
@@ -18,7 +18,9 @@ public class Actor : ActingObject
         switch(node.type)
         {
             case ActionType.ACTOR_CREATE:
-                action = new Action(ActionType.ACTOR_CREATE, node.immediately ? 0 : MetaManager.Instance.actorInfo[id].createTime, null);
+                action = new Action(ActionType.ACTOR_CREATE, node.immediately ? 0 : meta.level[this.level].createTime, null);
+                if(node.values != null && node.values.Count == 1)
+                    this.currentHP = node.values[0];
                 break;
             case ActionType.ACTOR_MOVING:
             case ActionType.ACTOR_FLYING:
@@ -35,7 +37,7 @@ public class Actor : ActingObject
                 //Debug.Log(string.Format("current id: {0}, map id {1}", this.currentMapId, this.mapId));
 
                 action = (node.type == ActionType.ACTOR_MOVING) ? 
-                        GetMovingAction(node.id, meta.ability, node.type) : GetFlyingAction(node.id, meta.ability, node.type);
+                        GetMovingAction(node.id, meta.level[this.level].ability, node.type) : GetFlyingAction(node.id, meta.level[this.level].ability, node.type);
                 if(action.type == ActionType.MAX)
                     return false;
 
@@ -52,24 +54,15 @@ public class Actor : ActingObject
             }
             case ActionType.ACTOR_ATTACK:
             {
-                TAG tag = (TAG)node.values[0];
-                action = new Action(ActionType.ACTOR_ATTACK);
-                
-                switch(tag)
-                {
-                    case TAG.ACTOR:
-                        this.followObject = ActorManager.Instance.actors[node.id];
-                        break;
-                    case TAG.MOB:
-                        this.followObject = MobManager.Instance.mobs[node.id];
-                        break;
-                }
-                //actions.Add(action);
+                action = new Action(node.type, 1);
                 break;
             }
+            case ActionType.ACTOR_UNDER_ATTACK:
+                action = new Action(node.type, 1, node.values);
+                break;
         }
-        if(insertIndex != -1)
-            actions.Insert(insertIndex, action);
+        if(node.insertIndex != -1 && actions.Count > 0)
+            actions.Insert(node.insertIndex, action);
         else
             actions.Add(action);
         return true;
@@ -82,9 +75,12 @@ public class Actor : ActingObject
         if(mapId == -1)
             return false;
         
-        Meta.Actor actor = MetaManager.Instance.actorInfo[id];
+        Meta.Actor meta = MetaManager.Instance.actorInfo[id];
         //prefab 생성
-        this.Instantiate(mapId, id, actor.prefab, TAG.ACTOR, actor.flying);
+        this.Instantiate(mapId, id, meta.level[this.level].prefab, TAG.ACTOR, meta.flying);
+
+        //HP
+        this.currentHP = meta.level[0].ability.HP;
 
         //progress
         progress = GameObject.Instantiate(Context.Instance.progressPrefab, GetProgressPosition(), Quaternion.identity);
@@ -104,43 +100,107 @@ public class Actor : ActingObject
         if(actions.Count > 0)
         {
             Action action = actions[0];
-            
+            Meta.Actor meta = MetaManager.Instance.actorInfo[this.id];
             action.currentTime += Time.deltaTime;
             actions[0] = action;
 
             switch(action.type)
             {
                 case ActionType.ACTOR_CREATE:
-                    SetProgress(action.currentTime, action.totalTime, true);
+                    ShowProgress(action.currentTime, action.totalTime, true);
                     break;
                 case ActionType.ACTOR_MOVING:
-                    Moving(action);
+                    if(!Moving(action))
+                    {
+                        actions.RemoveAt(0);
+                        return;
+                    }
                     break;
                 case ActionType.ACTOR_FLYING:
-                    Flying(action, 1);
+                    if(!Flying(action, 1))
+                    {
+                        actions.RemoveAt(0);
+                        return;
+                    }
                     break;
                 case ActionType.ACTOR_ATTACK:
                 {
-                    Meta.Actor meta = MetaManager.Instance.actorInfo[this.id];
                     //거리 측정해서 공격 거리보다 멀면 
-                    if(CheckAttacking(meta.ability))
+                    if(CheckAttacking(meta.level[this.level].ability))
                     {
+                        ShowHP(meta.level[this.level].ability.HP);
+                        Attacking();
                         //attack
                         //죽었는지 확인
-                        //안죽었으면 계속 공격
-                        Attacking();
+                        if(followObject.currentHP > 0)
+                        {
+                            //안죽었으면 계속 공격
+                            //상대방 공격 당함
+                            if(action.currentTime >= action.totalTime)
+                            {
+                                Updater.Instance.AddQ(
+                                    ActionType.ACTOR_UNDER_ATTACK,
+                                    followObject.mapId, 
+                                    this.mapId,
+                                    new List<int>() { meta.level[this.level].ability.attack },
+                                    true
+                                );
+                                action.currentTime = 0;
+                                actions[0] = action;
+                            }
+                            
+                        }
+                        else
+                        {
+                            SetAnimation(ActionType.ACTOR_MAX);
+                            actions.RemoveAt(0);
+                        }
+                        return;
                     } 
                     else 
                     {
-                        //따라가기 설정
-                        AddAction(new QNode(meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
-                            this.mapId, 
-                            MapManager.Instance.GetRandomNearEmptyMapId(followObject.GetCurrentMapId(), (int)meta.ability.attackDistance), 
-                            null, false), 0); 
+                        //SetAnimation(ActionType.ACTOR_MAX);
+                        this.Clear(true, false, true);
+                        List<QNode> list = new List<QNode>()
+                        {
+                            //공격하기
+                            new QNode(ActionType.ACTOR_ATTACK,
+                                this.mapId, 
+                                -1,
+                                null,
+                                false,
+                                -1
+                                ),
+                            //따라가기. 이동을 먼저 넣으면 mapid정보가 바뀌니까 뒤에 넣고 actions 순서를 바꾼다.
+                            new QNode(meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING,
+                                this.mapId, 
+                                MapManager.Instance.GetRandomNearEmptyMapId(followObject.GetCurrentMapId(), (int)meta.level[this.level].ability.attackDistance),
+                                null,
+                                false,
+                                0
+                                ),
+                        };
+                        
+                        Updater.Instance.AddQs(list);
                     }
                     return;
                 }
+                case ActionType.ACTOR_UNDER_ATTACK:
                     
+                    this.currentHP -= action.values[0];
+
+                    Debug.Log(string.Format("ACTOR_UNDER_ATTACK {0}/{1} - {2}", 
+                        this.currentHP, meta.level[this.level].ability.HP, action.values[0]));
+                    
+                    ShowHP(meta.level[this.level].ability.HP);
+                    if(this.currentHP <= 0)
+                    {
+                        Debug.Log("ACTOR_UNDER_ATTACK Die");
+                        actions.Clear();
+                        return;
+                    }
+                    actions.RemoveAt(0);
+                    return;
             }
 
             //finish
@@ -149,8 +209,7 @@ public class Actor : ActingObject
                 switch(action.type)
                 {
                     case ActionType.ACTOR_CREATE:
-                        GameObject.Destroy(progress);
-                        progress = null;
+                        progress.SetActive(false);
                         break;
                 }
                 actions.RemoveAt(0);

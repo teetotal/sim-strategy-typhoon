@@ -81,184 +81,217 @@
         {
             "id": 0,
             "name": "딱히 쓸모 없는 고양이",
-            "prefab": "Cat",
             "flying": false,
-            "level": 1,
-            "createTime": 10,
-            "ability": {
-                "building": 1,
-                "farming": 1,
-                "carring": 1,
-                "attack": 1,
-                "attackDistance": 2,
-                "depense": 10,
-                "moving": 1
-            },
-            "wage": [
+            "level": [
                 {
-                    "resourceId": 1,
-                    "amount": 1 
+                    "prefab": "Cat",
+                    "createTime": 10,
+                    "ability": {
+                        "HP": 20,
+                        "building": 1,
+                        "farming": 1,
+                        "carring": 1,
+                        "attack": 1,
+                        "attackDistance": 2,
+                        "depense": 10,
+                        "moving": 1
+                    },
+                    "wage": [
+                        {
+                            "resourceId": 1,
+                            "amount": 1 
+                        }
+                    ]
                 }
             ]
+            
         },
         {
             "id": 1,
             "name": "용맹한 댕댕이 기사",
-            "prefab": "DogPolyart",
             "flying": false,
-            "level": 1,
-            "createTime": 1,
-            "ability": {
-                "building": 1,
-                "farming": 1,
-                "carring": 1,
-                "attack": 10,
-                "attackDistance": 1,
-                "depense": 10,
-                "moving": 1
-            },
-            "wage": [
+            "level": [
                 {
-                    "resourceId": 1,
-                    "amount": 1 
+                    "prefab": "DogPolyart",
+                    "createTime": 1,
+                    "ability": {
+                        "HP": 10,
+                        "building": 1,
+                        "farming": 1,
+                        "carring": 1,
+                        "attack": 2,
+                        "attackDistance": 1,
+                        "depense": 10,
+                        "moving": 1
+                    },
+                    "wage": [
+                        {
+                            "resourceId": 1,
+                            "amount": 1 
+                        }
+                    ]
                 }
             ]
         },
         {
             "id": 2,
             "name": "꼬꼬",
-            "prefab": "Chicken",
             "flying": false,
-            "level": 1,
-            "createTime": 20,
-            "ability": {
-                "building": 1,
-                "farming": 2,
-                "carring": 2,
-                "attack": 1,
-                "attackDistance": 2,
-                "depense": 1,
-                "moving": 1
-            },
-            "wage": [
+            "level": [
                 {
-                    "resourceId": 1,
-                    "amount": 1 
+                    "prefab": "Chicken",
+                    "createTime": 20,
+                    "ability": {
+                        "HP": 10,
+                        "building": 1,
+                        "farming": 2,
+                        "carring": 2,
+                        "attack": 1,
+                        "attackDistance": 2,
+                        "depense": 1,
+                        "moving": 1
+                    },
+                    "wage": [
+                        {
+                            "resourceId": 1,
+                            "amount": 1 
+                        }
+                    ]
                 }
             ]
         },
         {
             "id": 3,
             "name": "토끼는 깡총깡총",
-            "prefab": "Rabbit",
             "flying": false,
-            "level": 1,
-            "createTime": 5,
-            "ability": {
-                "building": 1,
-                "farming": 2,
-                "carring": 2,
-                "attack": 1,
-                "attackDistance": 2,
-                "depense": 1,
-                "moving": 2
-            },
-            "wage": [
+            "level": [
                 {
-                    "resourceId": 1,
-                    "amount": 1 
+                    "prefab": "Rabbit",
+                    "createTime": 5,
+                    "ability": {
+                        "HP": 10,
+                        "building": 1,
+                        "farming": 2,
+                        "carring": 2,
+                        "attack": 1,
+                        "attackDistance": 2,
+                        "depense": 1,
+                        "moving": 2
+                    },
+                    "wage": [
+                        {
+                            "resourceId": 1,
+                            "amount": 1 
+                        }
+                    ]
                 }
             ]
         },
         {
             "id": 4,
             "name": "뭔지 모르겠는 로봇",
-            "prefab": "actor",
             "flying": false,
-            "level": 1,
-            "createTime": 20,
-            "ability": {
-                "building": 1,
-                "farming": 2,
-                "carring": 2,
-                "attack": 1,
-                "attackDistance": 2,
-                "depense": 1,
-                "moving": 1.5
-            },
-            "wage": [
+            "level": [
                 {
-                    "resourceId": 1,
-                    "amount": 1 
+                    "prefab": "actor",
+                    "createTime": 20,
+                    "ability": {
+                        "HP": 10,
+                        "building": 1,
+                        "farming": 2,
+                        "carring": 2,
+                        "attack": 1,
+                        "attackDistance": 2,
+                        "depense": 1,
+                        "moving": 1.5
+                    },
+                    "wage": [
+                        {
+                            "resourceId": 1,
+                            "amount": 1 
+                        }
+                    ]
                 }
             ]
         },
         {
             "id": 5,
             "name": "용슌이",
-            "prefab": "Dragon",
             "flying": true,
-            "level": 1,
-            "createTime": 20,
-            "ability": {
-                "building": 1,
-                "farming": 2,
-                "carring": 2,
-                "attack": 1,
-                "attackDistance": 2,
-                "depense": 1,
-                "moving": 2
-            },
-            "wage": [
+            "level": [
                 {
-                    "resourceId": 1,
-                    "amount": 1 
+                    "prefab": "Dragon",
+                    "createTime": 20,
+                    "ability": {
+                        "HP": 10,
+                        "building": 1,
+                        "farming": 2,
+                        "carring": 2,
+                        "attack": 1,
+                        "attackDistance": 2,
+                        "depense": 1,
+                        "moving": 2
+                    },
+                    "wage": [
+                        {
+                            "resourceId": 1,
+                            "amount": 1 
+                        }
+                    ]
                 }
             ]
         },
         {
             "id": 6,
             "name": "독수리",
-            "prefab": "Condor",
             "flying": true,
-            "level": 1,
-            "createTime": 20,
-            "ability": {
-                "building": 1,
-                "farming": 2,
-                "carring": 2,
-                "attack": 1,
-                "attackDistance": 2,
-                "depense": 1,
-                "moving": 3
-            },
-            "wage": [
+            "level": [
                 {
-                    "resourceId": 1,
-                    "amount": 1 
+                    "prefab": "Condor",
+                    "createTime": 20,
+                    "ability": {
+                        "HP": 10,
+                        "building": 1,
+                        "farming": 2,
+                        "carring": 2,
+                        "attack": 1,
+                        "attackDistance": 2,
+                        "depense": 1,
+                        "moving": 3
+                    },
+                    "wage": [
+                        {
+                            "resourceId": 1,
+                            "amount": 1 
+                        }
+                    ]
                 }
             ]
         },
         {
             "id": 7,
             "name": "비행닭",
-            "prefab": "FlyingChicken",
             "flying": true,
-            "level": 1,
-            "createTime": 20,
-            "ability": {
-                "building": 1,
-                "farming": 2,
-                "carring": 2,
-                "attack": 1,
-                "attackDistance": 2,
-                "depense": 1,
-                "moving": 1
-            },
-            "wage": [
+            "level": [
                 {
-                    "resourceId": 1,
-                    "amount": 1 
+                    "prefab": "FlyingChicken",
+                    "createTime": 20,
+                    "ability": {
+                        "HP": 10,
+                        "building": 1,
+                        "farming": 2,
+                        "carring": 2,
+                        "attack": 1,
+                        "attackDistance": 2,
+                        "depense": 1,
+                        "moving": 1
+                    },
+                    "wage": [
+                        {
+                            "resourceId": 1,
+                            "amount": 1 
+                        }
+                    ]
                 }
             ]
         }

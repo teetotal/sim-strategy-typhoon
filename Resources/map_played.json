@@ -23,7 +23,8 @@
                     "actors": [
                         {
                             "mapId": 2,
-                            "actorId": 0
+                            "actorId": 0,
+                            "HP": 10
                         }
                     ]
                 },
@@ -34,7 +35,8 @@
                     "actors": [
                         {
                             "mapId": 2,
-                            "actorId": 0
+                            "actorId": 0,
+                            "HP": 10
                         }
                     ]
                 }

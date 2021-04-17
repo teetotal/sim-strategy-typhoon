@@ -15,7 +15,7 @@ public class Context
     }
     public delegate void OnSelectionEvent(TAG tag, int mapId, int id, GameObject gameObject);
     public OnSelectionEvent onSelectEvent;
-    public delegate void OnActorAction(int mapId, int id, TAG targetTag, int targetMapId);
+    public delegate void OnActorAction(Actor actor, TAG targetTag, int targetMapId);
     public OnActorAction onAction;
     public delegate void OnCreationEvent(ActionType type, TAG tag, int mapId, int id);
     public OnCreationEvent onCreationEvent;

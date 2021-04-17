@@ -29,6 +29,7 @@ public abstract class Object
     public int currentMapId;
     public int id;
     public int level;
+    public float currentHP;
     public List<Action> actions = new List<Action>(); //현재 겪고 있는 액션 리스트.
     public GameObject progress; 
     
@@ -57,35 +58,48 @@ public abstract class Object
 
         return gameObject;
     }
-    protected void SetProgress(float v, float max, bool displayRemainTime)
+    public void ShowHP(int totalHP)
     {
-        if(progress)
-        {
-            float value = v / max;
-            progress.GetComponent<Slider>().value = value;
+        progress.SetActive(true);
+        progress.transform.position = GetProgressPosition();
 
-            Text txt = progress.GetComponentInChildren<Text>();
-            if(txt != null)
+        float value = (float)this.currentHP / (float)totalHP;
+        progress.GetComponent<Slider>().value = value;
+        Text txt = progress.GetComponentInChildren<Text>();
+        if(txt != null)
+        {
+            txt.text = "";
+        }
+
+    }
+    protected void ShowProgress(float v, float max, bool displayRemainTime)
+    {
+        progress.SetActive(true);
+        progress.transform.position = GetProgressPosition();
+
+        float value = v / max;
+        progress.GetComponent<Slider>().value = value;
+
+        Text txt = progress.GetComponentInChildren<Text>();
+        if(txt != null)
+        {
+            if(displayRemainTime)
             {
-                if(displayRemainTime)
-                {
-                    float t = max - v;
-                    int hour = (int)(t / (60 * 60));
-                    int min = (int)(t / 60);
-                    int sec = (int)(t % 60);
-                    
-                    if(hour == 0)
-                        txt.text = string.Format("{0:D2}:{1:D2}", min, sec);
-                    else
-                        txt.text = string.Format("{0}:{1:D2}:{2:D2}", hour, min, sec);
-                }
+                float t = max - v;
+                int hour = (int)(t / (60 * 60));
+                int min = (int)(t / 60);
+                int sec = (int)(t % 60);
+                
+                if(hour == 0)
+                    txt.text = string.Format("{0:D2}:{1:D2}", min, sec);
                 else
-                {
-                    txt.text = "";
-                }
+                    txt.text = string.Format("{0}:{1:D2}:{2:D2}", hour, min, sec);
+            }
+            else
+            {
+                txt.text = "";
             }
         }
-        
     }
     protected Vector3 GetProgressPosition()
     {
@@ -123,8 +137,7 @@ public abstract class Object
             actions.RemoveAt(removeActionIds[n]);
         }
     }
-    
-    protected void RemoveActionType(ActionType type)
+    public void RemoveActionType(ActionType type)
     {
         List<int> removeList = new List<int>();
         for(int n = 0; n < actions.Count; n++)
@@ -200,7 +213,7 @@ public abstract class Object
 public abstract class ActingObject : Object
 {
     public List<QNode> routine;
-    protected ActingObject followObject; // 쫒을 actingobject
+    public ActingObject followObject; // 쫒을 actingobject
     protected bool isMovingStarted;
     private int routineIdx = 0;
     public void SetRoutine(List<QNode> routine)
@@ -229,7 +242,7 @@ public abstract class ActingObject : Object
         return false;
     }
     
-    public abstract bool AddAction(QNode node, int insertIndex = -1);
+    public abstract bool AddAction(QNode node);
     
     protected Action GetFlyingAction(int targetMapId, Meta.Ability ability, ActionType type)
     {
@@ -262,8 +275,11 @@ public abstract class ActingObject : Object
 
         while(stack.Count > 0)
         {
-            int id = MapManager.Instance.GetMapId(new Vector2Int(stack.Peek().x, stack.Peek().y));
-            route.Add(id);
+            if(stack.Count > 1)
+                route.Add(MapManager.Instance.GetMapId(new Vector2Int(stack.Peek().x, stack.Peek().y)));
+            else
+                route.Add(targetMapId);
+            
             stack.Pop();
         }
 
@@ -290,13 +306,6 @@ public abstract class ActingObject : Object
             isMovingStarted = true;
         }
 
-        if(idx >= route.Count -1 && ratio > 0.5f)
-        {
-            SetAnimation(ActionType.MAX);
-            Vector3 end = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[route.Count-1]), flying);
-            actor.transform.position = end;
-        }
-
         if(idx == 0)
             return true;
 
@@ -307,14 +316,21 @@ public abstract class ActingObject : Object
         
         Vector3 pos = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[idx - 1]), flying);
         Vector3 posNext = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[idx + 0]), flying);
+       
+        if(idx > route.Count -1 ||  (idx >= route.Count -1 && ratio > 0.9f))
+        {
+            SetAnimation(ActionType.MAX);
+            actor.transform.position = posNext;
+            return false;
+        }
+        else
+        {
+            actor.transform.position = Vector3.Lerp(pos, posNext, ratio);
+        }
 
-        actor.transform.position = Vector3.Lerp(pos, posNext, ratio);
-
-        Vector3 target = posNext;
-        
-        Vector3 dir = target - actor.transform.position;
+        Vector3 dir = posNext - actor.transform.position;
         actor.transform.rotation = Quaternion.Lerp(actor.transform.rotation, Quaternion.LookRotation(dir), ratio);
-        
+
         return true;
     }
     protected bool Flying(Action action, float height)
@@ -358,6 +374,7 @@ public abstract class ActingObject : Object
                 case ActionType.ACTOR_MOVING:
                     p.SetMoving();
                     break;
+                case ActionType.ACTOR_MAX:
                 case ActionType.MAX:
                     p.SetIdle();
                     break;
@@ -372,4 +389,14 @@ public abstract class ActingObject : Object
             
         }
     }
+    public void Clear(bool clearActions = true, bool clearFollowObject = true, bool clearRoutine = true)
+    {
+        if(clearActions)
+            actions.Clear();
+        if(clearFollowObject)
+            followObject = null;
+        if(clearRoutine && routine != null)
+            routine.Clear();
+    }
+    
 }
