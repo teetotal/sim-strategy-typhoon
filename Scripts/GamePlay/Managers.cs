@@ -165,6 +165,7 @@ public class MobManager
         {
             list[n].Update();
             list[n].UpdateUIPosition();
+            list[n].UpdateUnderAttack();
         }
     }
 }
@@ -218,6 +219,7 @@ public class ActorManager
         {
             list[n].Update();
             list[n].UpdateUIPosition();
+            list[n].UpdateUnderAttack();
         }
     }
 }
@@ -283,6 +285,7 @@ public class BuildingManager
         {
             kv.Value.Update();
             kv.Value.UpdateUIPosition();
+            kv.Value.UpdateUnderAttack();
         }
     }
 }
@@ -349,6 +352,7 @@ public class NeutralManager
         {
             kv.Value.Update();
             kv.Value.UpdateUIPosition();
+            kv.Value.UpdateUnderAttack();
         }
     }
 }

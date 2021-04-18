@@ -37,6 +37,7 @@ public class GamePlay : MonoBehaviour
         Context.Instance.Init(  OnCreationEvent,
                                 OnSelected,
                                 OnActorAction,
+                                OnAttack,
                                 ref canvas, 
                                 "progress_default", 
                                 "text_default",
@@ -379,6 +380,13 @@ public class GamePlay : MonoBehaviour
                 break;
         }
         SelectionUI.Instance.Hide();
+    }
+    void OnAttack(Object from, Object to, int amount)
+    {
+        Debug.Log(string.Format("OnAttack {0} -> {1} attack: {2}, HP {3}", from.mapId, to.mapId, amount, to.currentHP));
+        if(to.currentHP <= 0)
+            Debug.Log("ACTOR_UNDER_ATTACK Die");
+            
     }
     //생성, 소멸등의 이벤트
     void OnCreationEvent(ActionType type, TAG tag, int mapId, int id)

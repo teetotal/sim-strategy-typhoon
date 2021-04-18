@@ -55,11 +55,13 @@ public class Actor : ActingObject
             }
             case ActionType.ACTOR_ATTACK:
             {
-                action = new Action(node.type, 1); //공격 속도
+                action = new Action(node.type, meta.level[this.level].ability.attackSpeed); //공격 속도
                 break;
             }
             case ActionType.ACTOR_UNDER_ATTACK:
-                action = new Action(node.type, 1, node.values);
+                Object obj = Util.GetObject(node.id, (TAG)node.values[0]);
+                //일부러 null 체크 안함
+                underAttackQ.Enqueue(new UnderAttack(obj, node.values[1]));
                 break;
             case ActionType.ACTOR_DIE:
                 action = new Action(node.type, 2);
@@ -152,15 +154,14 @@ public class Actor : ActingObject
                         //죽었는지 확인
                         if(followObject.currentHP > 0 && Attacking())
                         {
-                            //안죽었으면 계속 공격
-                            //상대방 공격 당함
                             if(action.currentTime >= action.totalTime)
                             {
+                                //상대방 공격 당함
                                 Updater.Instance.AddQ(
                                     ActionType.ACTOR_UNDER_ATTACK,
                                     followObject.mapId, 
                                     this.mapId,
-                                    new List<int>() { meta.level[this.level].ability.attack },
+                                    new List<int>() { (int)TAG.ACTOR, meta.level[this.level].ability.attack },
                                     true
                                 );
                                 action.currentTime = 0;
@@ -204,31 +205,6 @@ public class Actor : ActingObject
                     }
                     return;
                 }
-                case ActionType.ACTOR_UNDER_ATTACK:
-                    
-                    this.currentHP -= action.values[0];
-
-                    Debug.Log(string.Format("ACTOR_UNDER_ATTACK {0}/{1} - {2}", 
-                        this.currentHP, meta.level[this.level].ability.HP, action.values[0]));
-                    
-                    ShowHP(meta.level[this.level].ability.HP);
-                    if(this.currentHP <= 0)
-                    {
-                        Debug.Log("ACTOR_UNDER_ATTACK Die");
-                        actions.Clear();
-                        Updater.Instance.AddQ(ActionType.ACTOR_DIE, this.mapId, this.id, null, false);
-                        return;
-                    }
-                    actions.RemoveAt(0);
-                    //도망가기
-                    Updater.Instance.AddQ(
-                        meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
-                        this.mapId,
-                        MapManager.Instance.GetRandomNearEmptyMapId(this.mapId, 2),
-                        null,
-                        false
-                        );
-                    return;
                 case ActionType.ACTOR_DIE:
                     SetAnimation(ActionType.ACTOR_DIE);
                     if(action.currentTime >= action.totalTime)
@@ -256,5 +232,40 @@ public class Actor : ActingObject
                 actions.RemoveAt(0);
             }
         }
+    }
+    public override void UpdateUnderAttack()
+    {
+        Meta.Actor meta = MetaManager.Instance.actorInfo[this.id];
+        while(underAttackQ.Count > 0)
+        {
+            UnderAttack p = underAttackQ.Dequeue();
+            
+            this.currentHP -= p.amount;
+
+            //callback
+            Context.Instance.onAttack(p.from, this, p.amount);
+
+            ShowHP(meta.level[this.level].ability.HP);
+            if(this.currentHP <= 0)
+            {
+                HideProgress();
+                underAttackQ.Clear();
+                this.actions.Clear();
+                Updater.Instance.AddQ(ActionType.ACTOR_DIE, this.mapId, this.id, null, false);
+                return;
+            }
+            
+            //도망가기
+            Updater.Instance.AddQ(
+                meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
+                this.mapId,
+                MapManager.Instance.GetRandomNearEmptyMapId(this.mapId, 2),
+                null,
+                false
+                );
+            return;
+
+        }
+        
     }
 }

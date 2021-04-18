@@ -1,7 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+
+public struct UnderAttack
+{
+    public Object from;
+    public int amount;
+
+    public UnderAttack(Object from, int amount)
+    {
+        this.from = from;
+        this.amount = amount;
+    }
+}
 
 //각종 행위. 공격, 이동
 public struct Action
@@ -49,6 +59,9 @@ public class NeutralBuilding: Object
     }
 
     public override void Update()
+    {
+    }
+    public override void UpdateUnderAttack()
     {
     }
 }
@@ -105,8 +118,10 @@ public class BuildingObject : Object
                 actions.RemoveAt(0);
             }
         }
-
-        //RemoveActions(removeActionIds);
+    }
+    public override void UpdateUnderAttack()
+    {
+        
     }
 }
 

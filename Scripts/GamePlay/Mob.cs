@@ -109,4 +109,8 @@ public class Mob : ActingObject
         }
         SetCurrentMapId();
     }
+    public override void UpdateUnderAttack()
+    {
+        
+    }
 }

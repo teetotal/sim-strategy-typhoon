@@ -19,6 +19,8 @@ public class Context
     public OnActorAction onAction;
     public delegate void OnCreationEvent(ActionType type, TAG tag, int mapId, int id);
     public OnCreationEvent onCreationEvent;
+    public delegate void OnAttack(Object from, Object to, int amount);
+    public OnAttack onAttack;
 
     public Dictionary<Context.Mode, IContext> contexts;
     private static readonly Lazy<Context> hInstance = new Lazy<Context>(() => new Context());
@@ -65,6 +67,7 @@ public class Context
                     OnCreationEvent onCreationEvent,
                     OnSelectionEvent onSelectEvent,
                     OnActorAction onAction,
+                    OnAttack onAttack,
                     ref Transform canvas, 
                     string progressPrefab, 
                     string titlePrefab, 
@@ -75,6 +78,7 @@ public class Context
         this.onCreationEvent = onCreationEvent;
         this.onSelectEvent = onSelectEvent;
         this.onAction = onAction;
+        this.onAttack = onAttack;
 
         this.canvas = canvas;
         this.progressPrefab = Resources.Load<GameObject>(progressPrefab);

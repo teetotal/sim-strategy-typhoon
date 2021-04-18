@@ -26,6 +26,7 @@ public class Meta
         public float carring;
         public int attack;
         public float attackDistance;
+        public float attackSpeed;
         public float depense;
         public float moving;
     }

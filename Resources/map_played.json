@@ -17,18 +17,6 @@
             ],
             "buildings": [
                 {
-                    "mapId": 0,
-                    "buildingId": 0,
-                    "rotation": 0,
-                    "actors": [
-                        {
-                            "mapId": 2,
-                            "actorId": 0,
-                            "HP": 10
-                        }
-                    ]
-                },
-                {
                     "mapId": 10,
                     "buildingId": 0,
                     "rotation": 0,
@@ -36,7 +24,7 @@
                         {
                             "mapId": 2,
                             "actorId": 0,
-                            "HP": 10
+                            "HP": 20
                         }
                     ]
                 }

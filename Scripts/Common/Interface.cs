@@ -31,12 +31,14 @@ public abstract class Object
     public int id;
     public int level;
     public float currentHP;
+    public Queue<UnderAttack> underAttackQ = new Queue<UnderAttack>();
     public List<Action> actions = new List<Action>(); //현재 겪고 있는 액션 리스트.
     public GameObject progress; 
     
     //fn
     public abstract bool Create(int mapId, int id);
     public abstract void Update();
+    public abstract void UpdateUnderAttack();
     
     protected GameObject Instantiate(int mapId, int id, string prefab, TAG tag, bool flying)
     {
@@ -341,7 +343,7 @@ public abstract class ActingObject : Object
 
         Vector3 dir = posNext - actor.transform.position;
         actor.transform.rotation = Quaternion.Lerp(actor.transform.rotation, Quaternion.LookRotation(dir), ratio);
-        //actor.transform.LookAt(posNext);
+
         return true;
     }
     protected bool Flying(Action action, float height)

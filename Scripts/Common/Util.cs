@@ -68,4 +68,20 @@ public class Util
 
         return -1;
     }
+    public static Object GetObject(int mapId, TAG tag)
+    {
+        switch(tag)
+        {
+            case TAG.BUILDING:
+                return BuildingManager.Instance.objects[mapId];
+            case TAG.ACTOR:
+                return ActorManager.Instance.actors[mapId];
+            case TAG.MOB:
+                return MobManager.Instance.mobs[mapId];
+            case TAG.NEUTRAL:
+                return NeutralManager.Instance.objects[mapId];
+        }
+
+        return null;
+    }
 }
