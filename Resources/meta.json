@@ -120,7 +120,7 @@
                         "farming": 1,
                         "carring": 1,
                         "attack": 2,
-                        "attackDistance": 1,
+                        "attackDistance": 1.5,
                         "depense": 10,
                         "moving": 1
                     },

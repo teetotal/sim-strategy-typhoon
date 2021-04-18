@@ -15,6 +15,7 @@ public abstract class IAnimation : MonoBehaviour
 {
     public abstract void SetIdle();
     public abstract void SetMoving();
+    public abstract void SetDie();
 }
 public abstract class IAttacking : IAnimation
 {
@@ -72,6 +73,11 @@ public abstract class Object
         }
 
     }
+    protected void HideProgress()
+    {
+        if(progress != null)
+            progress.SetActive(false);
+    }
     protected void ShowProgress(float v, float max, bool displayRemainTime)
     {
         progress.SetActive(true);
@@ -105,6 +111,11 @@ public abstract class Object
     {
         Vector3 pos = gameObject.transform.position;
         return Camera.main.WorldToScreenPoint(new Vector3(pos.x, pos.y + 1, pos.z));
+    }
+    public void DestroyProgress()
+    {
+        if(progress != null)
+            GameObject.DestroyImmediate(progress);
     }
     /*
     private Vector3 GetColliderSize()
@@ -316,7 +327,7 @@ public abstract class ActingObject : Object
         
         Vector3 pos = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[idx - 1]), flying);
         Vector3 posNext = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[idx + 0]), flying);
-       
+
         if(idx > route.Count -1 ||  (idx >= route.Count -1 && ratio > 0.9f))
         {
             SetAnimation(ActionType.MAX);
@@ -330,7 +341,7 @@ public abstract class ActingObject : Object
 
         Vector3 dir = posNext - actor.transform.position;
         actor.transform.rotation = Quaternion.Lerp(actor.transform.rotation, Quaternion.LookRotation(dir), ratio);
-
+        //actor.transform.LookAt(posNext);
         return true;
     }
     protected bool Flying(Action action, float height)
@@ -385,6 +396,9 @@ public abstract class ActingObject : Object
                             a.SetAttack();
                     }
                     break;    
+                case ActionType.ACTOR_DIE:
+                    p.SetDie();
+                    break;
             }
             
         }

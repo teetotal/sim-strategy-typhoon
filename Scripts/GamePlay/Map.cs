@@ -273,6 +273,11 @@ public class MapManager
             Updater.Instance.AddQ(ActionType.NEUTRAL_CREATE, ne.mapId, ne.id, new List<int>() { ne.rotation }, true);
         }
     }
+    public void Remove(int mapId)
+    {
+        Vector2Int pos = GetMapPosition(mapId);
+        map[pos.x, pos.y] = mapMeta.defaultVal.cost;
+    }
     public void DestroyBuilding(int mapId)
     {
         Vector2Int pos = GetMapPosition(mapId);

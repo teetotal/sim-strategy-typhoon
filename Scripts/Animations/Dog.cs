@@ -59,4 +59,14 @@ public class Dog : IAttacking
         animator.SetBool("Run", false);
         animator.SetBool("Idle", false);
     }
+    public override void SetDie()
+    {
+        animator.SetBool("Walk", false);
+        animator.SetBool("Run", false);
+        animator.SetBool("Attack", false);
+        animator.SetBool("Attack2", false);
+        animator.SetBool("Idle", false);
+
+        animator.SetBool("Die", true);
+    }
 }

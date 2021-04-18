@@ -54,11 +54,14 @@ public class Actor : ActingObject
             }
             case ActionType.ACTOR_ATTACK:
             {
-                action = new Action(node.type, 1);
+                action = new Action(node.type, 1); //공격 속도
                 break;
             }
             case ActionType.ACTOR_UNDER_ATTACK:
                 action = new Action(node.type, 1, node.values);
+                break;
+            case ActionType.ACTOR_DIE:
+                action = new Action(node.type, 2);
                 break;
         }
         if(node.insertIndex != -1 && actions.Count > 0)
@@ -152,8 +155,9 @@ public class Actor : ActingObject
                         }
                         else
                         {
+                            Clear(true, true, false);
                             SetAnimation(ActionType.ACTOR_MAX);
-                            actions.RemoveAt(0);
+                            this.HideProgress();
                         }
                         return;
                     } 
@@ -197,10 +201,24 @@ public class Actor : ActingObject
                     {
                         Debug.Log("ACTOR_UNDER_ATTACK Die");
                         actions.Clear();
+                        Updater.Instance.AddQ(ActionType.ACTOR_DIE, this.mapId, this.id, null, false);
                         return;
                     }
                     actions.RemoveAt(0);
                     return;
+                case ActionType.ACTOR_DIE:
+                    SetAnimation(ActionType.ACTOR_DIE);
+                    if(action.currentTime >= action.totalTime)
+                    {
+                        //object삭제
+                        GameObject.DestroyImmediate(this.gameObject);
+                        ActorManager.Instance.actors.Remove(this.mapId);
+                        MapManager.Instance.Remove(this.mapId);
+                        DestroyProgress();
+                        Clear();
+                        return;
+                    }
+                    break;
             }
 
             //finish

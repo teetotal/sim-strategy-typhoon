@@ -49,9 +49,13 @@ public class ContextNone : IContext
                     id = BuildingManager.Instance.objects[mapId].id;
                     break;
                 case TAG.ACTOR:
-                    id = ActorManager.Instance.actors[mapId].id;
-                    Context.Instance.SetMode(Context.Mode.ACTOR);
-                    ((ContextActor)Context.Instance.contexts[Context.Mode.ACTOR]).SetSelectedActor(mapId);
+                    Actor actor = ActorManager.Instance.actors[mapId];
+                    id = actor.id;
+                    if(actor.currentHP > 0)
+                    {
+                        Context.Instance.SetMode(Context.Mode.ACTOR);
+                        ((ContextActor)Context.Instance.contexts[Context.Mode.ACTOR]).SetSelectedActor(mapId);
+                    }
                     break;
                 case TAG.BOTTOM:
                     id = mapId;

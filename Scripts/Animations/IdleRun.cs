@@ -14,13 +14,26 @@ public class IdleRun : IAnimation
 
     public override void SetIdle()
     {
-        animator.SetBool("Idle", true);
+        if(animator.GetBool("Idle") == false)
+            animator.SetBool("Idle", true);
+
         animator.SetBool("Run", false);
+        animator.SetBool("Die", false);
     }
 
     public override void SetMoving()
     {
         animator.SetBool("Idle", false);
-        animator.SetBool("Run", true);
+        animator.SetBool("Die", false);
+
+        if(!animator.GetBool("Run"))
+            animator.SetBool("Run", true);
+    }
+    public override void SetDie()
+    {
+        animator.SetBool("Idle", false);
+        animator.SetBool("Run", false);
+
+        animator.SetBool("Die", true);
     }
 }

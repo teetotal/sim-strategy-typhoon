@@ -48,4 +48,13 @@ public class Chicken : IAnimation
             animator.SetBool("Run", false);
         }
     }
+    public override void SetDie()
+    {
+        animator.SetBool("Walk", false);
+        animator.SetBool("Run", false);
+        animator.SetBool("Turn Head", false);
+        animator.SetBool("Eat", false);
+
+        animator.SetBool("Die", true);
+    }
 }

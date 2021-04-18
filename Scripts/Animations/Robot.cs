@@ -37,4 +37,12 @@ public class Robot : IAnimation
             animator.SetBool("Run", false);
         }
     }
+    public override void SetDie()
+    {
+        animator.SetBool("Walk", false);
+        animator.SetBool("Run", false);
+        animator.SetBool("Idle", false);
+        
+        animator.SetBool("Die", true);
+    }
 }
