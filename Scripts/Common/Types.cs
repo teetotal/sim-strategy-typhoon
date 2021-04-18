@@ -25,6 +25,7 @@ public enum ActionType
     ACTOR_CREATE,
     ACTOR_MOVING,
     ACTOR_FLYING,
+    ACTOR_MOVING_1_STEP,
     ACTOR_ATTACK,
     ACTOR_UNDER_ATTACK,
     ACTOR_DIE,

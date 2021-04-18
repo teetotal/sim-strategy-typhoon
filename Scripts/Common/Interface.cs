@@ -268,7 +268,10 @@ public abstract class ActingObject : Object
         Vector2Int diff = from - to;
         return new Action(type, (Mathf.Abs(diff.x) + Mathf.Abs(diff.y)) / ability.moving, route);
     }
-    protected Action GetMovingAction(int targetMapId, Meta.Ability ability, ActionType type)
+    /*
+    step: 몇 스텝만 이동할지, -1은 전체 
+    */
+    protected Action GetMovingAction(int targetMapId, Meta.Ability ability, ActionType type, int step = -1)
     {
         isMovingStarted = false;
         //Astar
@@ -284,7 +287,11 @@ public abstract class ActingObject : Object
             return a;
         }
 
-        while(stack.Count > 0)
+        int count = stack.Count;
+        if(step > 0 && step <= count)
+            count = step;
+
+        for(int n = 0; n < count; n++)
         {
             if(stack.Count > 1)
                 route.Add(MapManager.Instance.GetMapId(new Vector2Int(stack.Peek().x, stack.Peek().y)));
@@ -294,7 +301,7 @@ public abstract class ActingObject : Object
             stack.Pop();
         }
 
-        return new Action(type, route.Count / ability.moving, route);
+        return new Action(type, count / ability.moving, route);
     }
     protected bool Moving(Action action)
     {
@@ -311,7 +318,7 @@ public abstract class ActingObject : Object
         */
         bool flying = false;
 
-        if(!isMovingStarted && ratio > 0.5f) 
+        if(!isMovingStarted) 
         {
             SetAnimation(ActionType.ACTOR_MOVING);
             isMovingStarted = true;
@@ -322,22 +329,15 @@ public abstract class ActingObject : Object
 
         if(idx >= route.Count)
         {
+            SetAnimation(ActionType.MAX);
+            actor.transform.position = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[route.Count - 1]), flying);
             return false;
         }
         
         Vector3 pos = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[idx - 1]), flying);
         Vector3 posNext = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[idx + 0]), flying);
 
-        if(idx > route.Count -1 ||  (idx >= route.Count -1 && ratio > 0.9f))
-        {
-            SetAnimation(ActionType.MAX);
-            actor.transform.position = posNext;
-            return false;
-        }
-        else
-        {
-            actor.transform.position = Vector3.Lerp(pos, posNext, ratio);
-        }
+        actor.transform.position = Vector3.Lerp(pos, posNext, ratio);
 
         Vector3 dir = posNext - actor.transform.position;
         actor.transform.rotation = Quaternion.Lerp(actor.transform.rotation, Quaternion.LookRotation(dir), ratio);
@@ -370,6 +370,9 @@ public abstract class ActingObject : Object
     }
     protected bool Attacking()
     {
+        if(followObject == null)
+            return false;
+
         this.gameObject.transform.LookAt(followObject.gameObject.transform.position);
         SetAnimation(ActionType.ACTOR_ATTACK);
         return true;

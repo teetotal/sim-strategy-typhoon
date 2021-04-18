@@ -22,33 +22,34 @@ public class Actor : ActingObject
                 if(node.values != null && node.values.Count == 1)
                     this.currentHP = node.values[0];
                 break;
+            case ActionType.ACTOR_MOVING_1_STEP:
+            {
+                if(node.id == -1 || MapManager.Instance.GetCost(node.id) != MapManager.Instance.mapMeta.defaultVal.cost)
+                    return false;
+                
+                action = GetMovingAction(node.id, meta.level[this.level].ability, ActionType.ACTOR_MOVING, 3);
+                if(action.type == ActionType.MAX)
+                    return false;
+                
+                RemoveActionType(node.type); //이전 이동 액션을 제거
+                MoveMapId(action.values[action.values.Count - 1]);
+                
+                break;
+            }
             case ActionType.ACTOR_MOVING:
             case ActionType.ACTOR_FLYING:
             {
                 if(node.id == -1 || MapManager.Instance.GetCost(node.id) != MapManager.Instance.mapMeta.defaultVal.cost)
                     return false;
 
-                //mapmanager 변경. 
-                MapManager.Instance.Move(mapId, node.id);
-                //actormanager변경
-                ActorManager.Instance.actors[node.id] = this;
-                ActorManager.Instance.actors.Remove(mapId);
-
-                //Debug.Log(string.Format("current id: {0}, map id {1}", this.currentMapId, this.mapId));
-
                 action = (node.type == ActionType.ACTOR_MOVING) ? 
                         GetMovingAction(node.id, meta.level[this.level].ability, node.type) : GetFlyingAction(node.id, meta.level[this.level].ability, node.type);
                 if(action.type == ActionType.MAX)
                     return false;
-
+                
                 RemoveActionType(node.type); //이전 이동 액션을 제거
-                //actions.Add(action);
 
-                //actor map id변경
-                this.mapId = node.id;
-                GameObject parent = MapManager.Instance.defaultGameObjects[node.id];
-                gameObject.name = this.mapId.ToString();
-                gameObject.transform.SetParent(parent.transform);
+                MoveMapId(node.id);
 
                 break;
             }
@@ -69,6 +70,21 @@ public class Actor : ActingObject
         else
             actions.Add(action);
         return true;
+    }
+
+    protected void MoveMapId(int target)
+    {
+        //mapmanager 변경. 
+        MapManager.Instance.Move(mapId, target);
+        //actormanager변경
+        ActorManager.Instance.actors[target] = this;
+        ActorManager.Instance.actors.Remove(mapId);
+
+        //actor map id변경
+        this.mapId = target;
+        GameObject parent = MapManager.Instance.defaultGameObjects[target];
+        gameObject.name = this.mapId.ToString();
+        gameObject.transform.SetParent(parent.transform);
     }
     
     public override bool Create(int mapId, int id)
@@ -132,10 +148,9 @@ public class Actor : ActingObject
                     if(CheckAttacking(meta.level[this.level].ability))
                     {
                         ShowHP(meta.level[this.level].ability.HP);
-                        Attacking();
                         //attack
                         //죽었는지 확인
-                        if(followObject.currentHP > 0)
+                        if(followObject.currentHP > 0 && Attacking())
                         {
                             //안죽었으면 계속 공격
                             //상대방 공격 당함
@@ -176,7 +191,7 @@ public class Actor : ActingObject
                                 -1
                                 ),
                             //따라가기. 이동을 먼저 넣으면 mapid정보가 바뀌니까 뒤에 넣고 actions 순서를 바꾼다.
-                            new QNode(meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING,
+                            new QNode(meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING_1_STEP,
                                 this.mapId, 
                                 MapManager.Instance.GetRandomNearEmptyMapId(followObject.GetCurrentMapId(), (int)meta.level[this.level].ability.attackDistance),
                                 null,
@@ -205,6 +220,14 @@ public class Actor : ActingObject
                         return;
                     }
                     actions.RemoveAt(0);
+                    //도망가기
+                    Updater.Instance.AddQ(
+                        meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
+                        this.mapId,
+                        MapManager.Instance.GetRandomNearEmptyMapId(this.mapId, 2),
+                        null,
+                        false
+                        );
                     return;
                 case ActionType.ACTOR_DIE:
                     SetAnimation(ActionType.ACTOR_DIE);
