@@ -29,6 +29,8 @@ public enum ActionType
     ACTOR_ATTACK,
     ACTOR_UNDER_ATTACK,
     ACTOR_DIE,
+    ACTOR_LOAD_RESOURCE,
+    ACTOR_DELIVERY,
     ACTOR_MAX,
 
     MOB_CREATE,

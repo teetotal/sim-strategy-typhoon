@@ -103,17 +103,12 @@
     "neutrals": [
         {
             "id": 0,
-            "mapId": 24,
+            "mapId": 255,
             "rotation": 90
         },
         {
             "id": 1,
-            "mapId": 25,
-            "rotation": 90
-        },
-        {
-            "id": 2,
-            "mapId": 26,
+            "mapId": 128,
             "rotation": 90
         }
     ]

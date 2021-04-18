@@ -44,7 +44,7 @@ public class GameStatus
     ResourceId
     amount
     */
-    public Dictionary<int, Dictionary<int, int>> resourceInfo = new Dictionary<int, Dictionary<int, int>>();
+    public Dictionary<int, Dictionary<int, float>> resourceInfo = new Dictionary<int, Dictionary<int, float>>();
     /*
     mapId,
     Bilding Info
@@ -60,7 +60,7 @@ public class GameStatus
             //resources
             if(!gameStatus.resourceInfo.ContainsKey(n))
             {
-                gameStatus.resourceInfo[n] = new Dictionary<int, int>();
+                gameStatus.resourceInfo[n] = new Dictionary<int, float>();
             }
 
             Tribe tribe = gameStatus.tribes[n];
@@ -85,7 +85,7 @@ public class GameStatus
     {
         return tribes.Count;
     }
-    public int GetResource(int tribeId, int resourceId)
+    public float GetResource(int tribeId, int resourceId)
     {
         if(!resourceInfo[tribeId].ContainsKey(resourceId))
             return 0;

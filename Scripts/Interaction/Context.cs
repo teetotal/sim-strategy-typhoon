@@ -21,6 +21,10 @@ public class Context
     public OnCreationEvent onCreationEvent;
     public delegate void OnAttack(Object from, Object to, int amount);
     public OnAttack onAttack;
+    public delegate void OnLoadResource(Actor actor, int targetBuildingMapId);
+    public OnLoadResource onLoadResource;
+    public delegate void OnDelivery(Actor actor, int targetBuildingMapId, TAG targetBuildingTag);
+    public OnDelivery onDelivery;
 
     public Dictionary<Context.Mode, IContext> contexts;
     private static readonly Lazy<Context> hInstance = new Lazy<Context>(() => new Context());
@@ -68,6 +72,8 @@ public class Context
                     OnSelectionEvent onSelectEvent,
                     OnActorAction onAction,
                     OnAttack onAttack,
+                    OnLoadResource onLoadResource,
+                    OnDelivery onDelivery,
                     ref Transform canvas, 
                     string progressPrefab, 
                     string titlePrefab, 
@@ -79,6 +85,8 @@ public class Context
         this.onSelectEvent = onSelectEvent;
         this.onAction = onAction;
         this.onAttack = onAttack;
+        this.onLoadResource = onLoadResource;
+        this.onDelivery = onDelivery;
 
         this.canvas = canvas;
         this.progressPrefab = Resources.Load<GameObject>(progressPrefab);

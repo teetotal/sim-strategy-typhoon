@@ -2,7 +2,7 @@
     "standardResourceId": 0,
     "markets": [
         {
-            "mapId": 0,
+            "mapId": 128,
             "exchanges": [
                 {
                     "resourceId": 0,

@@ -189,12 +189,23 @@ public class ActorManager
         int mapId = q.mapId;
         if(q.type == ActionType.ACTOR_CREATE)
         {
+            BuildingObject building = BuildingManager.Instance.objects[mapId];
             Actor obj = new Actor();
             if(obj.Create(mapId, q.id))
-                actors[obj.mapId] = obj;
-
-            mapId = obj.mapId; // 빈 공간으로 생성시킨다.
-            Context.Instance.onCreationEvent(q.type, TAG.ACTOR, obj.mapId, obj.id);
+            {
+                mapId = obj.mapId; // 빈 공간으로 생성시킨다.
+                //actor등록
+                actors[mapId] = obj;
+                //building에 actor등록
+                building.actors.Add(obj);
+                //actor에 building등록
+                obj.attachedBuilding = building;
+                Context.Instance.onCreationEvent(q.type, TAG.ACTOR, mapId, obj.id);
+            }
+            else
+            {
+                return;
+            }
         }
         
         if(actors.ContainsKey(mapId) == false)

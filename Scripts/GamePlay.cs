@@ -32,12 +32,15 @@ public class GamePlay : MonoBehaviour
 
         InitSelectionUI();
         LoadSavedPlay();
+        UpdateResourceUI();
     
         //Context
         Context.Instance.Init(  OnCreationEvent,
                                 OnSelected,
                                 OnActorAction,
                                 OnAttack,
+                                OnLoadResource,
+                                OnDelivery,
                                 ref canvas, 
                                 "progress_default", 
                                 "text_default",
@@ -54,7 +57,7 @@ public class GamePlay : MonoBehaviour
             for(int n = 0; n < kv.Value.actors.Count; n++)
             {
                 GameStatus.MapIdActorIdHP p = kv.Value.actors[n];
-                Updater.Instance.AddQ(ActionType.ACTOR_CREATE, p.mapId, p.actorId, new List<int>() { p.HP}, true);
+                Updater.Instance.AddQ(ActionType.ACTOR_CREATE, kv.Key, p.actorId, new List<int>() { p.HP}, true);
             }
         }
     }
@@ -115,6 +118,7 @@ public class GamePlay : MonoBehaviour
             case "scrollview_actor":
                 actor_scrollview = obj;
                 break;
+            /*
             case "resource1":
                 obj.GetComponentInChildren<Text>().text = string.Format("{0} {1}", 
                     MetaManager.Instance.resourceInfo[0], 
@@ -130,11 +134,12 @@ public class GamePlay : MonoBehaviour
                     MetaManager.Instance.resourceInfo[2], 
                     GameSystem.Instance.gameStatus.GetResource(0, 2));
                 break;
+            */
             default:
                 break;
         }
     }
-     List<GameObject> GetBuildingScrollItems()
+    List<GameObject> GetBuildingScrollItems()
     {
         List<GameObject> list = new List<GameObject>();
         for(int n = 0; n < MetaManager.Instance.meta.buildings.Count; n++)
@@ -170,6 +175,17 @@ public class GamePlay : MonoBehaviour
         }
 
         return list;
+    }
+    /*
+    */
+    void UpdateResourceUI()
+    {
+        for(int n = 0; n < 3; n++)
+        {
+            GameObject.Find("resource" + (n+1).ToString()).GetComponentInChildren<Text>().text = string.Format("{0} {1}", 
+                    MetaManager.Instance.resourceInfo[n], 
+                    GameSystem.Instance.gameStatus.GetResource(0, n));
+        }
     }
     /*
         OnClick 처리
@@ -316,28 +332,25 @@ public class GamePlay : MonoBehaviour
     }
     void OnClickForUpgradingActor(int mapId, int actorId)
     {
-        Actor actor = ActorManager.Instance.actors[mapId];
-        Meta.Actor meta = MetaManager.Instance.actorInfo[actor.id];
-        //짐 싣기 테스트 코드
-        GameObject selectedObj = actor.gameObject;
-        //Debug.Log(string.Format("OnClickForUpgradingActor {0}-{1}", mapId, actorId));
-        GameObject o = Resources.Load<GameObject>("load");
-        o = GameObject.Instantiate(o);
         
-        o.transform.SetParent(selectedObj.transform);
-
-        Vector3 size = selectedObj.GetComponent<BoxCollider>().size;
-        o.transform.localPosition = new Vector3(0, size.y, 0);
-
+        ((ContextActor)Context.Instance.contexts[Context.Mode.ACTOR]).Clear();
+        Context.Instance.SetMode(Context.Mode.NONE);
+    }
+    /*
+    Context에 등록되는 On~ 함수들
+    */
+    void SetDelivery(Actor actor, int targetMapId, TAG targetBuildingTag)
+    {
+        Meta.Actor meta = MetaManager.Instance.actorInfo[actor.id];
         ActionType type = meta.flying ? ActionType.ACTOR_FLYING: ActionType.ACTOR_MOVING;
         //routine 추가
         actor.SetRoutine(new List<QNode>()
         {
-            new QNode(type, mapId, 0, null, false, -1),
-            new QNode(type, mapId, 255, null, false, -1)
+            new QNode(type, actor.mapId, actor.attachedBuilding.mapId, null, false, -1), //home으로 가서
+            new QNode(ActionType.ACTOR_LOAD_RESOURCE, actor.mapId, actor.attachedBuilding.mapId, null, false, -1), //적재
+            new QNode(type, actor.mapId, targetMapId, null, false, -1), // 시장으로 이동
+            new QNode(ActionType.ACTOR_DELIVERY, actor.mapId, targetMapId, new List<int>() { (int)targetBuildingTag }, false, -1) //판매
         });
-        ((ContextActor)Context.Instance.contexts[Context.Mode.ACTOR]).Clear();
-        Context.Instance.SetMode(Context.Mode.NONE);
     }
 
     // 모든 선택 이벤트 통합.
@@ -354,8 +367,20 @@ public class GamePlay : MonoBehaviour
         switch(tag)
         {
             case TAG.BUILDING:
-                GameStatus.Building building = GameSystem.Instance.gameStatus.buildingInfo[targetMapId];
-                //Debug.Log(string.Format("tribe {0}, {1}", building.tribeId, building.buildingId));
+                //BuildingObject targetBuilding = BuildingManager.Instance.objects[targetMapId];
+                //BuildingObject home = actor.attachedBuilding;
+
+                //Debug.Log(string.Format("{0} -> {1}", home.mapId, targetBuilding.mapId));
+                break;
+            case TAG.NEUTRAL:
+                /*
+                NeutralBuilding targetBuilding = NeutralManager.Instance.objects[targetMapId];
+                Meta.Neutral targetMeta = MetaManager.Instance.neutralInfo[targetBuilding.id]; 
+
+                BuildingObject home = actor.attachedBuilding;
+                Debug.Log(string.Format("{0} -> {1} {2}", home.mapId, targetBuilding.mapId, (BuildingType)targetMeta.type));
+                */
+                SetDelivery(actor, targetMapId, TAG.NEUTRAL);
                 break;
             case TAG.ACTOR:
                 actor.followObject = ActorManager.Instance.actors[targetMapId];
@@ -393,6 +418,44 @@ public class GamePlay : MonoBehaviour
     {
         //Debug.Log(string.Format("OnCreationEvent {0}, {1}, {2}, {3}", type, tag, mapId, id));
         //game system과 연결 시켜 줘야함
+    }
+    void OnLoadResource(Actor actor, int targetBuildingMapId)
+    {
+        //짐 싣기
+        GameObject selectedObj = actor.gameObject;
+        //Debug.Log(string.Format("OnClickForUpgradingActor {0}-{1}", mapId, actorId));
+        GameObject o = Resources.Load<GameObject>("load");
+        o = GameObject.Instantiate(o);
+        o.name = "load";
+        o.transform.SetParent(selectedObj.transform);
+        Vector3 size = selectedObj.GetComponent<BoxCollider>().size;
+        o.transform.localPosition = new Vector3(0, size.y, 0);
+    }
+    void OnDelivery(Actor actor, int targetBuildingMapId, TAG targetBuildingTag)
+    {
+        Transform load = actor.gameObject.transform.Find("load");
+        if(load == null)
+        {
+            Debug.LogError("Finding the load failure");
+        }
+        else
+        {
+            GameObject.DestroyImmediate(load.gameObject);
+        }
+        //resource 차감
+        Meta.Building metaBuilding = MetaManager.Instance.buildingInfo[actor.attachedBuilding.id];
+        Meta.Actor metaActor = MetaManager.Instance.actorInfo[actor.id];
+
+        for(int n = 0; n < metaBuilding.output.Count; n++)
+        {
+            int resourceId = metaBuilding.output[n].resourceId;
+            int amount = metaActor.level[actor.level].ability.carring;
+            //tribe
+            GameSystem.Instance.gameStatus.resourceInfo[0][resourceId] -= amount;
+            GameSystem.Instance.gameStatus.resourceInfo[0][GameSystem.Instance.marketStatus.standardResourceId] += 
+                amount * GameSystem.Instance.marketStatus.exchangeInfo[targetBuildingMapId][resourceId];
+        }
+        UpdateResourceUI();
     }
 
     // UI canceling

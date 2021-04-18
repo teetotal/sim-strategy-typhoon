@@ -23,7 +23,7 @@ public class Meta
         public int HP;
         public float building;
         public float farming;
-        public float carring;
+        public int carring;
         public int attack;
         public float attackDistance;
         public float attackSpeed;

@@ -5,8 +5,9 @@ using UnityEngine.UI;
 
 public class Actor : ActingObject
 {
-    /*
+    
     public BuildingObject attachedBuilding; //소속된 건물 정보
+    /*
     //전투의 경우, 수량 정보도 필요할 수 있음.
     public int currentHeadcount; //현재 인원. 전체 인원은 type과 level로 파악
     */
@@ -39,8 +40,21 @@ public class Actor : ActingObject
             case ActionType.ACTOR_MOVING:
             case ActionType.ACTOR_FLYING:
             {
-                if(node.id == -1 || MapManager.Instance.GetCost(node.id) != MapManager.Instance.mapMeta.defaultVal.cost)
+                /*
+                mapId: 사용 안함
+                id:     target 위치
+                */
+                if(node.id == -1)  
                     return false;
+
+                // 타겟 위치에 갈 수 없으면 근처로 이동.
+                //정확히 그 위치에 가고 싶은건 위치 지정레벨에서 컨트롤
+                if(MapManager.Instance.GetCost(node.id) != MapManager.Instance.mapMeta.defaultVal.cost)
+                {
+                    node.id = MapManager.Instance.GetRandomNearEmptyMapId(node.id, 1);
+                    if(node.id == -1)
+                        return false;
+                }
 
                 action = (node.type == ActionType.ACTOR_MOVING) ? 
                         GetMovingAction(node.id, meta.level[this.level].ability, node.type) : GetFlyingAction(node.id, meta.level[this.level].ability, node.type);
@@ -65,6 +79,12 @@ public class Actor : ActingObject
                 break;
             case ActionType.ACTOR_DIE:
                 action = new Action(node.type, 2);
+                break;
+            case ActionType.ACTOR_LOAD_RESOURCE:
+                action = new Action(node.type, 1, new List<int>() { node.id });
+                break;
+            case ActionType.ACTOR_DELIVERY:
+                action = new Action(node.type, 1, new List<int>() { node.id, node.values[0] });
                 break;
         }
         if(node.insertIndex != -1 && actions.Count > 0)
@@ -217,6 +237,21 @@ public class Actor : ActingObject
                         Clear();
                         return;
                     }
+                    break;
+                case ActionType.ACTOR_LOAD_RESOURCE:
+                    /*
+                    values[0]:     적재할 리소스를 가지고 있는 빌딩 mapId
+                    */
+                    if(action.currentTime >= action.totalTime)
+                        Context.Instance.onLoadResource(this, action.values[0]);
+                    break;
+                case ActionType.ACTOR_DELIVERY:
+                    /*
+                    values[0]:   배송할 건물의 mapId
+                    values[1]:   배송할 건물의 TAG
+                    */
+                    if(action.currentTime >= action.totalTime)
+                        Context.Instance.onDelivery(this, action.values[0], (TAG)action.values[1]);
                     break;
             }
 
