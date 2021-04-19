@@ -43,6 +43,10 @@ public struct Action
 //중립 지역 건물 정보
 public class NeutralBuilding: Object
 {
+    public override bool AddAction(QNode node)
+    {
+        return true;
+    }
     public override bool Create(int mapId, int id)
     {
         this.mapId = mapId;
@@ -69,15 +73,37 @@ public class NeutralBuilding: Object
 public class BuildingObject : Object
 {   
     public List<Actor> actors = new List<Actor>();
+    public override bool AddAction(QNode node)
+    {
+        Meta.Building meta =  MetaManager.Instance.buildingInfo[this.id];
+        Action action = new Action(ActionType.MAX);
+
+        switch(node.type)
+        {
+            case ActionType.BUILDING_UNDER_ATTACK:
+                Object obj = Util.GetObject(node.id, (TAG)node.values[0]);
+                //일부러 null 체크 안함
+                underAttackQ.Enqueue(new UnderAttack(obj, node.values[1]));
+                return true;
+            case ActionType.BUILDING_DESTROY:
+                action = new Action(node.type, 2);
+                break;
+        }
+        actions.Add(action);
+        return true;
+    }
     
     public override bool Create(int mapId, int id)
     {
         this.mapId = mapId;
         this.id = id;
+        this.currentMapId = mapId;
+        this.currentHP = MetaManager.Instance.buildingInfo[id].level[this.level].HP;
+        this.level = 0;
 
         //progress
         Vector3 pos = GetProgressPosition();
-        progress = GameObject.Instantiate(Context.Instance.progressPrefab, pos, Quaternion.identity);
+        progress = GameObject.Instantiate(Context.Instance.progressPrefab, GetProgressPosition(), Quaternion.identity);
         progress.name = string.Format("progress-{0}-{1}", mapId, this.id);
         progress.transform.SetParent(Context.Instance.canvas);
 
@@ -102,6 +128,22 @@ public class BuildingObject : Object
                 case ActionType.BUILDING_CREATE:
                     ShowProgress(action.currentTime, action.totalTime, true);
                     break;
+                case ActionType.BUILDING_DESTROY:
+                    if(action.currentTime >= action.totalTime)
+                    {
+                        //딸린 actor들 삭제
+                        for(int n = 0; n < this.actors.Count; n++)
+                        {
+                            Actor actor = actors[n];
+                            Updater.Instance.AddQ(ActionType.ACTOR_DIE, actor.mapId, actor.id, null, false, 0);
+                        }
+                        actions.Clear();
+                        DestroyProgress();
+                        BuildingManager.Instance.objects.Remove(mapId);
+                        MapManager.Instance.DestroyBuilding(mapId);
+                        return;
+                    }
+                    break;
             }
 
             //finish
@@ -111,8 +153,7 @@ public class BuildingObject : Object
                 switch(action.type)
                 {
                     case ActionType.BUILDING_CREATE:
-                        GameObject.Destroy(progress);
-                        progress = null;
+                        progress.SetActive(false);
                         break;
                 }
                 actions.RemoveAt(0);
@@ -121,7 +162,26 @@ public class BuildingObject : Object
     }
     public override void UpdateUnderAttack()
     {
-        
+        Meta.Building meta = MetaManager.Instance.buildingInfo[this.id];
+        while(underAttackQ.Count > 0)
+        {
+            UnderAttack p = underAttackQ.Dequeue();
+            
+            this.currentHP -= p.amount;
+
+            //callback
+            Context.Instance.onAttack(p.from, this, p.amount);
+
+            ShowHP(meta.level[this.level].HP);
+            if(this.currentHP <= 0)
+            {
+                HideProgress();
+                underAttackQ.Clear();
+                this.actions.Clear();
+                Updater.Instance.AddQ(ActionType.BUILDING_DESTROY, this.mapId, this.id, null, false);
+                return;
+            }
+        }
     }
 }
 

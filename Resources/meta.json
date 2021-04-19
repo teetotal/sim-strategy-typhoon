@@ -308,355 +308,160 @@
         {
             "id": 0,
             "type": 0,
-            "name": "집 lv.1",
-            "prefab": "ForestCabin",
-            "level": 1,
+            "name": "집",
+            "level": [
+                {
+                    "prefab": "ForestCabin",
+                    "buildTime": 5,
+                    "HP": 100,
+                    "costs": [
+                        {
+                            "resourceId": 3,
+                            "amount": 1
+                        }
+                    ],
+                    "output": [
+                        {
+                            "resourceId": 1,
+                            "amount": 2
+                        }
+                    ],
+                    "actors": [
+                        {
+                            "actorId": 0,
+                            "max": 2
+                        },
+                        {
+                            "actorId": 1,
+                            "max": 2
+                        },
+                        {
+                            "actorId": 2,
+                            "max": 2
+                        },
+                        {
+                            "actorId": 3,
+                            "max": 2
+                        },
+                        {
+                            "actorId": 4,
+                            "max": 2
+                        },
+                        {
+                            "actorId": 5,
+                            "max": 2
+                        },
+                        {
+                            "actorId": 6,
+                            "max": 2
+                        },
+                        {
+                            "actorId": 7,
+                            "max": 2
+                        }
+                    ]
+                }
+            ],
             "dimension": {
                 "x": 1,
                 "y": 1
-            },
-            "buildTime": 5,
-            "costs": [
-                {
-                    "resourceId": 0,
-                    "amount": 10
-                }
-            ],
-            "output": [
-                {
-                    "resourceId": 1,
-                    "amount": 4
-                }
-            ],
-            "actors": [
-                {
-                    "actorId": 0,
-                    "max": 2
-                },
-                {
-                    "actorId": 1,
-                    "max": 2
-                },
-                {
-                    "actorId": 2,
-                    "max": 2
-                },
-                {
-                    "actorId": 3,
-                    "max": 2
-                },
-                {
-                    "actorId": 4,
-                    "max": 2
-                },
-                {
-                    "actorId": 5,
-                    "max": 2
-                },
-                {
-                    "actorId": 6,
-                    "max": 2
-                },
-                {
-                    "actorId": 7,
-                    "max": 2
-                }
-            ]
+            }
         },
         {
             "id": 1,
-            "type": 1,
-            "name": "호수",
-            "prefab": "ForestLake",
-            "level": 2,
+            "type": 0,
+            "name": "텐트 1",
+            "level": [
+                {
+                    "prefab": "ForestTent_01",
+                    "buildTime": 5,
+                    "HP": 100,
+                    "costs": [
+                        {
+                            "resourceId": 3,
+                            "amount": 1
+                        }
+                    ],
+                    "output": [],
+                    "actors": []
+                }
+            ],
             "dimension": {
                 "x": 1,
                 "y": 1
-            },
-            "buildTime": 5,
-            "costs": [
-                {
-                    "resourceId": 0,
-                    "amount": 20
-                }
-            ],
-            "output": [
-                {
-                    "resourceId": 1,
-                    "amount": 8
-                }
-            ],
-            "actors": []
+            }
         },
         {
             "id": 2,
-            "type": 1,
-            "name": "강 직선",
-            "prefab": "ForestRiverStraight",
-            "level": 2,
+            "type": 0,
+            "name": "텐트 2",
+            "level": [
+                {
+                    "prefab": "ForestTent_02",
+                    "buildTime": 5,
+                    "HP": 100,
+                    "costs": [
+                        {
+                            "resourceId": 3,
+                            "amount": 1
+                        }
+                    ],
+                    "output": [],
+                    "actors": []
+                }
+            ],
             "dimension": {
                 "x": 1,
                 "y": 1
-            },
-            "buildTime": 5,
-            "costs": [
-                {
-                    "resourceId": 0,
-                    "amount": 20
-                }
-            ],
-            "output": [
-                {
-                    "resourceId": 1,
-                    "amount": 8
-                }
-            ],
-            "actors": []
+            }
         },
         {
             "id": 3,
-            "type": 1,
-            "name": "강 커브",
-            "prefab": "ForestRiverCurve",
-            "level": 2,
+            "type": 0,
+            "name": "텐트 3",
+            "level": [
+                {
+                    "prefab": "ForestTent_03",
+                    "buildTime": 5,
+                    "HP": 100,
+                    "costs": [
+                        {
+                            "resourceId": 3,
+                            "amount": 1
+                        }
+                    ],
+                    "output": [],
+                    "actors": []
+                }
+            ],
             "dimension": {
                 "x": 1,
                 "y": 1
-            },
-            "buildTime": 5,
-            "costs": [
-                {
-                    "resourceId": 0,
-                    "amount": 20
-                }
-            ],
-            "output": [
-                {
-                    "resourceId": 1,
-                    "amount": 8
-                }
-            ],
-            "actors": []
+            }
         },
         {
             "id": 4,
-            "type": 0,
-            "name": "텐트 1",
-            "prefab": "ForestTent_01",
-            "level": 1,
-            "dimension": {
-                "x": 1,
-                "y": 1
-            },
-            "buildTime": 5,
-            "costs": [
+            "type": 1,
+            "name": "house01",
+            "level": [
                 {
-                    "resourceId": 0,
-                    "amount": 20
+                    "prefab": "House_01",
+                    "buildTime": 5,
+                    "HP": 100,
+                    "costs": [
+                        {
+                            "resourceId": 3,
+                            "amount": 1
+                        }
+                    ],
+                    "output": [],
+                    "actors": []
                 }
             ],
-            "output": [],
-            "actors": [
-                {
-                    "actorId": 0,
-                    "max": 2
-                }
-            ]
-        },
-        {
-            "id": 5,
-            "type": 0,
-            "name": "텐트 2",
-            "prefab": "ForestTent_02",
-            "level": 1,
             "dimension": {
                 "x": 1,
                 "y": 1
-            },
-            "buildTime": 5,
-            "costs": [
-                {
-                    "resourceId": 0,
-                    "amount": 20
-                }
-            ],
-            "output": [],
-            "actors": [
-                {
-                    "actorId": 1,
-                    "max": 2
-                }
-            ]
-        },
-        {
-            "id": 6,
-            "type": 0,
-            "name": "텐트 3",
-            "prefab": "ForestTent_03",
-            "level": 1,
-            "dimension": {
-                "x": 1,
-                "y": 1
-            },
-            "buildTime": 5,
-            "costs": [
-                {
-                    "resourceId": 0,
-                    "amount": 20
-                }
-            ],
-            "output": [],
-            "actors": [
-                {
-                    "actorId": 2,
-                    "max": 2
-                }
-            ]
-        },
-        {
-            "id": 7,
-            "type": 1,
-            "name": "언덕",
-            "prefab": "ForestEmptyCube",
-            "level": 1,
-            "dimension": {
-                "x": 1,
-                "y": 1
-            },
-            "buildTime": 5,
-            "costs": [
-                {
-                    "resourceId": 0,
-                    "amount": 20
-                }
-            ],
-            "output": [],
-            "actors": []
-        },
-        {
-            "id": 8,
-            "type": 1,
-            "name": "과실수 1",
-            "prefab": "ForestTree_01",
-            "level": 1,
-            "dimension": {
-                "x": 1,
-                "y": 1
-            },
-            "buildTime": 5,
-            "costs": [
-                {
-                    "resourceId": 0,
-                    "amount": 20
-                }
-            ],
-            "output": [],
-            "actors": []
-        },
-        {
-            "id": 9,
-            "type": 1,
-            "name": "과실수 2",
-            "prefab": "ForestTree_02",
-            "level": 1,
-            "dimension": {
-                "x": 1,
-                "y": 1
-            },
-            "buildTime": 5,
-            "costs": [
-                {
-                    "resourceId": 0,
-                    "amount": 20
-                }
-            ],
-            "output": [],
-            "actors": []
-        },
-        {
-            "id": 10,
-            "type": 1,
-            "name": "모닥불",
-            "prefab": "ForestFire",
-            "level": 1,
-            "dimension": {
-                "x": 1,
-                "y": 1
-            },
-            "buildTime": 1,
-            "costs": [
-                {
-                    "resourceId": 3,
-                    "amount": 1
-                }
-            ],
-            "output": [],
-            "actors": []
-        },
-        {
-            "id": 11,
-            "type": 1,
-            "name": "동그란 바닥",
-            "prefab": "Ground",
-            "level": 1,
-            "dimension": {
-                "x": 1,
-                "y": 1
-            },
-            "buildTime": 1,
-            "costs": [],
-            "output": [],
-            "actors": []
-        },
-        {
-            "id": 12,
-            "type": 1,
-            "name": "브릿지1",
-            "prefab": "ForestBridge_01",
-            "level": 1,
-            "dimension": {
-                "x": 1,
-                "y": 1
-            },
-            "buildTime": 1,
-            "costs": [],
-            "output": [],
-            "actors": []
-        },
-        {
-            "id": 13,
-            "type": 1,
-            "name": "브릿지2",
-            "prefab": "ForestBridge_02",
-            "level": 1,
-            "dimension": {
-                "x": 1,
-                "y": 1
-            },
-            "buildTime": 1,
-            "costs": [],
-            "output": [],
-            "actors": []
-        },
-        {
-            "id": 15,
-            "type": 1,
-            "name": "불타는 모닥불",
-            "prefab": "ForestFire2",
-            "level": 1,
-            "dimension": {
-                "x": 1,
-                "y": 1
-            },
-            "buildTime": 1,
-            "costs": [
-                {
-                    "resourceId": 3,
-                    "amount": 1
-                }
-            ],
-            "output": [],
-            "actors": []
+            }
         }
     ],
     "neutrals": [

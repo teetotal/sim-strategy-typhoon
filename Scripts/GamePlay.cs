@@ -154,13 +154,13 @@ public class GamePlay : MonoBehaviour
         return list;
     }
 
-    List<GameObject> GetActorScrollItems(int buildingId)
+    List<GameObject> GetActorScrollItems(int buildingId, int level)
     {
         List<GameObject> list = new List<GameObject>();
-        for(int n = 0; n < MetaManager.Instance.meta.buildings[buildingId].actors.Count; n++)
+        for(int n = 0; n < MetaManager.Instance.meta.buildings[buildingId].level[level].actors.Count; n++)
         {
             GameObject obj = Resources.Load<GameObject>("button_default");
-            Meta.ActorIdMax actorIdMax = MetaManager.Instance.meta.buildings[buildingId].actors[n];
+            Meta.ActorIdMax actorIdMax = MetaManager.Instance.meta.buildings[buildingId].level[level].actors[n];
             Meta.Actor info = MetaManager.Instance.meta.actors[actorIdMax.actorId];
 
             string wage = "";
@@ -254,8 +254,7 @@ public class GamePlay : MonoBehaviour
                     int mapId = SelectionUI.Instance.GetSelectedMapId();
                     if(mapId != -1)
                     {
-                        int buildingId = BuildingManager.Instance.objects[mapId].id;
-                        OnClickForCreatingActor(mapId, buildingId);
+                        OnClickForCreatingActor(BuildingManager.Instance.objects[mapId]);
                     }
                     SelectionUI.Instance.Hide();
                 }
@@ -314,7 +313,7 @@ public class GamePlay : MonoBehaviour
         }
     }
     
-    void OnClickForCreatingActor(int mapId, int buildingId)
+    void OnClickForCreatingActor(BuildingObject building)
     {
         if(actorLayer.activeSelf == true)
             return;
@@ -324,11 +323,11 @@ public class GamePlay : MonoBehaviour
                                                                         actorLayer.GetComponent<RectTransform>().sizeDelta,
                                                                         actorLayer.transform.position
                                                                         );
-        LoaderPerspective.Instance.CreateScrollViewItems(GetActorScrollItems(buildingId), 15, OnClickButton, actor_scrollview);
+        LoaderPerspective.Instance.CreateScrollViewItems(GetActorScrollItems(building.id, building.level), 15, OnClickButton, actor_scrollview);
                 
         actorLayer.SetActive(true);
         Context.Instance.SetMode(Context.Mode.UI_ACTOR);
-        ((ContextCreatingActor)Context.Instance.contexts[Context.Mode.UI_ACTOR]).SetSelectedBuilding(mapId, buildingId);
+        ((ContextCreatingActor)Context.Instance.contexts[Context.Mode.UI_ACTOR]).SetSelectedBuilding(building.mapId, building.id);
     }
     void OnClickForUpgradingActor(int mapId, int actorId)
     {
@@ -367,24 +366,25 @@ public class GamePlay : MonoBehaviour
         switch(tag)
         {
             case TAG.BUILDING:
+                if(actor.SetFollowObject(targetMapId, TAG.BUILDING))
+                    Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.mapId, -1, null, false);
                 //BuildingObject targetBuilding = BuildingManager.Instance.objects[targetMapId];
                 //BuildingObject home = actor.attachedBuilding;
 
                 //Debug.Log(string.Format("{0} -> {1}", home.mapId, targetBuilding.mapId));
                 break;
             case TAG.NEUTRAL:
-                /*
                 NeutralBuilding targetBuilding = NeutralManager.Instance.objects[targetMapId];
                 Meta.Neutral targetMeta = MetaManager.Instance.neutralInfo[targetBuilding.id]; 
-
-                BuildingObject home = actor.attachedBuilding;
-                Debug.Log(string.Format("{0} -> {1} {2}", home.mapId, targetBuilding.mapId, (BuildingType)targetMeta.type));
-                */
-                SetDelivery(actor, targetMapId, TAG.NEUTRAL);
+                if(targetMeta.type == (int)BuildingType.MARKET)
+                    SetDelivery(actor, targetMapId, TAG.NEUTRAL);
                 break;
             case TAG.ACTOR:
-                actor.followObject = ActorManager.Instance.actors[targetMapId];
-                Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.mapId, -1, null, false);
+                if(actor.mapId != targetMapId)
+                {
+                    if(actor.SetFollowObject(targetMapId, TAG.ACTOR))
+                        Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.mapId, -1, null, false);
+                }
                 break;
             case TAG.MOB:
                 actor.followObject = MobManager.Instance.mobs[targetMapId];
@@ -410,7 +410,7 @@ public class GamePlay : MonoBehaviour
     {
         Debug.Log(string.Format("OnAttack {0} -> {1} attack: {2}, HP {3}", from.mapId, to.mapId, amount, to.currentHP));
         if(to.currentHP <= 0)
-            Debug.Log("ACTOR_UNDER_ATTACK Die");
+            Debug.Log("OnAttack Die");
             
     }
     //생성, 소멸등의 이벤트
@@ -446,9 +446,9 @@ public class GamePlay : MonoBehaviour
         Meta.Building metaBuilding = MetaManager.Instance.buildingInfo[actor.attachedBuilding.id];
         Meta.Actor metaActor = MetaManager.Instance.actorInfo[actor.id];
 
-        for(int n = 0; n < metaBuilding.output.Count; n++)
+        for(int n = 0; n < metaBuilding.level[actor.attachedBuilding.level].output.Count; n++)
         {
-            int resourceId = metaBuilding.output[n].resourceId;
+            int resourceId = metaBuilding.level[actor.attachedBuilding.level].output[n].resourceId;
             int amount = metaActor.level[actor.level].ability.carring;
             //tribe
             GameSystem.Instance.gameStatus.resourceInfo[0][resourceId] -= amount;

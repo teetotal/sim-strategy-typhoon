@@ -39,6 +39,56 @@
             "id": 7,
             "name": "ForestTreeTrunk_02",
             "cost": 2
+        },
+        {
+            "id": 8,
+            "name": "ForestFire2",
+            "cost": 2
+        },
+        {
+            "id": 9,
+            "name": "ForestBridge_02",
+            "cost": 2
+        },
+        {
+            "id": 10,
+            "name": "ForestBridge_01",
+            "cost": 2
+        },
+        {
+            "id": 11,
+            "name": "Ground",
+            "cost": 2
+        },
+        {
+            "id": 12,
+            "name": "ForestFire",
+            "cost": 2
+        },
+        {
+            "id": 13,
+            "name": "ForestTree_02",
+            "cost": 2
+        },
+        {
+            "id": 14,
+            "name": "ForestTree_01",
+            "cost": 2
+        },
+        {
+            "id": 15,
+            "name": "ForestEmptyCube",
+            "cost": 2
+        },
+        {
+            "id": 16,
+            "name": "ForestRiverCurve",
+            "cost": 2
+        },
+        {
+            "id": 17,
+            "name": "ForestRiverStraight",
+            "cost": 2
         }
     ],
     "grid": {

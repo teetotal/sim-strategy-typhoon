@@ -14,7 +14,7 @@ public class Actor : ActingObject
     public override bool AddAction(QNode node)
     {
         Meta.Actor meta =  MetaManager.Instance.actorInfo[this.id];
-        Action action = new Action();
+        Action action = new Action(ActionType.MAX);
 
         switch(node.type)
         {
@@ -73,6 +73,11 @@ public class Actor : ActingObject
                 break;
             }
             case ActionType.ACTOR_UNDER_ATTACK:
+            /*
+            id: from mapId
+            actions[0]: from TAG
+            actions[1]: attack amount
+            */
                 Object obj = Util.GetObject(node.id, (TAG)node.values[0]);
                 //일부러 null 체크 안함
                 underAttackQ.Enqueue(new UnderAttack(obj, node.values[1]));
@@ -122,6 +127,8 @@ public class Actor : ActingObject
 
         //HP
         this.currentHP = meta.level[0].ability.HP;
+        //level
+        this.level = 0;
 
         //progress
         progress = GameObject.Instantiate(Context.Instance.progressPrefab, GetProgressPosition(), Quaternion.identity);
@@ -177,8 +184,15 @@ public class Actor : ActingObject
                             if(action.currentTime >= action.totalTime)
                             {
                                 //상대방 공격 당함
+                                TAG t = MetaManager.Instance.GetTag(followObject.gameObject.tag);
+                                ActionType at = ActionType.MAX;
+                                if(t == TAG.ACTOR)
+                                    at = ActionType.ACTOR_UNDER_ATTACK;
+                                else if(t == TAG.BUILDING)
+                                    at = ActionType.BUILDING_UNDER_ATTACK;
+                                
                                 Updater.Instance.AddQ(
-                                    ActionType.ACTOR_UNDER_ATTACK,
+                                    at,
                                     followObject.mapId, 
                                     this.mapId,
                                     new List<int>() { (int)TAG.ACTOR, meta.level[this.level].ability.attack },
@@ -289,15 +303,16 @@ public class Actor : ActingObject
                 Updater.Instance.AddQ(ActionType.ACTOR_DIE, this.mapId, this.id, null, false);
                 return;
             }
-            
+
             //도망가기
-            Updater.Instance.AddQ(
-                meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
-                this.mapId,
-                MapManager.Instance.GetRandomNearEmptyMapId(this.mapId, 2),
-                null,
-                false
-                );
+            if(!this.HasActionType(ActionType.ACTOR_ATTACK))
+                Updater.Instance.AddQ(
+                    meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
+                    this.mapId,
+                    MapManager.Instance.GetRandomNearEmptyMapId(this.mapId, 2),
+                    null,
+                    false
+                    );
             return;
 
         }

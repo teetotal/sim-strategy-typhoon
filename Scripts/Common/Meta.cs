@@ -68,18 +68,24 @@ public class Meta
         
     }
     [Serializable]
+    public struct BuildingLevelInfo
+    {
+        public string prefab;
+        public int buildTime;
+        public int HP;
+        public List<ResourceIdAmount> costs;
+        public List<ResourceIdAmount> output;
+        public List<ActorIdMax> actors;
+    }
+    [Serializable]
     public struct Building
     {
         public int type;
         public int id;
         public string name;
-        public string prefab;
-        public int level;
+        public List<BuildingLevelInfo> level;
         public Vector2Int dimension;
-        public int buildTime;
-        public List<ResourceIdAmount> costs;
-        public List<ResourceIdAmount> output;
-        public List<ActorIdMax> actors;
+        
     }
     [Serializable]
     public struct Neutral

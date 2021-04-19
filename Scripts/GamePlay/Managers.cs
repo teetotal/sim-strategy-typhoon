@@ -210,7 +210,7 @@ public class ActorManager
         
         if(actors.ContainsKey(mapId) == false)
         {
-            Debug.Log("Invalid mapId");
+            Debug.Log(string.Format("Invalid mapId. {0}", q.type.ToString()));
         }
         else
         {
@@ -252,18 +252,23 @@ public class BuildingManager
 
     public void Fetch(QNode q)
     {
+        //destroy되기 전에 호출. 그래야 파티클을 보여주던 이벤트를 발생시켜도 아직 오브젝트가 살아있어야 뭘 하지
+        if(q.type == ActionType.BUILDING_DESTROY)
+            Context.Instance.onCreationEvent(q.type, TAG.BUILDING, q.mapId, q.id);
+
         switch(q.type)
         {
             case ActionType.BUILDING_CREATE:
                 Construct(q);
-                break;
-            case ActionType.BUILDING_DESTROY:
-                Destroy(q.mapId);
+                Context.Instance.onCreationEvent(q.type, TAG.BUILDING, q.mapId, q.id);
                 break;
             default:
+                if(objects.ContainsKey(q.mapId))
+                {
+                    objects[q.mapId].AddAction(q);
+                }
                 return;
         }
-        Context.Instance.onCreationEvent(q.type, TAG.BUILDING, q.mapId, q.id);
     }
     
     public void Construct(QNode q)
@@ -271,11 +276,11 @@ public class BuildingManager
         //화면 처리에 필요한 object 설정
         BuildingObject obj = new BuildingObject();
         //map에 설정 & prefab생성. environment object를 map에 적절히 assign해야 해서 mapmanager에서 처리함
-        obj.gameObject = MapManager.Instance.CreateBuilding(q.mapId, MetaManager.Instance.buildingInfo[q.id].prefab); //건물의 a* cost는 -1. 지나가지 못함
+        obj.gameObject = MapManager.Instance.CreateBuilding(q.mapId, MetaManager.Instance.buildingInfo[q.id].level[0].prefab); //건물의 a* cost는 -1. 지나가지 못함
             
         if(obj.Create(q.mapId, q.id))
         {
-            obj.actions.Add(new Action(ActionType.BUILDING_CREATE, q.immediately ? 0 : MetaManager.Instance.buildingInfo[q.id].buildTime, null));   
+            obj.actions.Add(new Action(ActionType.BUILDING_CREATE, q.immediately ? 0 : MetaManager.Instance.buildingInfo[q.id].level[0].buildTime, null));   
             objects[obj.mapId] = obj;
 
             //roatation
@@ -285,18 +290,19 @@ public class BuildingManager
             }
         }
     }
-    public void Destroy(int mapId)
-    {
-        MapManager.Instance.DestroyBuilding(mapId);
-        objects.Remove(mapId);
-    }
     public void Update()
     {
+        List<BuildingObject> list = new List<BuildingObject>();
         foreach(KeyValuePair<int, BuildingObject> kv in objects)
         {
-            kv.Value.Update();
-            kv.Value.UpdateUIPosition();
-            kv.Value.UpdateUnderAttack();
+            list.Add(kv.Value);
+        }
+
+        for(int n = 0; n < list.Count; n++)
+        {
+            list[n].Update();
+            list[n].UpdateUIPosition();
+            list[n].UpdateUnderAttack();
         }
     }
 }

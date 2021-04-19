@@ -36,6 +36,7 @@ public abstract class Object
     public GameObject progress; 
     
     //fn
+    public abstract bool AddAction(QNode node);
     public abstract bool Create(int mapId, int id);
     public abstract void Update();
     public abstract void UpdateUnderAttack();
@@ -162,6 +163,17 @@ public abstract class Object
         }
         RemoveActions(removeList);
     }
+    public bool HasActionType(ActionType type)
+    {
+        for(int n = 0; n < actions.Count; n++)
+        {
+            if(actions[n].type == type)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     private bool CheckMovableObject(TAG tag)
     {
         switch(tag)
@@ -226,13 +238,20 @@ public abstract class Object
 public abstract class ActingObject : Object
 {
     public List<QNode> routine;
-    public ActingObject followObject; // 쫒을 actingobject
+    public Object followObject; // 쫒을 actingobject
     protected bool isMovingStarted;
     private int routineIdx = 0;
     public void SetRoutine(List<QNode> routine)
     {
         this.routine = routine;
         routineIdx = 0;
+    }
+    public bool SetFollowObject(int mapId, TAG tag)
+    {
+        followObject = Util.GetObject(mapId, tag);
+        if(followObject == null)
+            return false;
+        return true;
     }
     protected void ApplyRoutine()
     {
@@ -254,8 +273,6 @@ public abstract class ActingObject : Object
             return true;
         return false;
     }
-    
-    public abstract bool AddAction(QNode node);
     
     protected Action GetFlyingAction(int targetMapId, Meta.Ability ability, ActionType type)
     {
