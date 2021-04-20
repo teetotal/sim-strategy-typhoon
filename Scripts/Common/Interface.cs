@@ -10,6 +10,12 @@ public interface IContext
     void OnTouchRelease();
     void OnDrag();
 }
+public abstract class IBuildingAttack : MonoBehaviour
+{
+    public abstract void Attack(Vector3 target, float ratio);
+    public abstract void AttackEnd();
+    public abstract void Rotation(Quaternion rot);
+}
 
 public abstract class IAnimation : MonoBehaviour
 {

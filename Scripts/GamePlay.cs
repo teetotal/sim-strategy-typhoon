@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 public class GamePlay : MonoBehaviour
 {
+    private float attackRatio = 0;
     public Transform canvas;
     private GameObject buildingLayer, actorLayer;
 
@@ -476,6 +477,29 @@ public class GamePlay : MonoBehaviour
                 default:
                     break;
             }
+        }
+        else if(Input.GetMouseButtonUp(1))
+        {
+            //GameObject obj = GameObject.Find("Turret");
+            
+            Vector3 target = MapManager.Instance.GetVector3FromMapId(70);
+            
+            IBuildingAttack p = GameObject.Find("TurretTower").GetComponent<IBuildingAttack>();
+            p.Rotation(Quaternion.LookRotation(target));
+            //obj.transform.LookAt(target);
+            attackRatio += 0.1f;
+            p.Attack(target, attackRatio);
+
+            
+            if(attackRatio > 1)
+            {
+                p.AttackEnd();
+                attackRatio = 0;
+            }
+                
+            //obj.transform
+            //GameObject p = GameObject.Instantiate(particle, obj.transform.position + new Vector3(0, 0, 1), obj.transform.rotation);
+            //p.transform.SetParent(obj.transform);
         }
     }
     
