@@ -473,9 +473,10 @@
                     "buildTime": 5,
                     "HP": 100,
                     "defense": {
-                        "attack": 10,
+                        "attack": 3,
+                        "patrolTime": 0.5,
                         "speed": 1,
-                        "rage": 2
+                        "range": 2
                     },
                     "costs": [
                         {

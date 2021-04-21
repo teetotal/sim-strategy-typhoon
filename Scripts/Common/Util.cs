@@ -98,4 +98,15 @@ public class Util
                 return ActionType.MAX;
         }
     }
+    public static GameObject Raycast(Vector3 from, Vector3 to, float range)
+    {
+        RaycastHit hit;
+        Vector3 direction = from - to;
+        Physics.Raycast(from, direction, out hit, range);
+        if (hit.collider != null)
+        {
+            return hit.collider.gameObject;
+        }
+        return null;
+    }
 }

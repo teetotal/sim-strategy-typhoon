@@ -12,9 +12,9 @@ public interface IContext
 }
 public abstract class IBuildingAttack : MonoBehaviour
 {
-    public abstract void Attack(Vector3 target, float ratio);
+    public abstract void Attack(List<Vector3> targets, float ratio);
     public abstract void AttackEnd();
-    public abstract void Rotation(Quaternion rot);
+    public abstract void Rotation(List<Transform> rots);
 }
 
 public abstract class IAnimation : MonoBehaviour
@@ -195,6 +195,7 @@ public abstract class Object
     }
     protected void SetCurrentMapId()
     {
+        int beforeMapId = this.currentMapId;
         RaycastHit hit;
 
         if(actions.Count > 0)
@@ -210,7 +211,7 @@ public abstract class Object
                     {
                         this.currentMapId = Util.GetIntFromGameObjectName(hit.collider.gameObject.name);
                     }
-                    return;
+                    break;
                 }
                 case ActionType.ACTOR_MOVING:
                 case ActionType.MOB_MOVING:
@@ -221,14 +222,18 @@ public abstract class Object
                     if(ratio < 0.5f && idx > 0)
                         idx --;
                     this.currentMapId = action.values[idx];
-                    return;
+                    break;
                 }
                 default:
                     this.currentMapId = this.mapId;
-                    return;
+                    break;
             }
         }
-        this.currentMapId = this.mapId;
+        else
+            this.currentMapId = this.mapId;
+
+        if(beforeMapId != this.currentMapId)
+            MapManager.Instance.MoveCurrentMap(beforeMapId, this, MetaManager.Instance.GetTag(this.gameObject.tag));
     }
     public int GetCurrentMapId()
     {

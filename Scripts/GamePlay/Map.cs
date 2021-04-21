@@ -60,6 +60,7 @@ public class MapManager
     public List<GameObject> defaultGameObjects = new List<GameObject>();
     public Dictionary<int, GameObject> buildingObjects = new Dictionary<int, GameObject>();
     public int[,] map;
+    public List<Object[,]> currentMap = new List<Object[,]>(); //현재 위치 저장 맵. 일단은 여러개가 같은 위치에 있어도 하나의 객체만 저장한다.
     private static readonly Lazy<MapManager> hInstance = new Lazy<MapManager>(() => new MapManager());
     public static MapManager Instance
     {
@@ -204,6 +205,27 @@ public class MapManager
             range++;
         }
     }
+    public bool SetCurrentMap(Object obj, TAG tag)
+    {
+        Vector2Int pos = GetMapPosition(obj.currentMapId);
+        if(currentMap[(int)tag][pos.x, pos.y] == null)
+        {
+            currentMap[(int)tag][pos.x, pos.y] = obj;
+            return true;
+        }
+        return false;
+    }
+    public bool MoveCurrentMap(int beforeMapId, Object obj, TAG tag)
+    {
+        //Debug.Log(string.Format("MoveCurrentMap {0} -> {1}", beforeMapId, obj.currentMapId));
+        //위치에 내가 있을 수도 있고 없을 수도 있다.
+        Vector2Int pos = GetMapPosition(beforeMapId);
+        Object beforeObj = currentMap[(int)tag][pos.x, pos.y];
+        if(beforeObj != null && beforeObj.mapId == obj.mapId)
+            currentMap[(int)tag][pos.x, pos.y] = null;
+        
+        return SetCurrentMap(obj, tag);
+    }
     //get map id which is not empty
     public List<GameObject> GetFilledMapId(int mapId, int range, List<TAG> skipTags = null)
     {
@@ -222,12 +244,22 @@ public class MapManager
                 if(pos.x == x && pos.y == y)
                     continue;
 
-                int id = GetMapId(new Vector2Int(x, y));
-                if(!IsEmptyMapId(id))
+                GameObject obj = null;
+                TAG tag = TAG.MAX;
+                if(currentMap[(int)TAG.ACTOR][x, y] != null)
                 {
-                    GameObject obj = defaultGameObjects[id].transform.GetChild(0).gameObject;
+                    obj = currentMap[(int)TAG.ACTOR][x, y].gameObject;
+                    tag = TAG.ACTOR;
+                }
+                else if(currentMap[(int)TAG.MOB][x, y] != null)
+                {
+                    obj = currentMap[(int)TAG.MOB][x, y].gameObject;
+                    tag = TAG.MOB;
+                }
+                    
 
-                    TAG tag = MetaManager.Instance.GetTag(obj.tag);
+                if(obj != null)
+                {
                     bool isAdd = true;
                     if(skipTags != null)
                     {
@@ -260,6 +292,10 @@ public class MapManager
     {
         mapMeta = Json.LoadJsonFile<Map>("map");
         map = new int[mapMeta.dimension.x, mapMeta.dimension.y];
+        for(int n = 0; n < (int)TAG.MAX; n++)
+        {
+            currentMap.Add(new Object[mapMeta.dimension.x, mapMeta.dimension.y]);
+        }
 
         Vector2Int startPosition = new Vector2Int(mapMeta.dimension.x / 2, mapMeta.dimension.y / 2);
         Map.Prefab prefabInfo = mapMeta.prefabs[mapMeta.defaultVal.prefabId];
@@ -316,10 +352,11 @@ public class MapManager
             Updater.Instance.AddQ(ActionType.NEUTRAL_CREATE, ne.mapId, ne.id, new List<int>() { ne.rotation }, true);
         }
     }
-    public void Remove(int mapId)
+    public void Remove(int mapId, TAG tag)
     {
         Vector2Int pos = GetMapPosition(mapId);
         map[pos.x, pos.y] = mapMeta.defaultVal.cost;
+        currentMap[(int)tag][pos.x, pos.y] = null;
     }
     public void DestroyBuilding(int mapId)
     {

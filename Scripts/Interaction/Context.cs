@@ -25,13 +25,15 @@ public class Context
     public OnLoadResource onLoadResource;
     public delegate void OnDelivery(Actor actor, int targetBuildingMapId, TAG targetBuildingTag);
     public OnDelivery onDelivery;
+    public delegate bool CheckDefenseAttack(Object target, Object from);
+    public CheckDefenseAttack checkDefenseAttack;
 
     public Dictionary<Context.Mode, IContext> contexts;
     private static readonly Lazy<Context> hInstance = new Lazy<Context>(() => new Context());
     public Mode mode = Mode.NONE;
     public bool isInitialized = false;
     public Transform canvas;
-    public GameObject greenPrefab, redPrefab, progressPrefab, titlePrefab;
+    public GameObject greenPrefab, redPrefab, progressPrefab;
     public static Context Instance
     {
         get {
@@ -74,9 +76,9 @@ public class Context
                     OnAttack onAttack,
                     OnLoadResource onLoadResource,
                     OnDelivery onDelivery,
+                    CheckDefenseAttack checkDefenseAttack,
                     ref Transform canvas, 
                     string progressPrefab, 
-                    string titlePrefab, 
                     string greenCube, 
                     string redCube
                     )
@@ -87,10 +89,10 @@ public class Context
         this.onAttack = onAttack;
         this.onLoadResource = onLoadResource;
         this.onDelivery = onDelivery;
+        this.checkDefenseAttack = checkDefenseAttack;
 
         this.canvas = canvas;
         this.progressPrefab = Resources.Load<GameObject>(progressPrefab);
-        this.titlePrefab = Resources.Load<GameObject>(titlePrefab);
         this.greenPrefab = Resources.Load<GameObject>(greenCube);
         this.redPrefab = Resources.Load<GameObject>(redCube);
 

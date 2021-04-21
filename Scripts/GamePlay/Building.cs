@@ -7,6 +7,8 @@ using UnityEngine.UI;
 public class BuildingObject : Object
 {   
     float elapsedDefense;
+    List<Object> defenseTargets = new List<Object>();
+    bool defenseLock = false;
 
     public List<Actor> actors = new List<Actor>();
     public override bool AddAction(QNode node)
@@ -19,13 +21,15 @@ public class BuildingObject : Object
             case ActionType.BUILDING_DEFENSE:
             {
                 /*
-                node.id: target
-                node.values[0]: TAG
+                defenseTargets을 처리하면 된다.
                 */
-                action = new Action(node.type, meta.level[this.level].defense.speed, new List<int>(){ node.id, node.values[0] });
-
-                Vector3 target = MapManager.Instance.GetVector3FromMapId(node.id);
-                this.gameObject.GetComponent<IBuildingAttack>().Rotation(Quaternion.LookRotation(target));
+                action = new Action(node.type, meta.level[this.level].defense.speed);
+                List<Transform> qList = new List<Transform>();
+                for(int n=0; n< defenseTargets.Count; n++)
+                {
+                    qList.Add(defenseTargets[n].gameObject.transform);
+                }
+                this.gameObject.GetComponent<IBuildingAttack>().Rotation(qList);
                 break;
             }
             case ActionType.BUILDING_UNDER_ATTACK:
@@ -85,10 +89,16 @@ public class BuildingObject : Object
                     ShowProgress(action.currentTime, action.totalTime, true);
                     break;
                 case ActionType.BUILDING_DEFENSE:
-                    Vector3 pos = MapManager.Instance.GetVector3FromMapId(action.values[0]);
-
+                    List<Vector3> posList = new List<Vector3>();
+                    for(int n = 0; n < defenseTargets.Count; n++)
+                    {
+                        posList.Add(
+                            MapManager.Instance.GetVector3FromMapId(defenseTargets[n].GetCurrentMapId())
+                            );
+                    }
                     IBuildingAttack p = this.gameObject.GetComponent<IBuildingAttack>();
-                    p.Attack(pos, action.currentTime / action.totalTime);
+                    p.Attack(posList, action.currentTime / action.totalTime);
+                    
                     break;
                 case ActionType.BUILDING_DESTROY:
                     if(action.currentTime >= action.totalTime)
@@ -116,13 +126,21 @@ public class BuildingObject : Object
                 {
                     case ActionType.BUILDING_DEFENSE:
                         this.gameObject.GetComponent<IBuildingAttack>().AttackEnd();
-                        //under attack
-                        Updater.Instance.AddQ(Util.GetUnderAttackActionType((TAG)action.values[1]), 
-                            action.values[0], 
-                            this.mapId, 
-                            new List<int>() { (int)TAG.BUILDING, meta.level[this.level].defense.attack },
-                            false
-                            );
+                        
+                        //현재 범위안에 있으면 under attack
+                        for(int n = 0; n < defenseTargets.Count; n++)
+                        {
+                            Object targetObj = defenseTargets[n];
+                            float d = MapManager.Instance.GetDistance(this.mapId, targetObj.GetCurrentMapId());
+                            if(d <= meta.level[this.level].defense.range)
+                                Updater.Instance.AddQ(Util.GetUnderAttackActionType((TAG)MetaManager.Instance.GetTag(targetObj.gameObject.tag)), 
+                                    targetObj.mapId, 
+                                    this.mapId, 
+                                    new List<int>() { (int)TAG.BUILDING, meta.level[this.level].defense.attack },
+                                    false
+                                    );
+                        }
+                        defenseLock = false;
                         break;
                     case ActionType.BUILDING_CREATE:
                         progress.SetActive(false);
@@ -157,8 +175,18 @@ public class BuildingObject : Object
     }
     public override void UpdateDefence()
     {
+        if(defenseLock)
+            return;
+
+        if(defenseTargets.Count > 0)
+            defenseTargets.Clear();
+
+        Meta.Building meta = MetaManager.Instance.buildingInfo[this.id];
+        if(meta.level[this.level].defense.range <= 0)
+            return;
+
         elapsedDefense += Time.deltaTime;
-        if(elapsedDefense < 1)
+        if(elapsedDefense < meta.level[this.level].defense.patrolTime)
             return;
         
         elapsedDefense = 0;
@@ -166,8 +194,7 @@ public class BuildingObject : Object
         if(this.HasActionType(ActionType.BUILDING_DEFENSE))
             return;
 
-        Meta.Building meta = MetaManager.Instance.buildingInfo[this.id];
-        List<GameObject> list = MapManager.Instance.GetFilledMapId(this.mapId, meta.level[this.level].defense.rage, new List<TAG>() { TAG.ENVIRONMENT, TAG.NEUTRAL });
+        List<GameObject> list = MapManager.Instance.GetFilledMapId(this.mapId, (int)meta.level[this.level].defense.range, new List<TAG>() { TAG.ENVIRONMENT, TAG.NEUTRAL });
         for(int n = 0; n < list.Count; n++)
         {
             int target = Util.GetIntFromGameObjectName(list[n].name);
@@ -176,22 +203,20 @@ public class BuildingObject : Object
             //이미 죽었으면 패스
             if(obj.currentHP <= 0)
                 continue;
-            //이동 중이면 패스
-            switch(tag)
-            {
-                case TAG.MOB:
-                    if(obj.HasActionType(ActionType.MOB_MOVING))
-                        continue;
-                    break;
-                case TAG.ACTOR: 
-                    if(obj.HasActionType(ActionType.ACTOR_MOVING))
-                        continue;
-                    break;
-            }
+            if(MapManager.Instance.GetDistance(this.mapId, obj.GetCurrentMapId()) > meta.level[this.level].defense.range)
+                continue;
 
-            Updater.Instance.AddQ(ActionType.BUILDING_DEFENSE, this.mapId, target, new List<int>() { (int)tag }, false);
+            if(Context.Instance.checkDefenseAttack(obj, this))
+            {
+                defenseTargets.Add(obj);
+            }
             //Debug.Log(string.Format("{0} - {1}", list[n].name, list[n].tag));
-            break;
         }
+
+        if(defenseTargets.Count > 0)
+        {
+            Updater.Instance.AddQ(ActionType.BUILDING_DEFENSE, this.mapId, this.id, null, false);
+            defenseLock = true;
+        }       
     }
 }

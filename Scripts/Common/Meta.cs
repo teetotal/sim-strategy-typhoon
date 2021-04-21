@@ -70,8 +70,9 @@ public class Meta
     public struct Defense
     {
         public int attack;
+        public float patrolTime; //일정 주기로 range내 object를 탐색
         public int speed;
-        public int rage;
+        public float range;
     }
     [Serializable]
     public struct BuildingLevelInfo

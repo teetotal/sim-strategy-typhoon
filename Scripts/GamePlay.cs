@@ -4,7 +4,10 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 public class GamePlay : MonoBehaviour
 {
-    private float attackRatio = 0;
+    GameObject cmObj;
+    float cmRatio = 0;
+    Vector3 cmDefault;
+    //-------------------
     public Transform canvas;
     private GameObject buildingLayer, actorLayer;
 
@@ -42,9 +45,9 @@ public class GamePlay : MonoBehaviour
                                 OnAttack,
                                 OnLoadResource,
                                 OnDelivery,
+                                CheckDefenseAttack,
                                 ref canvas, 
                                 "progress_default", 
-                                "text_default",
                                 "CubeGreen", 
                                 "CubeRed"
                                 );
@@ -335,6 +338,11 @@ public class GamePlay : MonoBehaviour
         
         ((ContextActor)Context.Instance.contexts[Context.Mode.ACTOR]).Clear();
         Context.Instance.SetMode(Context.Mode.NONE);
+
+        //camera moving
+        cmObj = ActorManager.Instance.actors[mapId].gameObject;
+        cmRatio = 0;
+        cmDefault = Camera.main.transform.position;
     }
     /*
     Context에 등록되는 On~ 함수들
@@ -458,6 +466,10 @@ public class GamePlay : MonoBehaviour
         }
         UpdateResourceUI();
     }
+    bool CheckDefenseAttack(Object target, Object from)
+    {
+        return true;
+    }
 
     // UI canceling
     void Update()
@@ -478,28 +490,20 @@ public class GamePlay : MonoBehaviour
                     break;
             }
         }
-        else if(Input.GetMouseButtonUp(1))
-        {
-            //GameObject obj = GameObject.Find("Turret");
-            
-            Vector3 target = MapManager.Instance.GetVector3FromMapId(70);
-            
-            IBuildingAttack p = GameObject.Find("TurretTower").GetComponent<IBuildingAttack>();
-            p.Rotation(Quaternion.LookRotation(target));
-            //obj.transform.LookAt(target);
-            attackRatio += 0.1f;
-            p.Attack(target, attackRatio);
 
-            
-            if(attackRatio > 1)
+        if(cmObj != null)
+        {
+            cmRatio += Time.deltaTime;
+            if(cmRatio < 1 )
             {
-                p.AttackEnd();
-                attackRatio = 0;
+                float s = Mathf.Sin( 90 * cmRatio * Mathf.PI / 180 );
+                //Debug.Log(string.Format("sin{0} {1}", cmRatio, s));
+                //Camera.main.transform.position = Vector3.Lerp(cmDefault, cmObj.transform.position, s);
+                Camera.main.fieldOfView = 10 - (5 * cmRatio);
+                Camera.main.transform.RotateAround(cmObj.transform.position, cmObj.transform.rotation.eulerAngles, 10*s);
+
             }
                 
-            //obj.transform
-            //GameObject p = GameObject.Instantiate(particle, obj.transform.position + new Vector3(0, 0, 1), obj.transform.rotation);
-            //p.transform.SetParent(obj.transform);
         }
     }
     

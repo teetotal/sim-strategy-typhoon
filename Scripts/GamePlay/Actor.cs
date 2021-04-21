@@ -135,7 +135,7 @@ public class Actor : ActingObject
         progress.name = string.Format("progress-{0}-{1}", mapId, this.id);
         progress.transform.SetParent(Context.Instance.canvas);
 
-        return true;
+        return MapManager.Instance.SetCurrentMap(this, TAG.ACTOR); //currentMap에 등록
     }
     //동시에 진행 못하고 순차적으로함. 이래야 아래 같은 시퀀스가 가능해짐
     //창고에 간다 -> 물건을 실는다 -> 시장에 가서 판다.
@@ -246,7 +246,7 @@ public class Actor : ActingObject
                         //object삭제
                         GameObject.DestroyImmediate(this.gameObject);
                         ActorManager.Instance.actors.Remove(this.mapId);
-                        MapManager.Instance.Remove(this.mapId);
+                        MapManager.Instance.Remove(this.mapId, TAG.ACTOR);
                         DestroyProgress();
                         Clear();
                         return;
@@ -305,6 +305,7 @@ public class Actor : ActingObject
             }
 
             //도망가기
+            /*
             if(!this.HasActionType(ActionType.ACTOR_ATTACK))
                 Updater.Instance.AddQ(
                     meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
@@ -313,6 +314,8 @@ public class Actor : ActingObject
                     null,
                     false
                     );
+            
+            */
             return;
 
         }

@@ -147,7 +147,10 @@ public class MobManager
         for(int n = 0; n < MapManager.Instance.mapMeta.mobs.Count; n++)
         {
             Map.Mob meta = MapManager.Instance.mapMeta.mobs[n];
-            if(cnts.ContainsKey(meta.mapId) && cnts[meta.mapId].ContainsKey(meta.id) && meta.max <= cnts[meta.mapId][meta.id])
+            if(meta.max == 0)
+                continue;
+                
+            if(cnts.ContainsKey(meta.mapId) && cnts[meta.mapId].ContainsKey(meta.id) && meta.max < cnts[meta.mapId][meta.id])
                 continue;
 
             Updater.Instance.AddQ(ActionType.MOB_CREATE, meta.mapId, meta.id, null, true);
