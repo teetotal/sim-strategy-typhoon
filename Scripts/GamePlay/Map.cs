@@ -204,6 +204,49 @@ public class MapManager
             range++;
         }
     }
+    //get map id which is not empty
+    public List<GameObject> GetFilledMapId(int mapId, int range, List<TAG> skipTags = null)
+    {
+        List<GameObject> list = new List<GameObject>();
+        Vector2Int pos = GetMapPosition(mapId);
+        
+        for(int y = pos.y - range; y <= pos.y + range; y++)
+        {
+            if(y < 0 || map.GetLength(1) <= y)
+                continue;
+
+            for(int x = pos.x - range; x <= pos.x + range; x++)
+            {
+                if(x < 0 || map.GetLength(0) <= x)
+                    continue;
+                if(pos.x == x && pos.y == y)
+                    continue;
+
+                int id = GetMapId(new Vector2Int(x, y));
+                if(!IsEmptyMapId(id))
+                {
+                    GameObject obj = defaultGameObjects[id].transform.GetChild(0).gameObject;
+
+                    TAG tag = MetaManager.Instance.GetTag(obj.tag);
+                    bool isAdd = true;
+                    if(skipTags != null)
+                    {
+                        for(int n = 0; n < skipTags.Count; n++)
+                        {
+                            if(skipTags[n] == tag)
+                            {
+                                isAdd = false;
+                                break;
+                            }
+                        }
+                    }
+                    if(isAdd)
+                        list.Add(obj);
+                }
+            }
+        }
+        return list;
+    }
     public float GetDistance(int from, int to)
     {
         return Vector2Int.Distance(GetMapPosition(from), GetMapPosition(to));

@@ -45,6 +45,7 @@ public abstract class Object
     public abstract bool AddAction(QNode node);
     public abstract bool Create(int mapId, int id);
     public abstract void Update();
+    public abstract void UpdateDefence();
     public abstract void UpdateUnderAttack();
     
     protected GameObject Instantiate(int mapId, int id, string prefab, TAG tag, bool flying)

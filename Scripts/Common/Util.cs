@@ -84,4 +84,18 @@ public class Util
 
         return null;
     }
+    public static ActionType GetUnderAttackActionType(TAG tag)
+    {
+        switch(tag)
+        {
+            case TAG.BUILDING:
+                return ActionType.BUILDING_UNDER_ATTACK;
+            case TAG.ACTOR:
+                return ActionType.ACTOR_UNDER_ATTACK;
+            case TAG.MOB:
+                return ActionType.MOB_UNDER_ATTACK;
+            default:
+                return ActionType.MAX;
+        }
+    }
 }

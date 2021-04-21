@@ -65,7 +65,13 @@ public class Meta
         public string name;
         public bool flying;
         public List<ActorLevelInfo> level;
-        
+    }
+    [Serializable]
+    public struct Defense
+    {
+        public int attack;
+        public int speed;
+        public int rage;
     }
     [Serializable]
     public struct BuildingLevelInfo
@@ -73,10 +79,12 @@ public class Meta
         public string prefab;
         public int buildTime;
         public int HP;
+        public Defense defense;
         public List<ResourceIdAmount> costs;
         public List<ResourceIdAmount> output;
         public List<ActorIdMax> actors;
     }
+    
     [Serializable]
     public struct Building
     {

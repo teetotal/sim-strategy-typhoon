@@ -316,6 +316,9 @@ public class Actor : ActingObject
             return;
 
         }
-        
+    }
+    public override void UpdateDefence()
+    {
+
     }
 }

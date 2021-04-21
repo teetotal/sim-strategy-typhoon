@@ -166,6 +166,7 @@ public class MobManager
             list[n].Update();
             list[n].UpdateUIPosition();
             list[n].UpdateUnderAttack();
+            list[n].UpdateDefence();
         }
     }
 }
@@ -231,6 +232,7 @@ public class ActorManager
             list[n].Update();
             list[n].UpdateUIPosition();
             list[n].UpdateUnderAttack();
+            list[n].UpdateDefence();
         }
     }
 }
@@ -303,6 +305,7 @@ public class BuildingManager
             list[n].Update();
             list[n].UpdateUIPosition();
             list[n].UpdateUnderAttack();
+            list[n].UpdateDefence();
         }
     }
 }
@@ -370,6 +373,7 @@ public class NeutralManager
             kv.Value.Update();
             kv.Value.UpdateUIPosition();
             kv.Value.UpdateUnderAttack();
+            kv.Value.UpdateDefence();
         }
     }
 }

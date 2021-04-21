@@ -20,6 +20,7 @@ public enum ActionType
     BUILDING_CREATE = 0,
     BUILDING_DESTROY,
     BUILDING_UPGRADE,
+    BUILDING_DEFENSE,
     BUILDING_UNDER_ATTACK,
     BUILDING_MAX,
 
@@ -38,6 +39,7 @@ public enum ActionType
     MOB_MOVING,
     MOB_FLYING,
     MOB_ATTACK,
+    MOB_UNDER_ATTACK,
     MOB_MAX,
 
     NEUTRAL_CREATE,

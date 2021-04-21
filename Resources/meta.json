@@ -462,6 +462,35 @@
                 "x": 1,
                 "y": 1
             }
+        },
+        {
+            "id": 5,
+            "type": 1,
+            "name": "수비 타워",
+            "level": [
+                {
+                    "prefab": "TurretTower",
+                    "buildTime": 5,
+                    "HP": 100,
+                    "defense": {
+                        "attack": 10,
+                        "speed": 1,
+                        "rage": 2
+                    },
+                    "costs": [
+                        {
+                            "resourceId": 3,
+                            "amount": 1
+                        }
+                    ],
+                    "output": [],
+                    "actors": []
+                }
+            ],
+            "dimension": {
+                "x": 1,
+                "y": 1
+            }
         }
     ],
     "neutrals": [
