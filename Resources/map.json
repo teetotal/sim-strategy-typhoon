@@ -156,5 +156,37 @@
             "mapId": 128,
             "rotation": 90
         }
+    ],
+    "tribes": [
+        {
+            "resources": [
+                {
+                    "resourceId": 0,
+                    "amount": 128
+                },
+                {
+                    "resourceId": 1,
+                    "amount": 215
+                },
+                {
+                    "resourceId": 2,
+                    "amount": 182
+                }
+            ],
+            "buildings": [
+                {
+                    "mapId": 10,
+                    "buildingId": 0,
+                    "rotation": 0,
+                    "actors": [
+                        {
+                            "mapId": 2,
+                            "actorId": 0,
+                            "HP": 20
+                        }
+                    ]
+                }
+            ]
+        }
     ]
 }

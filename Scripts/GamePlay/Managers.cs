@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 public class MetaManager
 {
     public Meta meta;
@@ -173,7 +172,6 @@ public class MobManager
         }
     }
 }
-
 public class ActorManager
 {
     public Dictionary<int, Actor> actors = new Dictionary<int, Actor>();
@@ -239,7 +237,6 @@ public class ActorManager
         }
     }
 }
-
 public class BuildingManager
 {
     public Dictionary<int, BuildingObject> objects = new Dictionary<int, BuildingObject>();
@@ -312,8 +309,6 @@ public class BuildingManager
         }
     }
 }
-
-
 public class NeutralManager
 {
     public Dictionary<int, NeutralBuilding> objects = new Dictionary<int, NeutralBuilding>();
@@ -380,7 +375,109 @@ public class NeutralManager
         }
     }
 }
+public class MarketManager
+{
+    public MarketStatus marketStatus;
+    public Dictionary<int, Dictionary<int, float>> exchangeInfo = new Dictionary<int, Dictionary<int, float>>();
+    private static readonly Lazy<MarketManager> hInstance = new Lazy<MarketManager>(() => new MarketManager());
+    public static MarketManager Instance
+    {
+        get {
+            return hInstance.Value;
+        } 
+    }
+    protected MarketManager()
+    {
+    }
+    public void Load()
+    {
+        marketStatus = Json.LoadJsonFile<MarketStatus>("market_price");
 
+        for(int n = 0; n < marketStatus.markets.Count; n++)
+        {
+            MarketStatus.Market market = marketStatus.markets[n];
+            if(exchangeInfo.ContainsKey(market.mapId) == false)
+            {
+                exchangeInfo[market.mapId] = new Dictionary<int, float>();
+            }
+            for(int m = 0; m < market.exchanges.Count; m++)
+            {
+                exchangeInfo[market.mapId][market.exchanges[m].resourceId] = market.exchanges[m].rate;
+            }
+        }
+    }
+    public float GetExchangeRatio(int marketMapId, int resourceId)
+    {
+        if(!exchangeInfo.ContainsKey(marketMapId) || !exchangeInfo[marketMapId].ContainsKey(resourceId))
+            return -1.0f;
+        return exchangeInfo[marketMapId][resourceId];
+    }
+    public float Exchange(int marketMapId, int resourceId, float amount)
+    {
+        float ratio = GetExchangeRatio(marketMapId, resourceId);
+        if(ratio == -1)
+            return -1;
+        return ratio * amount;
+    }
+    public int GetStandardResource()
+    {
+        return marketStatus.standardResourceId;
+    }
+}
+public class GameStatusManager
+{
+    GameStatus gameStatus;
+    /*
+    TribeId,
+    ResourceId
+    amount
+    */
+    public Dictionary<int, Dictionary<int, float>> resourceInfo = new Dictionary<int, Dictionary<int, float>>();
+    
+    private static readonly Lazy<GameStatusManager> hInstance = new Lazy<GameStatusManager>(() => new GameStatusManager());
+    public static GameStatusManager Instance { get { return hInstance.Value; } }
+    protected GameStatusManager() {}
+    public void Load()
+    {
+        gameStatus = Json.LoadJsonFile<GameStatus>("map_played");
+        //tribes
+        for(int n = 0; n < gameStatus.tribes.Count; n++)
+        {
+            //resources
+            if(!resourceInfo.ContainsKey(n))
+            {
+                resourceInfo[n] = new Dictionary<int, float>();
+            }
+
+            GameStatus.Tribe tribe = gameStatus.tribes[n];
+            for(int m = 0; m < tribe.resources.Count; m++)
+            {
+                GameStatus.ResourceIdAmount r = tribe.resources[m];
+                resourceInfo[n][r.resourceId] = r.amount;
+            }
+
+            for(int m = 0; m < tribe.buildings.Count; m++)
+            {
+                GameStatus.Building building = tribe.buildings[n];
+                Updater.Instance.AddQ(ActionType.BUILDING_CREATE, 
+                building.tribeId,
+                building.mapId, building.buildingId, new List<int>() {  (int)building.rotation }, true);
+
+                for(int i = 0; i < building.actors.Count; i++)
+                {
+                    GameStatus.MapIdActorIdHP p = building.actors[n];
+                    Updater.Instance.AddQ(ActionType.ACTOR_CREATE, n, building.mapId, p.actorId, new List<int>() { p.HP }, true);
+                }
+            }
+        }
+    }
+    public float GetResource(int tribeId, int resourceId)
+    {
+        if(!resourceInfo[tribeId].ContainsKey(resourceId))
+            return 0;
+        return resourceInfo[tribeId][resourceId];
+    }
+}
 public class TimeManager
 {
     public List<TimeNode> timeNodes = new List<TimeNode>(); //시대에 대한 정보

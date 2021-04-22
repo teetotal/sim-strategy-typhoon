@@ -116,3 +116,67 @@ public class Meta
     public List<Neutral> neutrals;
 }
 
+
+[Serializable]
+public class MarketStatus
+{
+    [Serializable]
+    public struct ResourceIdRate
+    {
+        public int resourceId;
+        public float rate;
+    }
+    
+    [Serializable]
+    public struct Market
+    {
+        public int mapId;
+        public List<ResourceIdRate> exchanges;
+    }
+
+   
+    public int standardResourceId;
+    public List<Market> markets;
+    /*
+    market mapId, resourceId, rate
+    */
+    public Dictionary<int, Dictionary<int, float>> exchangeInfo;
+}
+
+[Serializable]
+public class GameStatus
+{
+    [Serializable]
+    public class MapIdBuildingId
+    {
+        public int mapId;
+        public int buildingId;
+        public float rotation;
+    }
+    [Serializable]
+    public class MapIdActorIdHP
+    {
+        public int mapId;
+        public int actorId;
+        public int HP;
+    }
+    [Serializable]
+    public class ResourceIdAmount
+    {
+        public int resourceId;
+        public int amount;
+    }
+    [Serializable]
+    public class Building : MapIdBuildingId
+    {
+        public List<MapIdActorIdHP> actors;
+        public int tribeId; //json에서 로드되지 않고 load 시점에 할당 됨
+    }
+    [Serializable]
+    public class Tribe
+    {
+        public List<ResourceIdAmount> resources;
+        public List<Building> buildings;
+    }
+    public List<Tribe> tribes;
+}

@@ -21,8 +21,6 @@ public class GamePlay : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GameSystem.Instance.Init();
-
         LoaderPerspective.Instance.SetUI(Camera.main, ref canvas, OnClickButton);
         if(!LoaderPerspective.Instance.LoadJsonFile("ui"))
         {
@@ -38,7 +36,6 @@ public class GamePlay : MonoBehaviour
         }
 
         InitSelectionUI();
-        LoadSavedPlay();
         UpdateResourceUI();
     
         //Context
@@ -54,21 +51,6 @@ public class GamePlay : MonoBehaviour
                                 "CubeGreen", 
                                 "CubeRed"
                                 );
-    }
-    void LoadSavedPlay()
-    {
-        //Load save game status
-        foreach(KeyValuePair<int, GameStatus.Building> kv in GameSystem.Instance.gameStatus.buildingInfo)
-        {
-            Updater.Instance.AddQ(ActionType.BUILDING_CREATE, 
-                kv.Value.tribeId,
-                kv.Key, kv.Value.buildingId, new List<int>() {  (int)kv.Value.rotation }, true);
-            for(int n = 0; n < kv.Value.actors.Count; n++)
-            {
-                GameStatus.MapIdActorIdHP p = kv.Value.actors[n];
-                Updater.Instance.AddQ(ActionType.ACTOR_CREATE, kv.Value.tribeId, kv.Key, p.actorId, new List<int>() { p.HP}, true);
-            }
-        }
     }
     void InitSelectionUI()
     {
@@ -193,7 +175,7 @@ public class GamePlay : MonoBehaviour
         {
             GameObject.Find("resource" + (n+1).ToString()).GetComponentInChildren<Text>().text = string.Format("{0} {1}", 
                     MetaManager.Instance.resourceInfo[n], 
-                    GameSystem.Instance.gameStatus.GetResource(0, n));
+                    GameStatusManager.Instance.GetResource(0, n));
         }
     }
     /*
@@ -485,9 +467,9 @@ public class GamePlay : MonoBehaviour
             int resourceId = metaBuilding.level[actor.attachedBuilding.level].output[n].resourceId;
             int amount = metaActor.level[actor.level].ability.carring;
             //tribe
-            GameSystem.Instance.gameStatus.resourceInfo[0][resourceId] -= amount;
-            GameSystem.Instance.gameStatus.resourceInfo[0][GameSystem.Instance.marketStatus.standardResourceId] += 
-                amount * GameSystem.Instance.marketStatus.exchangeInfo[targetBuildingMapId][resourceId];
+            GameStatusManager.Instance.resourceInfo[0][resourceId] -= amount;
+            GameStatusManager.Instance.resourceInfo[0][MarketManager.Instance.GetStandardResource()] += 
+                MarketManager.Instance.Exchange(targetBuildingMapId, resourceId, amount);
         }
         UpdateResourceUI();
     }

@@ -369,8 +369,13 @@ public abstract class ActingObject : Object
         
         Vector3 pos = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[idx - 1]), flying);
         Vector3 posNext = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[idx + 0]), flying);
-
-        actor.transform.position = Vector3.Lerp(pos, posNext, ratio);
+        Vector3 position = Vector3.Lerp(pos, posNext, ratio);
+        float distance = Vector3.Distance(actor.transform.position, position);
+        if(distance > 3)
+        {
+            Debug.LogError(string.Format("too much distance. {0} mapid {1} -> {2}", distance, route[idx - 1], route[idx]));
+        }
+        actor.transform.position = position;
 
         Vector3 dir = posNext - actor.transform.position;
         actor.transform.rotation = Quaternion.Lerp(actor.transform.rotation, Quaternion.LookRotation(dir), ratio);
