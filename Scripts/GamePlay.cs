@@ -11,6 +11,9 @@ public class GamePlay : MonoBehaviour
     public Transform canvas;
     private GameObject buildingLayer, actorLayer;
 
+    //
+    int myTribeId = 0; 
+
     //a*
     List<int> route = new List<int>();
     //float time = 0;
@@ -57,11 +60,13 @@ public class GamePlay : MonoBehaviour
         //Load save game status
         foreach(KeyValuePair<int, GameStatus.Building> kv in GameSystem.Instance.gameStatus.buildingInfo)
         {
-            Updater.Instance.AddQ(ActionType.BUILDING_CREATE, kv.Key, kv.Value.buildingId, new List<int>() {  (int)kv.Value.rotation }, true);
+            Updater.Instance.AddQ(ActionType.BUILDING_CREATE, 
+                kv.Value.tribeId,
+                kv.Key, kv.Value.buildingId, new List<int>() {  (int)kv.Value.rotation }, true);
             for(int n = 0; n < kv.Value.actors.Count; n++)
             {
                 GameStatus.MapIdActorIdHP p = kv.Value.actors[n];
-                Updater.Instance.AddQ(ActionType.ACTOR_CREATE, kv.Key, p.actorId, new List<int>() { p.HP}, true);
+                Updater.Instance.AddQ(ActionType.ACTOR_CREATE, kv.Value.tribeId, kv.Key, p.actorId, new List<int>() { p.HP}, true);
             }
         }
     }
@@ -198,6 +203,27 @@ public class GamePlay : MonoBehaviour
     {
         //Debug.Log(string.Format("OnClick {0}, {1}", obj.name, Context.Instance.mode));
         string name = Util.GetObjectName(obj);
+        switch(name)
+        {
+            case "zoomin":
+                if(Camera.main.fieldOfView > 5)
+                    Camera.main.fieldOfView -= 5;
+                break;
+            case "zoomout":
+                if(Camera.main.fieldOfView < 25)
+                    Camera.main.fieldOfView += 5;
+                break;
+            case "tribe0":
+                myTribeId = 0;
+                break;
+            case "tribe1":
+                myTribeId = 1;
+                break;
+            case "tribe2":
+                myTribeId = 2;
+                break;
+        }
+
         switch(Context.Instance.mode)
         {
             case Context.Mode.NONE:
@@ -226,20 +252,14 @@ public class GamePlay : MonoBehaviour
                 buildingLayer.SetActive(true);
                 Context.Instance.SetMode(Context.Mode.UI_BUILD);
                 break;
-            case "zoomin":
-                if(Camera.main.fieldOfView > 5)
-                    Camera.main.fieldOfView -= 5;
-                break;
-            case "zoomout":
-                if(Camera.main.fieldOfView < 25)
-                    Camera.main.fieldOfView += 5;
-                break;
             case "buttonX":
                 if(SelectionUI.Instance.selectedObject != null)
                 {
                     int mapId = SelectionUI.Instance.GetSelectedMapId();
+                    Object building = BuildingManager.Instance.objects[mapId];
+                    
                     if(BuildingManager.Instance.objects[mapId].actions.Count == 0)
-                        Updater.Instance.AddQ(ActionType.BUILDING_DESTROY, mapId, -1, null, true);
+                        Updater.Instance.AddQ(ActionType.BUILDING_DESTROY, building.tribeId, mapId, -1, null, true);
                     else
                         Debug.Log("The Building has actions");
                 }
@@ -297,7 +317,7 @@ public class GamePlay : MonoBehaviour
         {
             int id = int.Parse(arr[1]);
             Context.Instance.SetMode(Context.Mode.BUILD);
-            ((ContextBuild)Context.Instance.contexts[Context.Mode.BUILD]).SetBuildingId(id);
+            ((ContextBuild)Context.Instance.contexts[Context.Mode.BUILD]).SetBuildingId(myTribeId, id);
             HideLayers();
         }
     }
@@ -310,8 +330,8 @@ public class GamePlay : MonoBehaviour
             int id = int.Parse(arr[1]);
             //actor에 대한 cost 처리
             int mapId = ((ContextCreatingActor)Context.Instance.contexts[Context.Mode.UI_ACTOR]).selectedMapId;
-
-            Updater.Instance.AddQ(ActionType.ACTOR_CREATE, mapId, id, null, false);
+            //building정보에서 tribe정보를 actor에 반영하기 때문에 tribeId는 몰라도 된다. 
+            Updater.Instance.AddQ(ActionType.ACTOR_CREATE, -1, mapId, id, null, false);
             Context.Instance.SetMode(Context.Mode.NONE);
             HideLayers();
         }
@@ -354,33 +374,38 @@ public class GamePlay : MonoBehaviour
         //routine 추가
         actor.SetRoutine(new List<QNode>()
         {
-            new QNode(type, actor.mapId, actor.attachedBuilding.mapId, null, false, -1), //home으로 가서
-            new QNode(ActionType.ACTOR_LOAD_RESOURCE, actor.mapId, actor.attachedBuilding.mapId, null, false, -1), //적재
-            new QNode(type, actor.mapId, targetMapId, null, false, -1), // 시장으로 이동
-            new QNode(ActionType.ACTOR_DELIVERY, actor.mapId, targetMapId, new List<int>() { (int)targetBuildingTag }, false, -1) //판매
+            new QNode(type, actor.tribeId, actor.mapId, actor.attachedBuilding.mapId, null, false, -1), //home으로 가서
+            new QNode(ActionType.ACTOR_LOAD_RESOURCE, actor.tribeId, actor.mapId, actor.attachedBuilding.mapId, null, false, -1), //적재
+            new QNode(type, actor.tribeId, actor.mapId, targetMapId, null, false, -1), // 시장으로 이동
+            new QNode(ActionType.ACTOR_DELIVERY, actor.tribeId, actor.mapId, targetMapId, new List<int>() { (int)targetBuildingTag }, false, -1) //판매
         });
     }
 
     // 모든 선택 이벤트 통합.
     void OnSelected(TAG tag, int mapId, int id, GameObject gameObject)
     {
+        if(tag == TAG.BOTTOM || tag == TAG.ENVIRONMENT)
+            return;
+
         //Debug.Log(string.Format("OnSelected {0} {1} {2}", tag, mapId, id));
-        SelectionUI.Instance.Activate(tag, gameObject, new string[1] { Util.GetNameInGame(tag, id) });
+        Object obj = Util.GetObject(mapId, tag);
+        SelectionUI.Instance.Activate(tag, gameObject, new string[1] { 
+            string.Format("{0} {1} {2}", Util.GetNameInGame(tag, id),  obj.tribeId, mapId.ToString() )
+            });
     }
     //Actor 모든 행동 이벤트
     void OnActorAction(Actor actor, TAG tag, int targetMapId)
     {
         //Debug.Log(string.Format("OnAction {0}, {1}, {2}, {3}", mapId, id, tag, targetMapId));
         Meta.Actor meta = MetaManager.Instance.actorInfo[actor.id];
+        Object targetObject = Util.GetObject(targetMapId, tag);
         switch(tag)
         {
             case TAG.BUILDING:
-                if(actor.SetFollowObject(targetMapId, TAG.BUILDING))
-                    Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.mapId, -1, null, false);
-                //BuildingObject targetBuilding = BuildingManager.Instance.objects[targetMapId];
-                //BuildingObject home = actor.attachedBuilding;
-
-                //Debug.Log(string.Format("{0} -> {1}", home.mapId, targetBuilding.mapId));
+                if(actor.tribeId != targetObject.tribeId && actor.SetFollowObject(targetMapId, TAG.BUILDING))
+                {
+                   Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.tribeId, actor.mapId, -1, null, false);
+                }
                 break;
             case TAG.NEUTRAL:
                 NeutralBuilding targetBuilding = NeutralManager.Instance.objects[targetMapId];
@@ -389,15 +414,14 @@ public class GamePlay : MonoBehaviour
                     SetDelivery(actor, targetMapId, TAG.NEUTRAL);
                 break;
             case TAG.ACTOR:
-                if(actor.mapId != targetMapId)
+                if(actor.tribeId != targetObject.tribeId && actor.SetFollowObject(targetMapId, TAG.ACTOR))
                 {
-                    if(actor.SetFollowObject(targetMapId, TAG.ACTOR))
-                        Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.mapId, -1, null, false);
+                    Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.tribeId, actor.mapId, -1, null, false);
                 }
                 break;
             case TAG.MOB:
                 actor.followObject = MobManager.Instance.mobs[targetMapId];
-                Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.mapId, -1, null, false);
+                Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.tribeId, actor.mapId, -1, null, false);
                 break;
             case TAG.BOTTOM:
                 if(actor.mapId != targetMapId && MapManager.Instance.IsEmptyMapId(targetMapId))
@@ -406,6 +430,7 @@ public class GamePlay : MonoBehaviour
                     actor.Clear();
                     Updater.Instance.AddQ(
                         meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
+                        actor.tribeId,
                         actor.mapId, 
                         targetMapId, 
                         null,
@@ -468,7 +493,9 @@ public class GamePlay : MonoBehaviour
     }
     bool CheckDefenseAttack(Object target, Object from)
     {
-        return true;
+        if(target.tribeId != from.tribeId)
+            return true;
+        return false;
     }
 
     // UI canceling

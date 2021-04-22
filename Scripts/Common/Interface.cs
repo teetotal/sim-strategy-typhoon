@@ -32,7 +32,8 @@ public abstract class IAttacking : IAnimation
 public abstract class Object
 {
     public GameObject gameObject;
-    public int mapId;     //이동시 업데이트 필요
+    public int tribeId = -1;
+    public int mapId;
     public int currentMapId;
     public int id;
     public int level;
@@ -43,12 +44,12 @@ public abstract class Object
     
     //fn
     public abstract bool AddAction(QNode node);
-    public abstract bool Create(int mapId, int id);
+    public abstract bool Create(int tribeId, int mapId, int id);
     public abstract void Update();
     public abstract void UpdateDefence();
     public abstract void UpdateUnderAttack();
     
-    protected GameObject Instantiate(int mapId, int id, string prefab, TAG tag, bool flying)
+    protected GameObject Instantiate(int tribeId, int mapId, int id, string prefab, TAG tag, bool flying)
     {
         Vector3 position = MapManager.Instance.GetVector3FromMapId(mapId);
         GameObject obj = Resources.Load<GameObject>(prefab);
@@ -63,6 +64,7 @@ public abstract class Object
 
         obj.transform.rotation = Quaternion.Euler(0, 180, 0);
 
+        this.tribeId = tribeId;
         this.id = id;
         this.mapId = mapId;
         this.gameObject = obj;

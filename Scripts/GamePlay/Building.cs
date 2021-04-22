@@ -5,9 +5,20 @@ using UnityEngine.UI;
 
 //건물 정보
 public class BuildingObject : Object
-{   
+{  
+    //디펜스 타워의 경우 상대가 움직이면 미사일이 따라가기 때문에 인식한 시점 위치로 날려야 한다. 
+    struct DefenseTargetInfo
+    {
+        public Object target;
+        public int targetMapId;
+        public DefenseTargetInfo(Object target, int targetMapId)
+        {
+            this.target = target;
+            this.targetMapId = targetMapId;
+        }
+    }
     float elapsedDefense;
-    List<Object> defenseTargets = new List<Object>();
+    List<DefenseTargetInfo> defenseTargets = new List<DefenseTargetInfo>();
     bool defenseLock = false;
 
     public List<Actor> actors = new List<Actor>();
@@ -27,7 +38,7 @@ public class BuildingObject : Object
                 List<Transform> qList = new List<Transform>();
                 for(int n=0; n< defenseTargets.Count; n++)
                 {
-                    qList.Add(defenseTargets[n].gameObject.transform);
+                    qList.Add(MapManager.Instance.defaultGameObjects[defenseTargets[n].targetMapId].transform);
                 }
                 this.gameObject.GetComponent<IBuildingAttack>().Rotation(qList);
                 break;
@@ -49,8 +60,9 @@ public class BuildingObject : Object
         return true;
     }
     
-    public override bool Create(int mapId, int id)
+    public override bool Create(int tribeId, int mapId, int id)
     {
+        this.tribeId = tribeId;
         this.mapId = mapId;
         this.id = id;
         this.currentMapId = mapId;
@@ -93,7 +105,7 @@ public class BuildingObject : Object
                     for(int n = 0; n < defenseTargets.Count; n++)
                     {
                         posList.Add(
-                            MapManager.Instance.GetVector3FromMapId(defenseTargets[n].GetCurrentMapId())
+                            MapManager.Instance.GetVector3FromMapId(defenseTargets[n].targetMapId)
                             );
                     }
                     IBuildingAttack p = this.gameObject.GetComponent<IBuildingAttack>();
@@ -107,7 +119,7 @@ public class BuildingObject : Object
                         for(int n = 0; n < this.actors.Count; n++)
                         {
                             Actor actor = actors[n];
-                            Updater.Instance.AddQ(ActionType.ACTOR_DIE, actor.mapId, actor.id, null, false, 0);
+                            Updater.Instance.AddQ(ActionType.ACTOR_DIE, actor.tribeId, actor.mapId, actor.id, null, false, 0);
                         }
                         actions.Clear();
                         DestroyProgress();
@@ -130,10 +142,11 @@ public class BuildingObject : Object
                         //현재 범위안에 있으면 under attack
                         for(int n = 0; n < defenseTargets.Count; n++)
                         {
-                            Object targetObj = defenseTargets[n];
+                            Object targetObj = defenseTargets[n].target;
                             float d = MapManager.Instance.GetDistance(this.mapId, targetObj.GetCurrentMapId());
                             if(d <= meta.level[this.level].defense.range)
                                 Updater.Instance.AddQ(Util.GetUnderAttackActionType((TAG)MetaManager.Instance.GetTag(targetObj.gameObject.tag)), 
+                                    targetObj.tribeId,
                                     targetObj.mapId, 
                                     this.mapId, 
                                     new List<int>() { (int)TAG.BUILDING, meta.level[this.level].defense.attack },
@@ -168,7 +181,7 @@ public class BuildingObject : Object
                 HideProgress();
                 underAttackQ.Clear();
                 this.actions.Clear();
-                Updater.Instance.AddQ(ActionType.BUILDING_DESTROY, this.mapId, this.id, null, false);
+                Updater.Instance.AddQ(ActionType.BUILDING_DESTROY, this.tribeId, this.mapId, this.id, null, false);
                 return;
             }
         }
@@ -208,14 +221,14 @@ public class BuildingObject : Object
 
             if(Context.Instance.checkDefenseAttack(obj, this))
             {
-                defenseTargets.Add(obj);
+                defenseTargets.Add(new DefenseTargetInfo(obj, obj.GetCurrentMapId()));
             }
             //Debug.Log(string.Format("{0} - {1}", list[n].name, list[n].tag));
         }
 
         if(defenseTargets.Count > 0)
         {
-            Updater.Instance.AddQ(ActionType.BUILDING_DEFENSE, this.mapId, this.id, null, false);
+            Updater.Instance.AddQ(ActionType.BUILDING_DEFENSE, this.tribeId, this.mapId, this.id, null, false);
             defenseLock = true;
         }       
     }

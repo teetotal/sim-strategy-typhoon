@@ -15,7 +15,7 @@ public class DefenseTower : IBuildingAttack
         defaultPos = cannonball.transform.localPosition;
 
         isStarted= false;
-        cannonball.SetActive(false);
+        cannonball.SetActive(false); //이거때문에 파티클이 제때 안나타난다. 그래서 파티클을 같은레벨 자식으로 등록한다.
     }
     public override void Rotation(List<Transform> rots)
     {
@@ -30,11 +30,12 @@ public class DefenseTower : IBuildingAttack
 
         cannonball.SetActive(true);
 
-        if(cannonball.transform.childCount > 0)
+        if(this.transform.childCount > 0)
         {
-            for(int n = 0; n < cannonball.transform.childCount; n++)
+            for(int n = 0; n < this.transform.childCount; n++)
             {
-                GameObject.Destroy(cannonball.transform.GetChild(n).gameObject);
+                if(this.transform.GetChild(n).name == "particle")
+                    GameObject.Destroy(this.transform.GetChild(n).gameObject);
             }
         }
         //first
@@ -43,7 +44,8 @@ public class DefenseTower : IBuildingAttack
             startPos = cannonball.transform.position;
             isStarted = true;
             GameObject p = GameObject.Instantiate(startParticle, startPos, Quaternion.identity);
-            p.transform.SetParent(cannonball.transform);
+            p.name = "particle";
+            p.transform.SetParent(this.transform);
         }
         cannonball.transform.position = Vector3.Lerp(startPos, targets[0], ratio);
         
@@ -51,9 +53,13 @@ public class DefenseTower : IBuildingAttack
     public override void AttackEnd()
     {
         Debug.Log("finish");
-        //turret.transform.rotation = defaultRoation;
+        Vector3 pos = cannonball.transform.position;
         cannonball.transform.localPosition = defaultPos;
-        
+
+        GameObject p = GameObject.Instantiate(startParticle, pos, Quaternion.identity);
+        p.name = "particle";
+        p.transform.SetParent(this.transform);
+
         cannonball.SetActive(false);
         isStarted = false;
     }

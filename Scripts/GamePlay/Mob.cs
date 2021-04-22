@@ -64,10 +64,10 @@ public class Mob : ActingObject
         return action;
     }
 
-    public override bool Create(int mapId, int id)
+    public override bool Create(int tribeId, int mapId, int id)
     {
         Meta.Mob mob = MetaManager.Instance.meta.mobs[id];
-        this.Instantiate(mapId, id, mob.prefab, TAG.MOB, mob.flyingHeight > 0 ? true: false);
+        this.Instantiate(tribeId, mapId, id, mob.prefab, TAG.MOB, mob.flyingHeight > 0 ? true: false);
         MapManager.Instance.SetMapId(mapId, mob.mapCost);
 
         MapManager.Instance.SetCurrentMap(this, TAG.MOB);

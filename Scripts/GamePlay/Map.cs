@@ -349,7 +349,7 @@ public class MapManager
         for(int n = 0; n < mapMeta.neutrals.Count; n++)
         {
             Map.Neutral ne = mapMeta.neutrals[n];
-            Updater.Instance.AddQ(ActionType.NEUTRAL_CREATE, ne.mapId, ne.id, new List<int>() { ne.rotation }, true);
+            Updater.Instance.AddQ(ActionType.NEUTRAL_CREATE, -1, ne.mapId, ne.id, new List<int>() { ne.rotation }, true);
         }
     }
     public void Remove(int mapId, TAG tag)

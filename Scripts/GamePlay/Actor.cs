@@ -114,7 +114,7 @@ public class Actor : ActingObject
         gameObject.transform.SetParent(parent.transform);
     }
     
-    public override bool Create(int mapId, int id)
+    public override bool Create(int tribeId, int mapId, int id)
     {
         //생성 위치 찾기.
         mapId = MapManager.Instance.AssignNearEmptyMapId(mapId);
@@ -123,7 +123,7 @@ public class Actor : ActingObject
         
         Meta.Actor meta = MetaManager.Instance.actorInfo[id];
         //prefab 생성
-        this.Instantiate(mapId, id, meta.level[this.level].prefab, TAG.ACTOR, meta.flying);
+        this.Instantiate(tribeId, mapId, id, meta.level[this.level].prefab, TAG.ACTOR, meta.flying);
 
         //HP
         this.currentHP = meta.level[0].ability.HP;
@@ -193,6 +193,7 @@ public class Actor : ActingObject
                                 
                                 Updater.Instance.AddQ(
                                     at,
+                                    followObject.tribeId,
                                     followObject.mapId, 
                                     this.mapId,
                                     new List<int>() { (int)TAG.ACTOR, meta.level[this.level].ability.attack },
@@ -219,6 +220,7 @@ public class Actor : ActingObject
                         {
                             //공격하기
                             new QNode(ActionType.ACTOR_ATTACK,
+                                this.tribeId,
                                 this.mapId, 
                                 -1,
                                 null,
@@ -227,6 +229,7 @@ public class Actor : ActingObject
                                 ),
                             //따라가기. 이동을 먼저 넣으면 mapid정보가 바뀌니까 뒤에 넣고 actions 순서를 바꾼다.
                             new QNode(meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING_1_STEP,
+                                this.tribeId,
                                 this.mapId, 
                                 MapManager.Instance.GetRandomNearEmptyMapId(followObject.GetCurrentMapId(), (int)meta.level[this.level].ability.attackDistance),
                                 null,
@@ -300,7 +303,7 @@ public class Actor : ActingObject
                 HideProgress();
                 underAttackQ.Clear();
                 this.actions.Clear();
-                Updater.Instance.AddQ(ActionType.ACTOR_DIE, this.mapId, this.id, null, false);
+                Updater.Instance.AddQ(ActionType.ACTOR_DIE, this.tribeId, this.mapId, this.id, null, false);
                 return;
             }
 

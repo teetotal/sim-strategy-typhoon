@@ -5,6 +5,7 @@ public class ContextBuild : IContext
 {
     List<GameObject> areaObjects = new List<GameObject>();
     
+    int selectedTribeId = -1;
     Meta.Building selectedBuilding;
     int selectedMapId = -1;
     bool isAvailableChoice = false;
@@ -38,7 +39,7 @@ public class ContextBuild : IContext
         //Debug.Log("[ContextBuild] OnTouchRelease");
         if(isAvailableChoice)
         {
-            Updater.Instance.AddQ(ActionType.BUILDING_CREATE, selectedMapId, selectedBuilding.id, null, false);
+            Updater.Instance.AddQ(ActionType.BUILDING_CREATE, selectedTribeId, selectedMapId, selectedBuilding.id, null);
             Context.Instance.SetMode(Context.Mode.NONE);
             Clear();
         }
@@ -48,8 +49,9 @@ public class ContextBuild : IContext
         
     }
     //----------------------------------------------------
-    public void SetBuildingId(int id)
+    public void SetBuildingId(int tribeId, int id)
     {
+        selectedTribeId = tribeId;
         selectedBuilding = MetaManager.Instance.buildingInfo[id];
     }
     private void Clear()

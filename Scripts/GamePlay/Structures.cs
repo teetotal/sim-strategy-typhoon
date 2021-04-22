@@ -47,8 +47,9 @@ public class NeutralBuilding: Object
     {
         return true;
     }
-    public override bool Create(int mapId, int id)
+    public override bool Create(int tribeId, int mapId, int id)
     {
+        this.tribeId = tribeId;
         this.mapId = mapId;
         this.id = id;
 
@@ -78,14 +79,16 @@ public class NeutralBuilding: Object
 public struct QNode
 {
     public ActionType type;
+    public int tribeId;
     public int mapId; //mapid
     public int id;
     public bool immediately;
     public List<int> values;    //caller쪽과 protocol을 맞춰야 한다.
     public int insertIndex;
 
-    public QNode(ActionType type, int mapId, int id, List<int> values, bool immediately, int insertIndex)
+    public QNode(ActionType type, int tribeId, int mapId, int id, List<int> values, bool immediately, int insertIndex)
     {
+        this.tribeId = tribeId;
         this.type = type;
         this.mapId = mapId;
         this.id = id;

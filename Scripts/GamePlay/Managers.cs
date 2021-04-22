@@ -103,7 +103,7 @@ public class MobManager
 
             Mob obj = new Mob();
             obj.attachedId = q.mapId;   //소속 위치 
-            if(obj.Create(mapId, q.id))
+            if(obj.Create(q.tribeId, mapId, q.id))
             {
                 mobs[obj.mapId] = obj;
             }
@@ -113,7 +113,7 @@ public class MobManager
             {
                 new QNode(
                     meta.flyingHeight == 0 ? ActionType.MOB_MOVING : ActionType.MOB_FLYING, 
-                    -1, -1, null, false, -1)
+                    -1, -1, -1, null, false, -1)
             };
             Context.Instance.onCreationEvent(q.type, TAG.MOB, obj.mapId, obj.id);
         }
@@ -149,11 +149,11 @@ public class MobManager
             Map.Mob meta = MapManager.Instance.mapMeta.mobs[n];
             if(meta.max == 0)
                 continue;
-                
+
             if(cnts.ContainsKey(meta.mapId) && cnts[meta.mapId].ContainsKey(meta.id) && meta.max < cnts[meta.mapId][meta.id])
                 continue;
 
-            Updater.Instance.AddQ(ActionType.MOB_CREATE, meta.mapId, meta.id, null, true);
+            Updater.Instance.AddQ(ActionType.MOB_CREATE, -1, meta.mapId, meta.id, null, true);
         }
     }
     public void Update()
@@ -195,7 +195,7 @@ public class ActorManager
         {
             BuildingObject building = BuildingManager.Instance.objects[mapId];
             Actor obj = new Actor();
-            if(obj.Create(mapId, q.id))
+            if(obj.Create(building.tribeId, mapId, q.id))
             {
                 mapId = obj.mapId; // 빈 공간으로 생성시킨다.
                 //actor등록
@@ -283,7 +283,7 @@ public class BuildingManager
         //map에 설정 & prefab생성. environment object를 map에 적절히 assign해야 해서 mapmanager에서 처리함
         obj.gameObject = MapManager.Instance.CreateBuilding(q.mapId, MetaManager.Instance.buildingInfo[q.id].level[0].prefab); //건물의 a* cost는 -1. 지나가지 못함
             
-        if(obj.Create(q.mapId, q.id))
+        if(obj.Create(q.tribeId, q.mapId, q.id))
         {
             obj.actions.Add(new Action(ActionType.BUILDING_CREATE, q.immediately ? 0 : MetaManager.Instance.buildingInfo[q.id].level[0].buildTime, null));   
             objects[obj.mapId] = obj;
@@ -352,7 +352,7 @@ public class NeutralManager
         //map에 설정 & prefab생성. environment object를 map에 적절히 assign해야 해서 mapmanager에서 처리함
         obj.gameObject = MapManager.Instance.CreateNeutral(q.mapId, MetaManager.Instance.neutralInfo[q.id].prefab); //건물의 a* cost는 -1. 지나가지 못함
             
-        if(obj.Create(q.mapId, q.id))
+        if(obj.Create(q.tribeId, q.mapId, q.id))
         {
             obj.actions.Add(new Action(ActionType.NEUTRAL_CREATE, 0, null));   
             objects[obj.mapId] = obj;
