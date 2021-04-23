@@ -81,6 +81,7 @@
         {
             "id": 0,
             "name": "딱히 쓸모 없는 고양이",
+            "earningTime": 10,
             "flying": false,
             "level": [
                 {
@@ -110,6 +111,7 @@
         {
             "id": 1,
             "name": "용맹한 댕댕이 기사",
+            "earningTime": 10,
             "flying": false,
             "level": [
                 {
@@ -128,7 +130,7 @@
                     },
                     "wage": [
                         {
-                            "resourceId": 0,
+                            "resourceId": 2,
                             "amount": 1 
                         }
                     ]
@@ -138,6 +140,7 @@
         {
             "id": 2,
             "name": "꼬꼬",
+            "earningTime": 10,
             "flying": false,
             "level": [
                 {
@@ -166,6 +169,7 @@
         {
             "id": 3,
             "name": "토끼는 깡총깡총",
+            "earningTime": 10,
             "flying": false,
             "level": [
                 {
@@ -194,6 +198,7 @@
         {
             "id": 4,
             "name": "뭔지 모르겠는 로봇",
+            "earningTime": 10,
             "flying": false,
             "level": [
                 {
@@ -222,6 +227,7 @@
         {
             "id": 5,
             "name": "용슌이",
+            "earningTime": 10,
             "flying": true,
             "level": [
                 {
@@ -250,6 +256,7 @@
         {
             "id": 6,
             "name": "독수리",
+            "earningTime": 10,
             "flying": true,
             "level": [
                 {
@@ -278,6 +285,7 @@
         {
             "id": 7,
             "name": "비행닭",
+            "earningTime": 10,
             "flying": true,
             "level": [
                 {
@@ -312,6 +320,7 @@
             "level": [
                 {
                     "prefab": "ForestCabin",
+                    "earningTime": 10,
                     "buildTime": 5,
                     "HP": 100,
                     "costs": [
@@ -320,19 +329,45 @@
                             "amount": 1
                         }
                     ],
-                    "output": [
+                    "output": [ ],
+                    "actors": [
+                        {
+                            "actorId": 1,
+                            "max": 2
+                        }
+                    ]
+                }
+            ],
+            "dimension": {
+                "x": 1,
+                "y": 1
+            }
+        },
+        {
+            "id": 1,
+            "type": 1,
+            "name": "농장",
+            "level": [
+                {
+                    "prefab": "House_01",
+                    "earningTime": 10,
+                    "buildTime": 5,
+                    "HP": 100,
+                    "costs": [
                         {
                             "resourceId": 1,
-                            "amount": 2
+                            "amount": 5
+                        }
+                    ],
+                    "output": [
+                        {
+                            "resourceId": 2,
+                            "amount": 8
                         }
                     ],
                     "actors": [
                         {
                             "actorId": 0,
-                            "max": 2
-                        },
-                        {
-                            "actorId": 1,
                             "max": 2
                         },
                         {
@@ -368,108 +403,13 @@
             }
         },
         {
-            "id": 1,
-            "type": 0,
-            "name": "텐트 1",
-            "level": [
-                {
-                    "prefab": "ForestTent_01",
-                    "buildTime": 5,
-                    "HP": 100,
-                    "costs": [
-                        {
-                            "resourceId": 1,
-                            "amount": 1
-                        }
-                    ],
-                    "output": [],
-                    "actors": []
-                }
-            ],
-            "dimension": {
-                "x": 1,
-                "y": 1
-            }
-        },
-        {
             "id": 2,
-            "type": 0,
-            "name": "텐트 2",
-            "level": [
-                {
-                    "prefab": "ForestTent_02",
-                    "buildTime": 5,
-                    "HP": 100,
-                    "costs": [
-                        {
-                            "resourceId": 1,
-                            "amount": 1
-                        }
-                    ],
-                    "output": [],
-                    "actors": []
-                }
-            ],
-            "dimension": {
-                "x": 1,
-                "y": 1
-            }
-        },
-        {
-            "id": 3,
-            "type": 0,
-            "name": "텐트 3",
-            "level": [
-                {
-                    "prefab": "ForestTent_03",
-                    "buildTime": 5,
-                    "HP": 100,
-                    "costs": [
-                        {
-                            "resourceId": 1,
-                            "amount": 1
-                        }
-                    ],
-                    "output": [],
-                    "actors": []
-                }
-            ],
-            "dimension": {
-                "x": 1,
-                "y": 1
-            }
-        },
-        {
-            "id": 4,
-            "type": 1,
-            "name": "house01",
-            "level": [
-                {
-                    "prefab": "House_01",
-                    "buildTime": 5,
-                    "HP": 100,
-                    "costs": [
-                        {
-                            "resourceId": 1,
-                            "amount": 1
-                        }
-                    ],
-                    "output": [],
-                    "actors": []
-                }
-            ],
-            "dimension": {
-                "x": 1,
-                "y": 1
-            }
-        },
-        {
-            "id": 5,
             "type": 1,
             "name": "수비 타워",
             "level": [
                 {
                     "prefab": "TurretTower",
+                    "earningTime": 10,
                     "buildTime": 5,
                     "HP": 100,
                     "defense": {
@@ -484,7 +424,12 @@
                             "amount": 1
                         }
                     ],
-                    "output": [],
+                    "output": [
+                        {
+                            "resourceId": 0,
+                            "amount": 1
+                        }
+                    ],
                     "actors": []
                 }
             ],

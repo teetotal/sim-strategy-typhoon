@@ -73,6 +73,9 @@ public class NeutralBuilding: Object
     {
 
     }
+    public override void UpdateEarning()
+    {
+    }
 }
 
 /* --------------------------- */

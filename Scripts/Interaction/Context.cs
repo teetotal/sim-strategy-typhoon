@@ -24,6 +24,7 @@ public class Context
         public OnLoadResource onLoadResource;
         public OnDelivery onDelivery;
         public CheckDefenseAttack checkDefenseAttack;
+        public OnEarning onEarning;
 
         public CallbackFunctions(OnCreationEvent onCreationEvent,
                                     OnCreationFinish onCreationFinish,
@@ -32,7 +33,8 @@ public class Context
                                     OnAttack onAttack,
                                     OnLoadResource onLoadResource,
                                     OnDelivery onDelivery, 
-                                    CheckDefenseAttack checkDefenseAttack)
+                                    CheckDefenseAttack checkDefenseAttack,
+                                    OnEarning onEarning)
         {
             this.onCreationEvent = onCreationEvent;
             this.onCreationFinish = onCreationFinish;
@@ -42,6 +44,7 @@ public class Context
             this.onLoadResource = onLoadResource;
             this.onDelivery = onDelivery;
             this.checkDefenseAttack = checkDefenseAttack;
+            this.onEarning = onEarning;
         }
     }
     public delegate void OnSelectionEvent(TAG tag, int mapId, int id, GameObject gameObject);
@@ -60,6 +63,9 @@ public class Context
     public CheckDefenseAttack checkDefenseAttack;
     public delegate void OnCreationFinish(ActionType type, Object obj);
     public OnCreationFinish onCreationFinish;
+    public delegate void OnEarning(Object obj, bool success);
+    public OnEarning onEarning;
+
     //----------------------------------------------------------------------------------------
     public Dictionary<Context.Mode, IContext> contexts;
     private static readonly Lazy<Context> hInstance = new Lazy<Context>(() => new Context());
@@ -118,6 +124,7 @@ public class Context
         this.onLoadResource = functions.onLoadResource;
         this.onDelivery = functions.onDelivery;
         this.checkDefenseAttack = functions.checkDefenseAttack;
+        this.onEarning = functions.onEarning;
 
         this.canvas = canvas;
         this.progressPrefab = Resources.Load<GameObject>(progressPrefab);

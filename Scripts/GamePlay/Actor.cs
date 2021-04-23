@@ -325,4 +325,25 @@ public class Actor : ActingObject
     {
 
     }
+
+    public override void UpdateEarning()
+    {
+        Meta.Actor meta = GetMeta();
+        if(meta.level[this.level].wage == null || meta.level[this.level].wage.Count == 0)
+            return;
+
+        earningElapse += Time.deltaTime;
+        if(meta.earningTime <= earningElapse)
+        {
+            earningElapse = 0;
+            bool success = GameStatusManager.Instance.Spend(this.tribeId, meta.level[this.level].wage);
+            Context.Instance.onEarning(this, success);
+            this.gameObject.GetComponent<IActor>().Earning(success);
+        }
+    }
+
+    private Meta.Actor GetMeta()
+    {
+        return MetaManager.Instance.actorInfo[this.id];
+    }
 }

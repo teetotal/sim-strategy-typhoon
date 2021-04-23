@@ -127,4 +127,7 @@ public class Mob : ActingObject
     {
 
     }
+    public override void UpdateEarning()
+    {
+    }
 }

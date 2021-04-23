@@ -47,7 +47,8 @@ public class GamePlay : MonoBehaviour
             callbacks.OnAttack,
             callbacks.OnLoadResource,
             callbacks.OnDelivery,
-            callbacks.CheckDefenseAttack
+            callbacks.CheckDefenseAttack,
+            callbacks.OnEarning
         );
 
     

@@ -10,20 +10,25 @@ public interface IContext
     void OnTouchRelease();
     void OnDrag();
 }
-public abstract class IBuildingAttack : MonoBehaviour
+public abstract class IBuilding: MonoBehaviour
+{
+    public abstract void Earning(bool success);
+}
+public abstract class IBuildingDefensing : IBuilding
 {
     public abstract void Attack(List<Vector3> targets, float ratio);
     public abstract void AttackEnd();
     public abstract void Rotation(List<Transform> rots);
 }
 
-public abstract class IAnimation : MonoBehaviour
+public abstract class IActor : MonoBehaviour
 {
     public abstract void SetIdle();
     public abstract void SetMoving();
     public abstract void SetDie();
+    public abstract void Earning(bool success);
 }
-public abstract class IAttacking : IAnimation
+public abstract class IActorAttacking : IActor
 {
     public abstract void SetAttack();
 }
@@ -38,6 +43,7 @@ public abstract class Object
     public int id;
     public int level;
     public float currentHP;
+    public float earningElapse = 0;
     public Queue<UnderAttack> underAttackQ = new Queue<UnderAttack>();
     public List<Action> actions = new List<Action>(); //현재 겪고 있는 액션 리스트.
     public GameObject progress; 
@@ -48,6 +54,7 @@ public abstract class Object
     public abstract void Update();
     public abstract void UpdateDefence();
     public abstract void UpdateUnderAttack();
+    public abstract void UpdateEarning();
     
     protected GameObject Instantiate(int tribeId, int mapId, int id, string prefab, TAG tag, bool flying)
     {
@@ -418,7 +425,7 @@ public abstract class ActingObject : Object
     public void SetAnimation(ActionType type)
     {
         //set animation
-        IAnimation p = gameObject.GetComponent<IAnimation>();
+        IActor p = gameObject.GetComponent<IActor>();
         if(p != null)
         {
             switch(type)
@@ -432,7 +439,7 @@ public abstract class ActingObject : Object
                     break;
                 case ActionType.ACTOR_ATTACK:
                     {
-                        IAttacking a = gameObject.GetComponent<IAttacking>();
+                        IActorAttacking a = gameObject.GetComponent<IActorAttacking>();
                         if(a != null)
                             a.SetAttack();
                     }

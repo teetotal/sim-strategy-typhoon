@@ -63,6 +63,7 @@ public class Meta
     {
         public int id;
         public string name;
+        public float earningTime;
         public bool flying;
         public List<ActorLevelInfo> level;
     }
@@ -78,6 +79,7 @@ public class Meta
     public struct BuildingLevelInfo
     {
         public string prefab;
+        public float earningTime;
         public int buildTime;
         public int HP;
         public Defense defense;

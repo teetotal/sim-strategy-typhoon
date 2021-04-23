@@ -240,6 +240,7 @@ public class ActorManager
             list[n].UpdateUIPosition();
             list[n].UpdateUnderAttack();
             list[n].UpdateDefence();
+            list[n].UpdateEarning();
         }
     }
 }
@@ -308,6 +309,7 @@ public class BuildingManager
             list[n].UpdateUIPosition();
             list[n].UpdateUnderAttack();
             list[n].UpdateDefence();
+            list[n].UpdateEarning();
         }
     }
 }
@@ -481,6 +483,7 @@ public class GameStatusManager
     }
     public bool Spend(int tribeId, List<Meta.ResourceIdAmount> resources)
     {
+        Debug.Log("Spend");
         //check validation
         for(int n = 0; n < resources.Count; n++)
         {
@@ -491,6 +494,17 @@ public class GameStatusManager
         for(int n = 0; n < resources.Count; n++)
         {
             resourceInfo[tribeId][resources[n].resourceId] -= resources[n].amount;
+        }
+        return true;
+        
+    }
+    public bool Earn(int tribeId, List<Meta.ResourceIdAmount> resources)
+    {
+        Debug.Log("Earn");
+        //earn
+        for(int n = 0; n < resources.Count; n++)
+        {
+            resourceInfo[tribeId][resources[n].resourceId] += resources[n].amount;
         }
         return true;
         

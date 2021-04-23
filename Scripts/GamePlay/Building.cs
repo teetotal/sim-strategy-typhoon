@@ -40,7 +40,7 @@ public class BuildingObject : Object
                 {
                     qList.Add(MapManager.Instance.defaultGameObjects[defenseTargets[n].targetMapId].transform);
                 }
-                this.gameObject.GetComponent<IBuildingAttack>().Rotation(qList);
+                this.gameObject.GetComponent<IBuildingDefensing>().Rotation(qList);
                 break;
             }
             case ActionType.BUILDING_UNDER_ATTACK:
@@ -108,7 +108,7 @@ public class BuildingObject : Object
                             MapManager.Instance.GetVector3FromMapId(defenseTargets[n].targetMapId)
                             );
                     }
-                    IBuildingAttack p = this.gameObject.GetComponent<IBuildingAttack>();
+                    IBuildingDefensing p = this.gameObject.GetComponent<IBuildingDefensing>();
                     p.Attack(posList, action.currentTime / action.totalTime);
                     
                     break;
@@ -121,7 +121,7 @@ public class BuildingObject : Object
                 switch(action.type)
                 {
                     case ActionType.BUILDING_DEFENSE:
-                        this.gameObject.GetComponent<IBuildingAttack>().AttackEnd();
+                        this.gameObject.GetComponent<IBuildingDefensing>().AttackEnd();
                         
                         //현재 범위안에 있으면 under attack
                         for(int n = 0; n < defenseTargets.Count; n++)
@@ -229,5 +229,25 @@ public class BuildingObject : Object
             Updater.Instance.AddQ(ActionType.BUILDING_DEFENSE, this.tribeId, this.mapId, this.id, null, false);
             defenseLock = true;
         }       
+    }
+    public override void UpdateEarning()
+    {
+        Meta.Building meta = GetMeta();
+        if(meta.level[this.level].output == null || meta.level[this.level].output.Count == 0)
+            return;
+
+        earningElapse += Time.deltaTime;
+        if(meta.level[this.level].earningTime <= earningElapse)
+        {
+            earningElapse = 0;
+            bool success = GameStatusManager.Instance.Earn(this.tribeId, meta.level[this.level].output);
+            Context.Instance.onEarning(this, success);
+            this.gameObject.GetComponent<IBuilding>().Earning(success);
+        }   
+    }
+
+    private Meta.Building GetMeta()
+    {
+        return MetaManager.Instance.buildingInfo[this.id];
     }
 }

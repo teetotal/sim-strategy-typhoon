@@ -163,6 +163,16 @@ public class Callbacks
         return false;
     }
 
+    public void OnEarning(Object obj, bool success)
+    {
+        if(success)
+            UpdateResourceUI();
+        else
+        {
+            //임금을 받지 못했을때 이벤트 처리
+        }
+    }
+
     //-------------------------------------------
     /*
     */
