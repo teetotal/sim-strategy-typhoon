@@ -4,15 +4,15 @@
             "resources": [
                 {
                     "resourceId": 0,
-                    "amount": 128
+                    "amount": 3
                 },
                 {
                     "resourceId": 1,
-                    "amount": 215
+                    "amount": 10
                 },
                 {
                     "resourceId": 2,
-                    "amount": 182
+                    "amount": 10
                 }
             ],
             "buildings": [
@@ -23,7 +23,37 @@
                     "actors": [
                         {
                             "mapId": 2,
-                            "actorId": 0,
+                            "actorId": 1,
+                            "HP": 20
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "resources": [
+                {
+                    "resourceId": 0,
+                    "amount": 3
+                },
+                {
+                    "resourceId": 1,
+                    "amount": 10
+                },
+                {
+                    "resourceId": 2,
+                    "amount": 10
+                }
+            ],
+            "buildings": [
+                {
+                    "mapId": 169,
+                    "buildingId": 0,
+                    "rotation": 0,
+                    "actors": [
+                        {
+                            "mapId": 170,
+                            "actorId": 1,
                             "HP": 20
                         }
                     ]

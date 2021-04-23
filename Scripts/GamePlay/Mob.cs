@@ -106,6 +106,13 @@ public class Mob : ActingObject
             //finish
             if(action.currentTime >= action.totalTime)
             {
+                switch(action.type)
+                {
+                    case ActionType.MOB_CREATE:
+                        Context.Instance.onCreationFinish(action.type, this);
+                        break;
+                    //mob die 추가해야 함
+                }
                 actions.RemoveAt(0);
             }
         }

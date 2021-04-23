@@ -244,31 +244,6 @@ public class Actor : ActingObject
                 }
                 case ActionType.ACTOR_DIE:
                     SetAnimation(ActionType.ACTOR_DIE);
-                    if(action.currentTime >= action.totalTime)
-                    {
-                        //object삭제
-                        GameObject.DestroyImmediate(this.gameObject);
-                        ActorManager.Instance.actors.Remove(this.mapId);
-                        MapManager.Instance.Remove(this.mapId, TAG.ACTOR);
-                        DestroyProgress();
-                        Clear();
-                        return;
-                    }
-                    break;
-                case ActionType.ACTOR_LOAD_RESOURCE:
-                    /*
-                    values[0]:     적재할 리소스를 가지고 있는 빌딩 mapId
-                    */
-                    if(action.currentTime >= action.totalTime)
-                        Context.Instance.onLoadResource(this, action.values[0]);
-                    break;
-                case ActionType.ACTOR_DELIVERY:
-                    /*
-                    values[0]:   배송할 건물의 mapId
-                    values[1]:   배송할 건물의 TAG
-                    */
-                    if(action.currentTime >= action.totalTime)
-                        Context.Instance.onDelivery(this, action.values[0], (TAG)action.values[1]);
                     break;
             }
 
@@ -279,6 +254,29 @@ public class Actor : ActingObject
                 {
                     case ActionType.ACTOR_CREATE:
                         progress.SetActive(false);
+                        Context.Instance.onCreationFinish(action.type, this);
+                        break;
+                    case ActionType.ACTOR_DIE:
+                        Context.Instance.onCreationFinish(action.type, this);
+                        //object삭제
+                        GameObject.DestroyImmediate(this.gameObject);
+                        ActorManager.Instance.actors.Remove(this.mapId);
+                        MapManager.Instance.Remove(this.mapId, TAG.ACTOR);
+                        DestroyProgress();
+                        Clear();
+                        return;
+                    case ActionType.ACTOR_LOAD_RESOURCE:
+                        /*
+                        values[0]:     적재할 리소스를 가지고 있는 빌딩 mapId
+                        */
+                        Context.Instance.onLoadResource(this, action.values[0]);
+                        break;
+                    case ActionType.ACTOR_DELIVERY:
+                        /*
+                        values[0]:   배송할 건물의 mapId
+                        values[1]:   배송할 건물의 TAG
+                        */
+                        Context.Instance.onDelivery(this, action.values[0], (TAG)action.values[1]);
                         break;
                 }
                 actions.RemoveAt(0);

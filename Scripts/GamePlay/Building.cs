@@ -112,22 +112,6 @@ public class BuildingObject : Object
                     p.Attack(posList, action.currentTime / action.totalTime);
                     
                     break;
-                case ActionType.BUILDING_DESTROY:
-                    if(action.currentTime >= action.totalTime)
-                    {
-                        //딸린 actor들 삭제
-                        for(int n = 0; n < this.actors.Count; n++)
-                        {
-                            Actor actor = actors[n];
-                            Updater.Instance.AddQ(ActionType.ACTOR_DIE, actor.tribeId, actor.mapId, actor.id, null, false, 0);
-                        }
-                        actions.Clear();
-                        DestroyProgress();
-                        BuildingManager.Instance.objects.Remove(mapId);
-                        MapManager.Instance.DestroyBuilding(mapId);
-                        return;
-                    }
-                    break;
             }
 
             //finish
@@ -157,7 +141,21 @@ public class BuildingObject : Object
                         break;
                     case ActionType.BUILDING_CREATE:
                         progress.SetActive(false);
+                        Context.Instance.onCreationFinish(action.type, this);
                         break;
+                    case ActionType.BUILDING_DESTROY:
+                        Context.Instance.onCreationFinish(action.type, this);
+                        //딸린 actor들 삭제
+                        for(int n = 0; n < this.actors.Count; n++)
+                        {
+                            Actor actor = actors[n];
+                            Updater.Instance.AddQ(ActionType.ACTOR_DIE, actor.tribeId, actor.mapId, actor.id, null, false, 0);
+                        }
+                        actions.Clear();
+                        DestroyProgress();
+                        BuildingManager.Instance.objects.Remove(mapId);
+                        MapManager.Instance.DestroyBuilding(mapId);
+                        return;
                 }
                 actions.RemoveAt(0);
             }

@@ -170,7 +170,6 @@ public class GameStatus
     public class Building : MapIdBuildingId
     {
         public List<MapIdActorIdHP> actors;
-        public int tribeId; //json에서 로드되지 않고 load 시점에 할당 됨
     }
     [Serializable]
     public class Tribe

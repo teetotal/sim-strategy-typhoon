@@ -13,11 +13,42 @@ public class Context
         ACTOR,
         MAX
     }
+
+    public struct CallbackFunctions
+    {
+        public OnCreationEvent onCreationEvent;
+        public OnCreationFinish onCreationFinish;
+        public OnSelectionEvent onSelectEvent;
+        public OnActorAction onAction;
+        public OnAttack onAttack;
+        public OnLoadResource onLoadResource;
+        public OnDelivery onDelivery;
+        public CheckDefenseAttack checkDefenseAttack;
+
+        public CallbackFunctions(OnCreationEvent onCreationEvent,
+                                    OnCreationFinish onCreationFinish,
+                                    OnSelectionEvent onSelectEvent,
+                                    OnActorAction onAction,
+                                    OnAttack onAttack,
+                                    OnLoadResource onLoadResource,
+                                    OnDelivery onDelivery, 
+                                    CheckDefenseAttack checkDefenseAttack)
+        {
+            this.onCreationEvent = onCreationEvent;
+            this.onCreationFinish = onCreationFinish;
+            this.onSelectEvent = onSelectEvent;
+            this.onAction = onAction;
+            this.onAttack = onAttack;
+            this.onLoadResource = onLoadResource;
+            this.onDelivery = onDelivery;
+            this.checkDefenseAttack = checkDefenseAttack;
+        }
+    }
     public delegate void OnSelectionEvent(TAG tag, int mapId, int id, GameObject gameObject);
     public OnSelectionEvent onSelectEvent;
     public delegate void OnActorAction(Actor actor, TAG targetTag, int targetMapId);
     public OnActorAction onAction;
-    public delegate void OnCreationEvent(ActionType type, TAG tag, int mapId, int id);
+    public delegate bool OnCreationEvent(QNode q);
     public OnCreationEvent onCreationEvent;
     public delegate void OnAttack(Object from, Object to, int amount);
     public OnAttack onAttack;
@@ -27,7 +58,9 @@ public class Context
     public OnDelivery onDelivery;
     public delegate bool CheckDefenseAttack(Object target, Object from);
     public CheckDefenseAttack checkDefenseAttack;
-
+    public delegate void OnCreationFinish(ActionType type, Object obj);
+    public OnCreationFinish onCreationFinish;
+    //----------------------------------------------------------------------------------------
     public Dictionary<Context.Mode, IContext> contexts;
     private static readonly Lazy<Context> hInstance = new Lazy<Context>(() => new Context());
     public Mode mode = Mode.NONE;
@@ -70,26 +103,21 @@ public class Context
         contexts[mode].OnMove();
     }
     public void Init(
-                    OnCreationEvent onCreationEvent,
-                    OnSelectionEvent onSelectEvent,
-                    OnActorAction onAction,
-                    OnAttack onAttack,
-                    OnLoadResource onLoadResource,
-                    OnDelivery onDelivery,
-                    CheckDefenseAttack checkDefenseAttack,
-                    ref Transform canvas, 
+                    CallbackFunctions functions,
+                    ref Transform canvas,
                     string progressPrefab, 
                     string greenCube, 
                     string redCube
                     )
     {
-        this.onCreationEvent = onCreationEvent;
-        this.onSelectEvent = onSelectEvent;
-        this.onAction = onAction;
-        this.onAttack = onAttack;
-        this.onLoadResource = onLoadResource;
-        this.onDelivery = onDelivery;
-        this.checkDefenseAttack = checkDefenseAttack;
+        this.onCreationEvent = functions.onCreationEvent;
+        this.onCreationFinish = functions.onCreationFinish;
+        this.onSelectEvent = functions.onSelectEvent;
+        this.onAction = functions.onAction;
+        this.onAttack = functions.onAttack;
+        this.onLoadResource = functions.onLoadResource;
+        this.onDelivery = functions.onDelivery;
+        this.checkDefenseAttack = functions.checkDefenseAttack;
 
         this.canvas = canvas;
         this.progressPrefab = Resources.Load<GameObject>(progressPrefab);

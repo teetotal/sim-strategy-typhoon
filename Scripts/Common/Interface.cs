@@ -34,7 +34,7 @@ public abstract class Object
     public GameObject gameObject;
     public int tribeId = -1;
     public int mapId;
-    public int currentMapId;
+    public int currentMapId = -1;
     public int id;
     public int level;
     public float currentHP;
@@ -197,7 +197,7 @@ public abstract class Object
     }
     protected void SetCurrentMapId()
     {
-        int beforeMapId = this.currentMapId;
+        int beforeMapId = this.GetCurrentMapId();
         RaycastHit hit;
 
         if(actions.Count > 0)

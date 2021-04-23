@@ -100,6 +100,9 @@ public class MobManager
             if(mapId == -1)
                 return;
 
+            if(!Context.Instance.onCreationEvent(q))
+                return;
+
             Mob obj = new Mob();
             obj.attachedId = q.mapId;   //소속 위치 
             if(obj.Create(q.tribeId, mapId, q.id))
@@ -114,7 +117,7 @@ public class MobManager
                     meta.flyingHeight == 0 ? ActionType.MOB_MOVING : ActionType.MOB_FLYING, 
                     -1, -1, -1, null, false, -1)
             };
-            Context.Instance.onCreationEvent(q.type, TAG.MOB, obj.mapId, obj.id);
+            
         }
         else
         {
@@ -192,6 +195,10 @@ public class ActorManager
         if(q.type == ActionType.ACTOR_CREATE)
         {
             BuildingObject building = BuildingManager.Instance.objects[mapId];
+            q.tribeId = building.tribeId;
+            if(!Context.Instance.onCreationEvent(q))
+                return;
+            
             Actor obj = new Actor();
             if(obj.Create(building.tribeId, mapId, q.id))
             {
@@ -202,7 +209,6 @@ public class ActorManager
                 building.actors.Add(obj);
                 //actor에 building등록
                 obj.attachedBuilding = building;
-                Context.Instance.onCreationEvent(q.type, TAG.ACTOR, mapId, obj.id);
             }
             else
             {
@@ -254,15 +260,11 @@ public class BuildingManager
 
     public void Fetch(QNode q)
     {
-        //destroy되기 전에 호출. 그래야 파티클을 보여주던 이벤트를 발생시켜도 아직 오브젝트가 살아있어야 뭘 하지
-        if(q.type == ActionType.BUILDING_DESTROY)
-            Context.Instance.onCreationEvent(q.type, TAG.BUILDING, q.mapId, q.id);
-
         switch(q.type)
         {
             case ActionType.BUILDING_CREATE:
-                Construct(q);
-                Context.Instance.onCreationEvent(q.type, TAG.BUILDING, q.mapId, q.id);
+                if(Context.Instance.onCreationEvent(q))
+                    Construct(q);
                 break;
             default:
                 if(objects.ContainsKey(q.mapId))
@@ -329,7 +331,8 @@ public class NeutralManager
         switch(q.type)
         {
             case ActionType.NEUTRAL_CREATE:
-                Construct(q);
+                if(Context.Instance.onCreationEvent(q))
+                    Construct(q);
                 break;
             case ActionType.NEUTRAL_DESTROY:
                 Destroy(q.mapId);
@@ -337,7 +340,6 @@ public class NeutralManager
             default:
                 return;
         }
-        Context.Instance.onCreationEvent(q.type, TAG.NEUTRAL, q.mapId, q.id);
     }
     
     public void Construct(QNode q)
@@ -458,14 +460,14 @@ public class GameStatusManager
 
             for(int m = 0; m < tribe.buildings.Count; m++)
             {
-                GameStatus.Building building = tribe.buildings[n];
+                GameStatus.Building building = tribe.buildings[m];
                 Updater.Instance.AddQ(ActionType.BUILDING_CREATE, 
-                building.tribeId,
-                building.mapId, building.buildingId, new List<int>() {  (int)building.rotation }, true);
+                                        n,
+                                        building.mapId, building.buildingId, new List<int>() {  (int)building.rotation }, true);
 
                 for(int i = 0; i < building.actors.Count; i++)
                 {
-                    GameStatus.MapIdActorIdHP p = building.actors[n];
+                    GameStatus.MapIdActorIdHP p = building.actors[i];
                     Updater.Instance.AddQ(ActionType.ACTOR_CREATE, n, building.mapId, p.actorId, new List<int>() { p.HP }, true);
                 }
             }
@@ -476,6 +478,22 @@ public class GameStatusManager
         if(!resourceInfo[tribeId].ContainsKey(resourceId))
             return 0;
         return resourceInfo[tribeId][resourceId];
+    }
+    public bool Spend(int tribeId, List<Meta.ResourceIdAmount> resources)
+    {
+        //check validation
+        for(int n = 0; n < resources.Count; n++)
+        {
+            if(GetResource(tribeId, resources[n].resourceId) < resources[n].amount)
+                return false;
+        }
+        //spend
+        for(int n = 0; n < resources.Count; n++)
+        {
+            resourceInfo[tribeId][resources[n].resourceId] -= resources[n].amount;
+        }
+        return true;
+        
     }
 }
 public class TimeManager

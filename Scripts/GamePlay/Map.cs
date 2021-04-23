@@ -207,7 +207,7 @@ public class MapManager
     }
     public bool SetCurrentMap(Object obj, TAG tag)
     {
-        Vector2Int pos = GetMapPosition(obj.currentMapId);
+        Vector2Int pos = GetMapPosition(obj.GetCurrentMapId());
         if(currentMap[(int)tag][pos.x, pos.y] == null)
         {
             currentMap[(int)tag][pos.x, pos.y] = obj;
