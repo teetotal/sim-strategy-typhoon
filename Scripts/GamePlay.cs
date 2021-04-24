@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 public class GamePlay : MonoBehaviour
 {
     Callbacks callbacks = new Callbacks();
@@ -337,11 +338,13 @@ public class GamePlay : MonoBehaviour
         
         ((ContextActor)Context.Instance.contexts[Context.Mode.ACTOR]).Clear();
         Context.Instance.SetMode(Context.Mode.NONE);
-
+        SceneManager.LoadScene("LevelUp");
+        /*
         //camera moving
         cmObj = ActorManager.Instance.actors[mapId].gameObject;
         cmRatio = 0;
         cmDefault = Camera.main.transform.position;
+        */
     }
     
 
@@ -381,7 +384,7 @@ public class GamePlay : MonoBehaviour
         }
     }
     
-     GameObject OnCreate(string layerName,string name, string tag, Vector2 position, Vector2 size)
+    GameObject OnCreate(string layerName,string name, string tag, Vector2 position, Vector2 size)
     {
         return null;
     } 

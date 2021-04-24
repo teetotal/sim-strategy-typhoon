@@ -1,0 +1,69 @@
+{
+    "_Name": "levelup",
+    "_GridDim":{"x":60,"y":30},
+    "_Margin":{"x":0.0,"y":0.0},
+    "_InnerMargin":{"x":0.0,"y":0.0},
+    "_Objects": [
+    ],
+    "_Subs":[
+        {
+            "_Name": "left",
+            "_BGColor": [0, 0 , 0, 0.5],
+            "_From": {"x": 0, "y": 8},
+            "_To": {"x": 19, "y": 18},
+            "_GridDim":{"x":1,"y":1},
+            "_Margin":{"x":10, "y":10},
+            "_InnerMargin":{"x":2.0,"y":0},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"scrollview",
+                    "tag":"UI",
+                    "prefab": "LevelUp/ScrollView",
+                    "ui": true
+                }
+            ]
+        },
+        {
+            "_Name": "progress",
+            "_BGColor": [1, 1 , 1, 0],
+            "_From": {"x": 20, "y": 0},
+            "_To": {"x": 39, "y": 7},
+            "_GridDim":{"x":1,"y":4},
+            "_Margin":{"x":10, "y":10},
+            "_InnerMargin":{"x":0.0,"y":0},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":2},
+                    "name":"progress",
+                    "tag":"UI",
+                    "prefab": "progress_default",
+                    "ui": true,
+                    "text": "3/5"
+                }
+            ]
+        },
+        {
+            "_Name": "bottom",
+            "_BGColor": [1, 1 , 1, 0],
+            "_From": {"x": 20, "y": 0},
+            "_To": {"x": 39, "y": 7},
+            "_GridDim":{"x":3,"y":5},
+            "_Margin":{"x":10, "y":10},
+            "_InnerMargin":{"x":0.0,"y":0},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":1,"y":1},
+                    "name":"levelup",
+                    "tag":"UI",
+                    "prefab": "button_default",
+                    "ui": true,
+                    "text": "LEVEL UP"
+                }
+            ]
+        }
+    ]
+}
