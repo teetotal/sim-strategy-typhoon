@@ -6,6 +6,7 @@ public class Instantiation : MonoBehaviour
     void Awake()
     {
         MapManager.Instance.CreatePrefabs();
+        BuildingManager.Instance.Instantiate();
         //GameStatusManager.Instance.Load();
         Debug.Log("CreatePrefabs completed");
     }

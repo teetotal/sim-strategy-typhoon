@@ -47,7 +47,7 @@ public class NeutralBuilding: Object
     {
         return true;
     }
-    public override bool Create(int tribeId, int mapId, int id)
+    public override bool Create(int tribeId, int mapId, int id, bool isInstantiate)
     {
         this.tribeId = tribeId;
         this.mapId = mapId;

@@ -105,7 +105,7 @@ public class MobManager
 
             Mob obj = new Mob();
             obj.attachedId = q.mapId;   //소속 위치 
-            if(obj.Create(q.tribeId, mapId, q.id))
+            if(obj.Create(q.tribeId, mapId, q.id, true))
             {
                 mobs[obj.mapId] = obj;
             }
@@ -194,26 +194,9 @@ public class ActorManager
         int mapId = q.mapId;
         if(q.type == ActionType.ACTOR_CREATE)
         {
-            BuildingObject building = BuildingManager.Instance.objects[mapId];
-            q.tribeId = building.tribeId;
             if(!Context.Instance.onCreationEvent(q))
                 return;
-            
-            Actor obj = new Actor();
-            if(obj.Create(building.tribeId, mapId, q.id))
-            {
-                mapId = obj.mapId; // 빈 공간으로 생성시킨다.
-                //actor등록
-                actors[mapId] = obj;
-                //building에 actor등록
-                building.actors.Add(obj);
-                //actor에 building등록
-                obj.attachedBuilding = building;
-            }
-            else
-            {
-                return;
-            }
+            Create(q.mapId, q.id, true);
         }
         
         if(actors.ContainsKey(mapId) == false)
@@ -224,6 +207,33 @@ public class ActorManager
         {
             actors[mapId].AddAction(q);
         }
+    }
+
+    public void SetActor(int buildingMapId, int actorId, float HP)
+    {
+        Actor actor = Create(buildingMapId, actorId, false);
+        actor.currentHP = HP;
+    }
+
+    private Actor Create(int buildingMapId, int id, bool isInstantiate)
+    {
+        BuildingObject building = BuildingManager.Instance.objects[buildingMapId];
+        int tribeId = building.tribeId;
+        
+        Actor obj = new Actor();
+        if(obj.Create(building.tribeId, buildingMapId, id, isInstantiate))
+        {
+            //actor등록
+            actors[obj.mapId] = obj;
+            //building에 actor등록
+            building.actors.Add(obj);
+            //actor에 building등록
+            obj.attachedBuilding = building;
+
+            return obj;
+        }
+
+        return null;
     }
     
     public void Update()
@@ -261,29 +271,65 @@ public class BuildingManager
 
     public void Fetch(QNode q)
     {
-        switch(q.type)
+        if(q.type == ActionType.BUILDING_CREATE)
         {
-            case ActionType.BUILDING_CREATE:
-                if(Context.Instance.onCreationEvent(q))
-                    Construct(q);
-                break;
-            default:
-                if(objects.ContainsKey(q.mapId))
+            if(Context.Instance.onCreationEvent(q))
+            {
+                if(!Create(q.tribeId, q.mapId, q.id, 0, true))
                 {
-                    objects[q.mapId].AddAction(q);
+                    return;
                 }
+            }
+            else{
                 return;
+            }
+        }
+
+        if(objects.ContainsKey(q.mapId))
+        {
+            objects[q.mapId].AddAction(q);
         }
     }
-    
+
+    public bool SetBuilding(int tribeId, int mapId, int id, float roatation)
+    {
+        return Create(tribeId, mapId, id, roatation, false);
+    }
+
+    private bool Create(int tribeId, int mapId, int id, float roatation, bool isInstantiate)
+    {
+        BuildingObject obj = new BuildingObject();
+        obj.roatation = roatation;
+        if(obj.Create(tribeId, mapId, id, false))
+        {
+            objects[obj.mapId] = obj;
+            MapManager.Instance.AssignBuilding(obj.mapId);
+            return true;
+        }
+
+        return false;
+    }
+    public void Instantiate()
+    {
+        foreach(KeyValuePair<int, BuildingObject> kv in objects)
+        {
+            kv.Value.Instantiate();
+            for(int n = 0; n < kv.Value.actors.Count; n++)
+            {
+                Actor actor = kv.Value.actors[n];
+                actor.Instantiate();
+            }
+        }
+    }
+    /*
     public void Construct(QNode q)
     {
         //화면 처리에 필요한 object 설정
         BuildingObject obj = new BuildingObject();
         //map에 설정 & prefab생성. environment object를 map에 적절히 assign해야 해서 mapmanager에서 처리함
-        obj.gameObject = MapManager.Instance.CreateBuilding(q.mapId, MetaManager.Instance.buildingInfo[q.id].level[0].prefab); //건물의 a* cost는 -1. 지나가지 못함
+        //obj.gameObject = MapManager.Instance.CreateBuilding(q.mapId, MetaManager.Instance.buildingInfo[q.id].level[0].prefab); //건물의 a* cost는 -1. 지나가지 못함
             
-        if(obj.Create(q.tribeId, q.mapId, q.id))
+        if(obj.Create(q.tribeId, q.mapId, q.id, true))
         {
             obj.actions.Add(new Action(ActionType.BUILDING_CREATE, q.immediately ? 0 : MetaManager.Instance.buildingInfo[q.id].level[0].buildTime, null));   
             objects[obj.mapId] = obj;
@@ -295,6 +341,7 @@ public class BuildingManager
             }
         }
     }
+    */
     public void Update()
     {
         List<BuildingObject> list = new List<BuildingObject>();
@@ -343,15 +390,28 @@ public class NeutralManager
                 return;
         }
     }
+
+    public bool SetBuilding(int mapId, int id)
+    {
+        NeutralBuilding obj = new NeutralBuilding();
+        if(obj.Create(-1, mapId, id, false))
+        {
+            objects[obj.mapId] = obj;
+            MapManager.Instance.AssignBuilding(obj.mapId);
+            return true;
+        }
+
+        return false;
+    }
     
     public void Construct(QNode q)
     {
         //화면 처리에 필요한 object 설정
         NeutralBuilding obj = new NeutralBuilding();
         //map에 설정 & prefab생성. environment object를 map에 적절히 assign해야 해서 mapmanager에서 처리함
-        obj.gameObject = MapManager.Instance.CreateNeutral(q.mapId, MetaManager.Instance.neutralInfo[q.id].prefab); //건물의 a* cost는 -1. 지나가지 못함
+        //obj.gameObject = MapManager.Instance.CreateNeutral(q.mapId, MetaManager.Instance.neutralInfo[q.id].prefab); //건물의 a* cost는 -1. 지나가지 못함
             
-        if(obj.Create(q.tribeId, q.mapId, q.id))
+        if(obj.Create(q.tribeId, q.mapId, q.id, true))
         {
             obj.actions.Add(new Action(ActionType.NEUTRAL_CREATE, 0, null));   
             objects[obj.mapId] = obj;
@@ -367,7 +427,7 @@ public class NeutralManager
     {
         NeutralBuilding obj = new NeutralBuilding();
             
-        if(obj.Create(-1, mapId, id))
+        if(obj.Create(-1, mapId, id, false))
         {
             objects[obj.mapId] = obj;
             return obj.mapId;
@@ -456,32 +516,36 @@ public class GameStatusManager
     {
         gameStatus = Json.LoadJsonFile<GameStatus>("map_played");
         //tribes
-        for(int n = 0; n < gameStatus.tribes.Count; n++)
+        for(int tribeId = 0; tribeId < gameStatus.tribes.Count; tribeId++)
         {
             //resources
-            if(!resourceInfo.ContainsKey(n))
+            if(!resourceInfo.ContainsKey(tribeId))
             {
-                resourceInfo[n] = new Dictionary<int, float>();
+                resourceInfo[tribeId] = new Dictionary<int, float>();
             }
 
-            GameStatus.Tribe tribe = gameStatus.tribes[n];
+            GameStatus.Tribe tribe = gameStatus.tribes[tribeId];
             for(int m = 0; m < tribe.resources.Count; m++)
             {
                 GameStatus.ResourceIdAmount r = tribe.resources[m];
-                resourceInfo[n][r.resourceId] = r.amount;
+                resourceInfo[tribeId][r.resourceId] = r.amount;
             }
-
+            //buildings
             for(int m = 0; m < tribe.buildings.Count; m++)
             {
                 GameStatus.Building building = tribe.buildings[m];
+                BuildingManager.Instance.SetBuilding(tribeId, building.mapId, building.buildingId, building.rotation);
+                /*
                 Updater.Instance.AddQ(ActionType.BUILDING_CREATE, 
                                         n,
                                         building.mapId, building.buildingId, new List<int>() {  (int)building.rotation }, true);
-
+                */
+                //actors
                 for(int i = 0; i < building.actors.Count; i++)
                 {
                     GameStatus.MapIdActorIdHP p = building.actors[i];
-                    Updater.Instance.AddQ(ActionType.ACTOR_CREATE, n, building.mapId, p.actorId, new List<int>() { p.HP }, true);
+                    ActorManager.Instance.SetActor(building.mapId, p.actorId, p.HP);
+                    //Updater.Instance.AddQ(ActionType.ACTOR_CREATE, n, building.mapId, p.actorId, new List<int>() { p.HP }, true);
                 }
             }
         }

@@ -50,7 +50,7 @@ public abstract class Object
     
     //fn
     public abstract bool AddAction(QNode node);
-    public abstract bool Create(int tribeId, int mapId, int id);
+    public abstract bool Create(int tribeId, int mapId, int id, bool isInstantiate);
     public abstract void Update();
     public abstract void UpdateDefence();
     public abstract void UpdateUnderAttack();
@@ -71,15 +71,15 @@ public abstract class Object
 
         obj.transform.rotation = Quaternion.Euler(0, 180, 0);
 
-        this.tribeId = tribeId;
-        this.id = id;
-        this.mapId = mapId;
         this.gameObject = obj;
 
         return gameObject;
     }
     public void ShowHP(int totalHP)
     {
+        if(progress == null)
+            CreateProgress();
+            
         progress.SetActive(true);
         progress.transform.position = GetProgressPosition();
 
@@ -110,7 +110,7 @@ public abstract class Object
     {
         if(progress == null)
             CreateProgress();
-            
+
         progress.SetActive(true);
         progress.transform.position = GetProgressPosition();
 

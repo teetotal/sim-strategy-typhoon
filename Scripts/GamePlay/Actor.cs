@@ -114,7 +114,7 @@ public class Actor : ActingObject
         gameObject.transform.SetParent(parent.transform);
     }
     
-    public override bool Create(int tribeId, int mapId, int id)
+    public override bool Create(int tribeId, int mapId, int id, bool isInstantiate)
     {
         //생성 위치 찾기.
         mapId = MapManager.Instance.AssignNearEmptyMapId(mapId);
@@ -123,12 +123,18 @@ public class Actor : ActingObject
         
         Meta.Actor meta = MetaManager.Instance.actorInfo[id];
         //prefab 생성
-        this.Instantiate(tribeId, mapId, id, meta.level[this.level].prefab, TAG.ACTOR, meta.flying);
-
+        if(isInstantiate)
+        {
+            Instantiate();
+        }
         //HP
         this.currentHP = meta.level[0].ability.HP;
         //level
         this.level = 0;
+
+        this.tribeId = tribeId;
+        this.id = id;
+        this.mapId = mapId;
 
         //progress
         /*
@@ -139,6 +145,13 @@ public class Actor : ActingObject
 
         return MapManager.Instance.SetCurrentMap(this, TAG.ACTOR); //currentMap에 등록
     }
+
+    public void Instantiate()
+    {
+        Meta.Actor meta = MetaManager.Instance.actorInfo[id];
+        Instantiate(tribeId, mapId, id, meta.level[this.level].prefab, TAG.ACTOR, meta.flying);
+    }
+
     //동시에 진행 못하고 순차적으로함. 이래야 아래 같은 시퀀스가 가능해짐
     //창고에 간다 -> 물건을 실는다 -> 시장에 가서 판다.
     public override void Update()

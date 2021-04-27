@@ -81,6 +81,7 @@ public class MapManager
         map[fromPos.x, fromPos.y] = mapMeta.defaultVal.cost;
     }
     //regarding object
+    /*
     public GameObject GetBuildingObject(int id)
     {
         if(buildingObjects.ContainsKey(id) == false)
@@ -90,6 +91,7 @@ public class MapManager
 
         return buildingObjects[id];
     }
+    */
     //regarding position
     public void SetMapId(int mapId, int cost)
     {
@@ -121,7 +123,7 @@ public class MapManager
     {
         Vector2Int pos = GetMapPosition(id);
         //Debug.Log(string.Format("IsEmptyMapId {0} - {1}", pos, map[pos.x, pos.y]));
-        if(map[pos.x, pos.y] == mapMeta.defaultVal.cost && defaultGameObjects[id].gameObject.transform.childCount == 0)
+        if(map[pos.x, pos.y] == mapMeta.defaultVal.cost) // && defaultGameObjects[id].gameObject.transform.childCount == 0)
         {
             return true;
         }
@@ -345,6 +347,9 @@ public class MapManager
     }
     public void CreatePrefabs()
     {
+        defaultGameObjects.Clear();
+        buildingObjects.Clear();
+
         Vector2Int startPosition = new Vector2Int(mapMeta.dimension.x / 2, mapMeta.dimension.y / 2);
         Map.Prefab prefabInfoDefault = mapMeta.prefabs[mapMeta.defaultVal.prefabId];
         //init map
@@ -461,20 +466,19 @@ public class MapManager
         GameObject.DestroyImmediate(buildingObjects[mapId]);
         buildingObjects.Remove(mapId);
     }
-    public GameObject CreateNeutral(int id, string prefab)
+   
+    public void AssignBuilding(int mapId)
     {
-        return Construct(id, prefab, -1, TAG.NEUTRAL);
+        Vector2Int position = GetMapPosition(mapId);
+        map[position.x, position.y] = -1;
     }
-    public GameObject CreateBuilding(int id, string prefab)
-    {
-        return Construct(id, prefab, -1, TAG.BUILDING);
-    }
-    
+    /*
     private GameObject Construct(int id, string prefab, int mapCost, TAG tag)
     {
         GameObject parent = defaultGameObjects[id];
         Vector2Int position = GetMapPosition(id);
         map[position.x, position.y] = mapCost;
+
         GameObject obj = Resources.Load<GameObject>(prefab);
         obj = GameObject.Instantiate(obj, new Vector3(parent.transform.position.x, parent.transform.position.y + 0.1f, parent.transform.position.z), Quaternion.identity);
         obj.tag = MetaManager.Instance.GetTag(tag);
@@ -488,4 +492,5 @@ public class MapManager
 
         return obj;
     }
+    */
 }

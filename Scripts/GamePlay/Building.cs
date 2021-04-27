@@ -22,6 +22,7 @@ public class BuildingObject : Object
     bool defenseLock = false;
 
     public List<Actor> actors = new List<Actor>();
+    public float roatation;
     public override bool AddAction(QNode node)
     {
         Meta.Building meta =  MetaManager.Instance.buildingInfo[this.id];
@@ -60,7 +61,7 @@ public class BuildingObject : Object
         return true;
     }
     
-    public override bool Create(int tribeId, int mapId, int id)
+    public override bool Create(int tribeId, int mapId, int id, bool isInstantiate)
     {
         this.tribeId = tribeId;
         this.mapId = mapId;
@@ -71,6 +72,12 @@ public class BuildingObject : Object
 
         elapsedDefense = 0;
 
+        if(isInstantiate)
+        {
+            Instantiate();
+        }
+        
+
         //progress
         /*
         Vector3 pos = GetProgressPosition();
@@ -80,6 +87,12 @@ public class BuildingObject : Object
         */
 
         return true;
+    }
+
+    public void Instantiate()
+    {
+        Meta.Building meta = MetaManager.Instance.buildingInfo[id];
+        Instantiate(tribeId, mapId, id, meta.level[level].prefab, TAG.BUILDING, false);
     }
 
     public override void Update()
