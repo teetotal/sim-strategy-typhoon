@@ -363,6 +363,17 @@ public class NeutralManager
             }
         }
     }
+    public int CreateObjectOnly(int mapId, int id)
+    {
+        NeutralBuilding obj = new NeutralBuilding();
+            
+        if(obj.Create(-1, mapId, id))
+        {
+            objects[obj.mapId] = obj;
+            return obj.mapId;
+        }
+        return -1;
+    }
     public void Destroy(int mapId)
     {
         MapManager.Instance.DestroyBuilding(mapId);

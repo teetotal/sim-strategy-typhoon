@@ -70,7 +70,6 @@ public class Context
     public Dictionary<Context.Mode, IContext> contexts;
     private static readonly Lazy<Context> hInstance = new Lazy<Context>(() => new Context());
     public Mode mode = Mode.NONE;
-    public bool isInitialized = false;
     public Transform canvas;
     public GameObject greenPrefab, redPrefab, progressPrefab;
     public static Context Instance

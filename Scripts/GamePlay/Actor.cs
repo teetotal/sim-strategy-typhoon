@@ -131,9 +131,11 @@ public class Actor : ActingObject
         this.level = 0;
 
         //progress
+        /*
         progress = GameObject.Instantiate(Context.Instance.progressPrefab, GetProgressPosition(), Quaternion.identity);
         progress.name = string.Format("progress-{0}-{1}", mapId, this.id);
         progress.transform.SetParent(Context.Instance.canvas);
+        */
 
         return MapManager.Instance.SetCurrentMap(this, TAG.ACTOR); //currentMap에 등록
     }

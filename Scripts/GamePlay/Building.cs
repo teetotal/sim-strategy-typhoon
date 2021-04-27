@@ -72,10 +72,12 @@ public class BuildingObject : Object
         elapsedDefense = 0;
 
         //progress
+        /*
         Vector3 pos = GetProgressPosition();
         progress = GameObject.Instantiate(Context.Instance.progressPrefab, GetProgressPosition(), Quaternion.identity);
         progress.name = string.Format("progress-{0}-{1}", mapId, this.id);
         progress.transform.SetParent(Context.Instance.canvas);
+        */
 
         return true;
     }

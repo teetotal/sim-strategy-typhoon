@@ -92,6 +92,15 @@ public abstract class Object
         }
 
     }
+    protected void CreateProgress()
+    {
+        //progress
+        Vector3 pos = GetProgressPosition();
+        progress = GameObject.Instantiate(Context.Instance.progressPrefab, pos, Quaternion.identity);
+        progress.name = string.Format("progress-{0}-{1}", mapId, this.id);
+        progress.transform.SetParent(Context.Instance.canvas);
+        progress.SetActive(false);
+    }
     protected void HideProgress()
     {
         if(progress != null)
@@ -99,6 +108,9 @@ public abstract class Object
     }
     protected void ShowProgress(float v, float max, bool displayRemainTime)
     {
+        if(progress == null)
+            CreateProgress();
+            
         progress.SetActive(true);
         progress.transform.position = GetProgressPosition();
 

@@ -298,30 +298,16 @@ public class MapManager
         }
 
         Vector2Int startPosition = new Vector2Int(mapMeta.dimension.x / 2, mapMeta.dimension.y / 2);
-        Map.Prefab prefabInfo = mapMeta.prefabs[mapMeta.defaultVal.prefabId];
+        Map.Prefab prefabInfoDefault = mapMeta.prefabs[mapMeta.defaultVal.prefabId];
         //init map
-        int idx = 0;
+        
         for(int i = 0; i < map.GetLength(1); i++)
         {
             for(int j = 0; j < map.GetLength(0); j++)
             {
                 map[j, i] = mapMeta.defaultVal.cost;
-                GameObject defaultPrefab = Resources.Load<GameObject>(prefabInfo.name);
-                defaultPrefab = GameObject.Instantiate(defaultPrefab, new Vector3(j - startPosition.x, -0.1f, i - startPosition.y), Quaternion.identity);
-                defaultPrefab.name = idx++.ToString();
-                defaultPrefab.tag = MetaManager.Instance.GetTag(TAG.BOTTOM);
-
-                defaultGameObjects.Add(defaultPrefab);
-
-                //defaultPrefab.transform.SetParent(plane.transform);
             }
         }
-
-        SetSpecificObject();
-        SetNeutrals();
-    }
-    private void SetSpecificObject()
-    {
         //set specific
         for(int n = 0; n < mapMeta.nodes.Count; n++)
         {
@@ -331,7 +317,9 @@ public class MapManager
             //positions
             for(int i = 0; i < node.positions.Count; i++)
             {
-                CreateEnvironment(node.positions[i], prefabInfo.name, prefabInfo.cost);   
+                int mapId = node.positions[i];
+                Vector2Int position = GetMapPosition(mapId);
+                map[position.x, position.y] = prefabInfo.cost;
             }
 
             //range
@@ -339,11 +327,118 @@ public class MapManager
             {
                 for(int id = node.range.start; id <= node.range.end; id++)
                 {
-                    CreateEnvironment(id, prefabInfo.name, prefabInfo.cost);   
+                    int mapId = id;
+                    Vector2Int position = GetMapPosition(mapId);
+                    map[position.x, position.y] = prefabInfo.cost;
                 }
             }
         }
+
+        //SetNeutrals
+        for(int n = 0; n < mapMeta.neutrals.Count; n++)
+        {
+            Map.Neutral ne = mapMeta.neutrals[n];
+            int mapId = NeutralManager.Instance.CreateObjectOnly(ne.mapId, ne.id);
+            Vector2Int position = GetMapPosition(mapId);
+            map[position.x, position.y] = -1;
+        }
     }
+    public void CreatePrefabs()
+    {
+        Vector2Int startPosition = new Vector2Int(mapMeta.dimension.x / 2, mapMeta.dimension.y / 2);
+        Map.Prefab prefabInfoDefault = mapMeta.prefabs[mapMeta.defaultVal.prefabId];
+        //init map
+        int idx = 0;
+        for(int i = 0; i < map.GetLength(1); i++)
+        {
+            for(int j = 0; j < map.GetLength(0); j++)
+            {
+                CreateInstance(idx, prefabInfoDefault.name, new Vector3(j - startPosition.x, -0.1f, i - startPosition.y), idx.ToString(), TAG.BOTTOM, null);
+                idx++;
+            }
+        }
+        //set specific
+        for(int n = 0; n < mapMeta.nodes.Count; n++)
+        {
+            Map.Node node = mapMeta.nodes[n];
+            Map.Prefab prefabInfo = mapMeta.prefabs[node.prefabId];
+
+            //positions
+            for(int i = 0; i < node.positions.Count; i++)
+            {
+                int mapId = node.positions[i];
+                GameObject parent = defaultGameObjects[mapId];
+
+                CreateInstance(mapId, 
+                                prefabInfo.name, 
+                                parent.transform.position + new Vector3(0, 0.1f, 0), 
+                                mapId.ToString(),
+                                TAG.ENVIRONMENT,
+                                parent
+                                );
+            }
+
+            //range
+            if(node.range.end > node.range.start)
+            {
+                for(int id = node.range.start; id <= node.range.end; id++)
+                {
+                    int mapId = id;
+                    GameObject parent = defaultGameObjects[mapId];
+
+                    CreateInstance(mapId, 
+                                prefabInfo.name, 
+                                parent.transform.position + new Vector3(0, 0.1f, 0), 
+                                mapId.ToString(),
+                                TAG.ENVIRONMENT,
+                                parent
+                                );
+                }
+            }
+        }
+
+        //SetNeutrals
+        foreach(KeyValuePair<int, NeutralBuilding> kv in NeutralManager.Instance.objects)
+        {
+            int mapId = kv.Value.mapId;
+            GameObject parent = defaultGameObjects[mapId];
+            kv.Value.gameObject = CreateInstance(mapId, 
+                                                MetaManager.Instance.neutralInfo[kv.Value.id].prefab, 
+                                                parent.transform.position + new Vector3(0, 0.1f, 0), 
+                                                mapId.ToString(),
+                                                TAG.NEUTRAL,
+                                                parent
+                                                );
+        }
+    }
+    public GameObject CreateInstance(int mapId, string prefab, Vector3 position, string name, TAG tag, GameObject parent)
+    {
+        GameObject p = Resources.Load<GameObject>(prefab);
+        p = GameObject.Instantiate(p, position, Quaternion.identity);
+        p.name = name;
+        p.tag = MetaManager.Instance.GetTag(tag);
+        switch(tag)
+        {
+            case TAG.BOTTOM:
+                defaultGameObjects.Add(p);
+            break;
+            case TAG.BUILDING:
+            case TAG.ENVIRONMENT:
+            case TAG.NEUTRAL:
+                if(buildingObjects.ContainsKey(mapId) == true)
+                {
+                    throw new Exception("Already assigned position. conflict creating building");
+                }
+                buildingObjects[mapId] = p;
+            break;
+        } 
+            
+        if(parent != null)
+            p.transform.SetParent(parent.transform);
+
+        return p;
+    }
+    /*
     private void SetNeutrals()
     {
         for(int n = 0; n < mapMeta.neutrals.Count; n++)
@@ -352,6 +447,7 @@ public class MapManager
             Updater.Instance.AddQ(ActionType.NEUTRAL_CREATE, -1, ne.mapId, ne.id, new List<int>() { ne.rotation }, true);
         }
     }
+    */
     public void Remove(int mapId, TAG tag)
     {
         Vector2Int pos = GetMapPosition(mapId);
@@ -373,10 +469,7 @@ public class MapManager
     {
         return Construct(id, prefab, -1, TAG.BUILDING);
     }
-    private GameObject CreateEnvironment(int id, string prefab, int mapCost)
-    {
-        return Construct(id, prefab, mapCost, TAG.ENVIRONMENT);
-    }
+    
     private GameObject Construct(int id, string prefab, int mapCost, TAG tag)
     {
         GameObject parent = defaultGameObjects[id];

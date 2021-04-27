@@ -53,13 +53,6 @@ public class NeutralBuilding: Object
         this.mapId = mapId;
         this.id = id;
 
-        //progress
-        Vector3 pos = GetProgressPosition();
-        progress = GameObject.Instantiate(Context.Instance.progressPrefab, pos, Quaternion.identity);
-        progress.name = string.Format("progress-{0}-{1}", mapId, this.id);
-        progress.transform.SetParent(Context.Instance.canvas);
-        progress.SetActive(false);
-
         return true;
     }
 
