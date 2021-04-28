@@ -22,7 +22,7 @@ public class BuildingObject : Object
     bool defenseLock = false;
 
     public List<Actor> actors = new List<Actor>();
-    public float roatation;
+    public float rotation;
     public override bool AddAction(QNode node)
     {
         Meta.Building meta =  MetaManager.Instance.buildingInfo[this.id];

@@ -340,8 +340,8 @@ public class MapManager
         for(int n = 0; n < mapMeta.neutrals.Count; n++)
         {
             Map.Neutral ne = mapMeta.neutrals[n];
-            int mapId = NeutralManager.Instance.CreateObjectOnly(ne.mapId, ne.id);
-            Vector2Int position = GetMapPosition(mapId);
+            NeutralManager.Instance.Create(ne.mapId, ne.id, ne.rotation, false);
+            Vector2Int position = GetMapPosition(ne.mapId);
             map[position.x, position.y] = -1;
         }
     }

@@ -43,17 +43,23 @@ public struct Action
 //중립 지역 건물 정보
 public class NeutralBuilding: Object
 {
+    public float rotation;
     public override bool AddAction(QNode node)
     {
         return true;
     }
     public override bool Create(int tribeId, int mapId, int id, bool isInstantiate)
     {
-        this.tribeId = tribeId;
+        this.tribeId = -1;
         this.mapId = mapId;
         this.id = id;
 
         return true;
+    }
+    public void Instantiate()
+    {
+        Meta.Neutral meta = MetaManager.Instance.neutralInfo[id];
+        Instantiate(-1, mapId, id, meta.prefab, TAG.NEUTRAL, false);
     }
 
     public override void Update()

@@ -122,11 +122,7 @@ public class Actor : ActingObject
             return false;
         
         Meta.Actor meta = MetaManager.Instance.actorInfo[id];
-        //prefab 생성
-        if(isInstantiate)
-        {
-            Instantiate();
-        }
+        
         //HP
         this.currentHP = meta.level[0].ability.HP;
         //level
@@ -135,6 +131,12 @@ public class Actor : ActingObject
         this.tribeId = tribeId;
         this.id = id;
         this.mapId = mapId;
+
+        //prefab 생성
+        if(isInstantiate)
+        {
+            Instantiate();
+        }
 
         //progress
         /*
