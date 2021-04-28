@@ -41,7 +41,7 @@ public class Levelup : MonoBehaviour
         switch(obj.name)
         {
             case "scrollview":
-                LoaderPerspective.Instance.CreateScrollViewItems(GeScrollItems(), 15, OnClickButton, obj, false);
+                LoaderPerspective.Instance.CreateScrollViewItems(GeScrollItems(), 10, OnClickButton, obj, false);
                 break;
             default:
                 break;
@@ -69,9 +69,10 @@ public class Levelup : MonoBehaviour
     List<GameObject> GeScrollItems()
     {
         List<GameObject> list = new List<GameObject>();
-        for(int n = 0; n < 3; n++)
+        for(int n = 0; n < 10; n++)
         {
             GameObject obj = Resources.Load<GameObject>("LevelUp/levelup_element");
+            //GameObject obj = Resources.Load<GameObject>("button_default");
             obj.GetComponentInChildren<Text>().text = n.ToString()+" A급 재료";
             obj.name = string.Format("item-{0}", n);
             list.Add(Instantiate(obj)); 

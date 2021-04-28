@@ -30,6 +30,9 @@ public class BuildingObject : Object
 
         switch(node.type)
         {
+            case ActionType.BUILDING_CREATE:
+                action = new Action(node.type, meta.level[this.level].buildTime);
+                break;
             case ActionType.BUILDING_DEFENSE:
             {
                 /*
@@ -169,6 +172,7 @@ public class BuildingObject : Object
                         actions.Clear();
                         DestroyProgress();
                         BuildingManager.Instance.objects.Remove(mapId);
+                        GameObject.DestroyImmediate(this.gameObject);
                         MapManager.Instance.DestroyBuilding(mapId);
                         return;
                 }
@@ -202,6 +206,10 @@ public class BuildingObject : Object
     public override void UpdateDefence()
     {
         if(defenseLock)
+            return;
+        
+        //생성중에는 공격 못함
+        if(IsCreating())
             return;
 
         if(defenseTargets.Count > 0)

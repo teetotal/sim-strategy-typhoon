@@ -23,7 +23,8 @@ public class ActorManager
             q.tribeId = BuildingManager.Instance.objects[mapId].tribeId;
             if(!Context.Instance.onCreationEvent(q))
                 return;
-            Create(q.mapId, q.id, true);
+            Actor actor = Create(q.mapId, q.id, true);
+            mapId = actor.mapId;
         }
         
         if(actors.ContainsKey(mapId) == false)

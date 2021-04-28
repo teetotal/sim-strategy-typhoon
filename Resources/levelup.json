@@ -8,7 +8,7 @@
     "_Subs":[
         {
             "_Name": "left",
-            "_BGColor": [0, 0 , 0, 0.5],
+            "_BGColor": [0, 0 , 0, 0.7],
             "_From": {"x": 0, "y": 8},
             "_To": {"x": 19, "y": 18},
             "_GridDim":{"x":1,"y":1},
@@ -20,7 +20,7 @@
                     "position":{"x":0,"y":0},
                     "name":"scrollview",
                     "tag":"UI",
-                    "prefab": "LevelUp/ScrollView",
+                    "prefab": "LevelUp/scrollview_default",
                     "ui": true
                 }
             ]

@@ -13,6 +13,10 @@ public class Actor : ActingObject
     */
     public override bool AddAction(QNode node)
     {
+        //생성중에는 아무것도 못함
+        if(IsCreating())
+            return false;
+
         Meta.Actor meta =  MetaManager.Instance.actorInfo[this.id];
         Action action = new Action(ActionType.MAX);
 
@@ -20,8 +24,7 @@ public class Actor : ActingObject
         {
             case ActionType.ACTOR_CREATE:
                 action = new Action(ActionType.ACTOR_CREATE, node.immediately ? 0 : meta.level[this.level].createTime, null);
-                if(node.values != null && node.values.Count == 1)
-                    this.currentHP = node.values[0];
+                //if(node.values != null && node.values.Count == 1) this.currentHP = node.values[0];
                 break;
             case ActionType.ACTOR_MOVING_1_STEP:
             {
@@ -46,6 +49,8 @@ public class Actor : ActingObject
                 */
                 if(node.id == -1)  
                     return false;
+                
+                Clear(); //진행중인 행위 모두 취소
 
                 // 타겟 위치에 갈 수 없으면 근처로 이동.
                 //정확히 그 위치에 가고 싶은건 위치 지정레벨에서 컨트롤
@@ -355,7 +360,9 @@ public class Actor : ActingObject
             earningElapse = 0;
             bool success = GameStatusManager.Instance.Spend(this.tribeId, meta.level[this.level].wage);
             Context.Instance.onEarning(this, success);
-            this.gameObject.GetComponent<IActor>().Earning(success);
+            IActor ia = this.gameObject.GetComponent<IActor>();
+            if(ia != null)
+                ia.Earning(success);
         }
     }
 

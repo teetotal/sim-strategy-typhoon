@@ -79,7 +79,7 @@ public abstract class Object
     {
         if(progress == null)
             CreateProgress();
-            
+
         progress.SetActive(true);
         progress.transform.position = GetProgressPosition();
 
@@ -91,6 +91,21 @@ public abstract class Object
             txt.text = "";
         }
 
+    }
+    public bool IsCreating()
+    {
+        if(actions.Count > 0)
+        {
+            switch(actions[0].type)
+            {
+                case ActionType.BUILDING_CREATE:
+                case ActionType.ACTOR_CREATE:
+                    return true;
+                default:
+                    break;
+            }
+        } 
+        return false;
     }
     protected void CreateProgress()
     {

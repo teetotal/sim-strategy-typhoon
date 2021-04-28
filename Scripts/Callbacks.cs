@@ -98,8 +98,6 @@ public class Callbacks
             case TAG.BOTTOM:
                 if(actor.mapId != targetMapId && MapManager.Instance.IsEmptyMapId(targetMapId))
                 {
-                    //이전 모든 행위 취소
-                    actor.Clear();
                     Updater.Instance.AddQ(
                         meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
                         actor.tribeId,

@@ -463,8 +463,8 @@ public class MapManager
     {
         Vector2Int pos = GetMapPosition(mapId);
         map[pos.x, pos.y] = mapMeta.defaultVal.cost;
-        GameObject.DestroyImmediate(buildingObjects[mapId]);
-        buildingObjects.Remove(mapId);
+        //GameObject.DestroyImmediate(buildingObjects[mapId]);
+        //buildingObjects.Remove(mapId);
     }
    
     public void AssignBuilding(int mapId)
