@@ -27,7 +27,9 @@ public class Levelup : MonoBehaviour
         elapse += Time.deltaTime;
         if(elapse > 6)
         {
-            SceneManager.LoadScene("GamePlay");
+            Camera.main.GetComponent<Animation>().Stop();
+            GachaManager.Instance.Run();
+            //SceneManager.LoadScene("GamePlay");
         }
         else if(elapse > 4)
         {
@@ -70,18 +72,52 @@ public class Levelup : MonoBehaviour
     GameObject OnCreate(string layerName,string name, string tag, Vector2 position, Vector2 size)
     {
         return null;
-    } 
+    }
+    void OnChangeMaterialQuantity(GameObject obj, int itemId, bool isAdd)
+    {
+        string name = ItemManager.Instance.items[itemId].name;
+        int quantity = InventoryManager.Instance.items[itemId];
+        int added = GachaManager.Instance.GetAssignedMaterialCount(itemId);
+
+        if(isAdd)
+        {
+            if(added >= quantity)
+                return;
+            GachaManager.Instance.AddMaterial(itemId);
+        }
+        else
+        {
+            if(added <= 0)
+                return;
+            GachaManager.Instance.SubtractMaterial(itemId);
+        }
+            
+        added = GachaManager.Instance.GetAssignedMaterialCount(itemId);
+
+        obj.GetComponentInChildren<Text>().text = string.Format("{0} {1}/{2}", name, added, quantity);
+    }
     //----------------------------------------------------------
     List<GameObject> GeScrollItems()
     {
         List<GameObject> list = new List<GameObject>();
-        for(int n = 0; n < 10; n++)
+        
+        foreach(KeyValuePair<int, int> kv in InventoryManager.Instance.items)
         {
+            Item item = ItemManager.Instance.items[kv.Key];
+
             GameObject obj = Resources.Load<GameObject>("LevelUp/levelup_element");
+            obj = Instantiate(obj);
             //GameObject obj = Resources.Load<GameObject>("button_default");
-            obj.GetComponentInChildren<Text>().text = n.ToString()+" A급 재료";
-            obj.name = string.Format("item-{0}", n);
-            list.Add(Instantiate(obj)); 
+            obj.GetComponentInChildren<Text>().text = string.Format("{0} 0/{1}", item.name, kv.Value);
+            obj.name = string.Format("item-{0}", kv.Key);
+
+            Button[] btns = obj.GetComponentsInChildren<Button>();
+            Button increase = btns[0];
+            Button decrease = btns[1];
+            increase.onClick.AddListener(() => { OnChangeMaterialQuantity(obj, kv.Key, true);});
+            decrease.onClick.AddListener(() => { OnChangeMaterialQuantity(obj, kv.Key, false);});
+
+            list.Add(obj); 
         }
 
         return list;

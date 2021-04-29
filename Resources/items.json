@@ -1,0 +1,36 @@
+{
+    "items": [
+        {
+            "id": 0,
+            "type": 0,
+            "name": "식량 +10",
+            "prefab": "",
+            "v": 2,
+            "amount": 10
+        },
+        {
+            "id": 1,
+            "type": 1,
+            "name": "레벨업 A급 재료",
+            "prefab": "",
+            "v": 2,
+            "amount": 1
+        },
+        {
+            "id": 2,
+            "type": 1,
+            "name": "레벨업 B급 재료",
+            "prefab": "",
+            "v": 1,
+            "amount": 1
+        },
+        {
+            "id": 3,
+            "type": 1,
+            "name": "레벨업 C급 재료",
+            "prefab": "",
+            "v": 0,
+            "amount": 1
+        }
+    ]
+}

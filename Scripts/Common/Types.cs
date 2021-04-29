@@ -49,4 +49,9 @@ public enum ActionType
     MAX,
 }
 
-
+public enum ItemType
+{
+    RESOURCE = 0, //자원
+    GACHA_MATERIAL, //강화 재료
+    MAX
+}
