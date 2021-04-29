@@ -28,7 +28,7 @@ public class Callbacks
                 UpdateResourceUI();
             else
             {
-                Debug.Log(string.Format("Not enough resources {0}, {1}, {2}", q.type, q.mapId, q.id));
+                SetMessage(string.Format("Not enough resources {0}, {1}, {2}", q.type, q.mapId, q.id));
                 return false;
             }
         }
@@ -37,7 +37,7 @@ public class Callbacks
     }
     public void OnCreationFinish(ActionType type, Object obj)
     {
-        Debug.Log(string.Format("OnCreationFinish {0}, {1}, {2}, {3}", type, obj.gameObject.tag, obj.mapId, obj.id));
+        SetMessage(string.Format("OnCreationFinish {0}, {1}, {2}, {3}", type, obj.gameObject.tag, obj.mapId, obj.id));
     }
     public void SetDelivery(Actor actor, int targetMapId, TAG targetBuildingTag)
     {
@@ -71,6 +71,15 @@ public class Callbacks
         //Debug.Log(string.Format("OnAction {0}, {1}, {2}, {3}", mapId, id, tag, targetMapId));
         Meta.Actor meta = MetaManager.Instance.actorInfo[actor.id];
         Object targetObject = Util.GetObject(targetMapId, tag);
+        if(tag != TAG.BOTTOM)
+        {
+            if(meta.level[actor.level].ability.attackDistance < MapManager.Instance.GetDistance(actor.GetCurrentMapId(), targetMapId))
+            {
+                SetMessage("too far target to attack");
+                return;
+            }
+        }
+
         switch(tag)
         {
             case TAG.BUILDING:
@@ -133,7 +142,7 @@ public class Callbacks
         Transform load = actor.gameObject.transform.Find("load");
         if(load == null)
         {
-            Debug.LogError("Finding the load failure");
+            SetMessage("Finding the load failure");
         }
         else
         {
@@ -174,6 +183,16 @@ public class Callbacks
     //-------------------------------------------
     /*
     */
+    public float elapseMessage; 
+    GameObject messageArea;
+    Text message;
+    public void Init()
+    {
+        elapseMessage = 0;
+        messageArea = GameObject.Find("MessageArea");
+        message = GameObject.Find("message").GetComponent<Text>();
+        messageArea.SetActive(false);
+    }
     public void UpdateResourceUI()
     {
         for(int n = 0; n < 3; n++)
@@ -181,6 +200,23 @@ public class Callbacks
             GameObject.Find("resource" + (n+1).ToString()).GetComponentInChildren<Text>().text = string.Format("{0} {1}", 
                     MetaManager.Instance.resourceInfo[n], 
                     GameStatusManager.Instance.GetResource(0, n));
+        }
+    }
+    private void SetMessage(string sz)
+    {
+        messageArea.SetActive(true);
+        elapseMessage = 0;
+        message.text = sz;
+    }
+    public void CheckMessageAvailable(float deltaTime)
+    {
+        if(!messageArea.activeSelf)
+            return;
+
+        elapseMessage += deltaTime;
+        if(elapseMessage > 3.0f)
+        {
+            messageArea.SetActive(false);
         }
     }
 }

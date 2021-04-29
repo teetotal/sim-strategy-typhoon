@@ -1,0 +1,38 @@
+{
+    "_Name": "lobby",
+    "_GridDim":{"x":5,"y":5},
+    "_Margin":{"x":0.0,"y":0.0},
+    "_InnerMargin":{"x":0.0,"y":0.0},
+    "_Objects": [
+    ],
+    "_Subs":[
+        {
+            "_Name": "main",
+            "_BGColor": [0, 0 , 0, 0],
+            "_From": {"x": 1, "y": 1},
+            "_To": {"x": 3, "y": 3},
+            "_GridDim":{"x":2,"y":1},
+            "_Margin":{"x":0, "y":0},
+            "_InnerMargin":{"x":20,"y":0},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"play",
+                    "tag":"UI",
+                    "prefab": "button_default",
+                    "ui": true,
+                    "text": "PLAY GAME"
+                },
+                {
+                    "position":{"x":1,"y":0},
+                    "name":"levelup",
+                    "tag":"UI",
+                    "prefab": "button_default",
+                    "ui": true,
+                    "text": "LEVEL UP"
+                }
+            ]
+        }
+    ]
+}

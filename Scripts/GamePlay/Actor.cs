@@ -283,6 +283,7 @@ public class Actor : ActingObject
                         //object삭제
                         GameObject.DestroyImmediate(this.gameObject);
                         ActorManager.Instance.actors.Remove(this.mapId);
+                        this.attachedBuilding.RemoveActor(this.mapId);
                         MapManager.Instance.Remove(this.mapId, TAG.ACTOR);
                         DestroyProgress();
                         Clear();

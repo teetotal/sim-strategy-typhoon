@@ -136,6 +136,8 @@ public class Context
             kv.Value.Init();
         }
 
+        SetMode(Mode.NONE);
+
     }
     public void SetMode(Mode _mode)
     {

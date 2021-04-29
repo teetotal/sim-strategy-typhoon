@@ -97,6 +97,17 @@ public class BuildingObject : Object
         Meta.Building meta = MetaManager.Instance.buildingInfo[id];
         Instantiate(tribeId, mapId, id, meta.level[level].prefab, TAG.BUILDING, false);
     }
+    public void RemoveActor(int mapId)
+    {
+        for(int n = 0; n < actors.Count; n++)
+        {
+            if(actors[n].mapId == mapId)
+            {
+                actors.RemoveAt(n);
+                return;
+            }
+        }
+    }
 
     public override void Update()
     {

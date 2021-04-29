@@ -18,6 +18,25 @@
             "_Objects":[
                 {
                     "position":{"x":0,"y":0},
+                    "name":"scrollview_actors",
+                    "tag":"UI",
+                    "prefab": "LevelUp/scrollview_default",
+                    "ui": true
+                }
+            ]
+        },
+        {
+            "_Name": "right",
+            "_BGColor": [0, 0 , 0, 0.7],
+            "_From": {"x": 39, "y": 8},
+            "_To": {"x": 59, "y": 18},
+            "_GridDim":{"x":1,"y":1},
+            "_Margin":{"x":10, "y":10},
+            "_InnerMargin":{"x":2.0,"y":0},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
                     "name":"scrollview",
                     "tag":"UI",
                     "prefab": "LevelUp/scrollview_default",
@@ -50,18 +69,26 @@
             "_BGColor": [1, 1 , 1, 0],
             "_From": {"x": 20, "y": 0},
             "_To": {"x": 39, "y": 7},
-            "_GridDim":{"x":3,"y":5},
-            "_Margin":{"x":10, "y":10},
-            "_InnerMargin":{"x":0.0,"y":0},
+            "_GridDim":{"x":2,"y":5},
+            "_Margin":{"x":0, "y":0},
+            "_InnerMargin":{"x":10.0,"y":0},
             "_DrawGridLine": false,
             "_Objects":[
                 {
-                    "position":{"x":1,"y":1},
+                    "position":{"x":0,"y":1},
                     "name":"levelup",
                     "tag":"UI",
                     "prefab": "button_default",
                     "ui": true,
                     "text": "LEVEL UP"
+                },
+                {
+                    "position":{"x":1,"y":1},
+                    "name":"play",
+                    "tag":"UI",
+                    "prefab": "button_default",
+                    "ui": true,
+                    "text": "PLAY"
                 }
             ]
         }

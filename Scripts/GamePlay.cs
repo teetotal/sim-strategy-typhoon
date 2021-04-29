@@ -37,6 +37,7 @@ public class GamePlay : MonoBehaviour
             HideLayers();
         }
 
+        callbacks.Init();
         InitSelectionUI();
         callbacks.UpdateResourceUI();
 
@@ -351,6 +352,8 @@ public class GamePlay : MonoBehaviour
     // UI canceling
     void Update()
     {
+        callbacks.CheckMessageAvailable(Time.deltaTime);
+        
         if(Input.GetMouseButtonUp(0))
         {
             //------------------------------

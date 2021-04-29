@@ -7,6 +7,26 @@
     ],
     "_Subs":[
         {
+            "_Name": "MessageArea",
+            "_BGColor": [1, 1 , 1, 0],
+            "_From": {"x": 0, "y": 23},
+            "_To": {"x": 0, "y": 25},
+            "_GridDim":{"x":1,"y":1},
+            "_Margin":{"x":0, "y":0},
+            "_InnerMargin":{"x":0.0,"y":0},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"message",
+                    "tag":"UI",
+                    "prefab": "text_message",
+                    "ui": true,
+                    "text": "MESSAGE"
+                }
+            ]
+        },
+        {
             "_Name": "top",
             "_BGColor": [1, 1 , 1, 0],
             "_From": {"x": 0, "y": 26},

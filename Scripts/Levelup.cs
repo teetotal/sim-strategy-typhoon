@@ -57,6 +57,9 @@ public class Levelup : MonoBehaviour
                 GameObject.Find("shaman").GetComponent<Animator>().SetBool("levelUp", true);
                 isStart = true;
             break;
+            case "play":
+                SceneManager.LoadScene("GamePlay");
+            break;
             default:
             break;
         }
