@@ -303,7 +303,7 @@ public abstract class ActingObject : Object
     }
     protected void ApplyRoutine()
     {
-        if(actions.Count > 0 || routine == null)
+        if(actions.Count > 0 || routine == null || routine.Count == 0)
             return;
         if(AddAction(routine[routineIdx]))
         {

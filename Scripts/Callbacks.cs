@@ -71,18 +71,15 @@ public class Callbacks
         //Debug.Log(string.Format("OnAction {0}, {1}, {2}, {3}", mapId, id, tag, targetMapId));
         Meta.Actor meta = MetaManager.Instance.actorInfo[actor.id];
         Object targetObject = Util.GetObject(targetMapId, tag);
-        if(tag != TAG.BOTTOM)
-        {
-            if(meta.level[actor.level].ability.attackDistance < MapManager.Instance.GetDistance(actor.GetCurrentMapId(), targetMapId))
-            {
-                SetMessage("too far target to attack");
-                return;
-            }
-        }
-
+        
         switch(tag)
         {
             case TAG.BUILDING:
+                if(meta.level[actor.level].ability.attackDistance < MapManager.Instance.GetDistance(actor.GetCurrentMapId(), targetMapId))
+                {
+                    SetMessage("too far target to attack");
+                    return;
+                }
                 if(actor.tribeId != targetObject.tribeId && actor.SetFollowObject(targetMapId, TAG.BUILDING))
                 {
                    Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.tribeId, actor.mapId, -1, null, false);
@@ -95,6 +92,11 @@ public class Callbacks
                     SetDelivery(actor, targetMapId, TAG.NEUTRAL);
                 break;
             case TAG.ACTOR:
+                if(meta.level[actor.level].ability.attackDistance < MapManager.Instance.GetDistance(actor.GetCurrentMapId(), targetMapId))
+                {
+                    SetMessage("too far target to attack");
+                    return;
+                }
                 if(actor.tribeId != targetObject.tribeId && actor.SetFollowObject(targetMapId, TAG.ACTOR))
                 {
                     Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.tribeId, actor.mapId, -1, null, false);

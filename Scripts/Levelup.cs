@@ -43,6 +43,9 @@ public class Levelup : MonoBehaviour
             case "scrollview":
                 LoaderPerspective.Instance.CreateScrollViewItems(GeScrollItems(), 10, OnClickButton, obj, false);
                 break;
+            case "scrollview_actors":
+                LoaderPerspective.Instance.CreateScrollViewItems(GeScrollItemsActors(), 10, OnClickButton, obj, false);
+                break;
             default:
                 break;
         }
@@ -79,6 +82,25 @@ public class Levelup : MonoBehaviour
             obj.GetComponentInChildren<Text>().text = n.ToString()+" A급 재료";
             obj.name = string.Format("item-{0}", n);
             list.Add(Instantiate(obj)); 
+        }
+
+        return list;
+    }
+    List<GameObject> GeScrollItemsActors()
+    {
+        List<GameObject> list = new List<GameObject>();
+        foreach(KeyValuePair<int, Actor> kv in ActorManager.Instance.actors)
+        {
+            GameObject obj = Resources.Load<GameObject>("button_default");
+            //GameObject obj = Resources.Load<GameObject>("button_default");
+            if(kv.Value.tribeId == 0)
+            {
+                Meta.Actor meta = MetaManager.Instance.actorInfo[kv.Value.id];
+                obj.GetComponentInChildren<Text>().text = meta.name + " lv." + kv.Value.level.ToString();
+                obj.name = string.Format("item-{0}", kv.Key);
+                list.Add(Instantiate(obj)); 
+            }
+            
         }
 
         return list;

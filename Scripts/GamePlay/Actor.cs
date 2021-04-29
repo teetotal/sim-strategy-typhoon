@@ -50,7 +50,7 @@ public class Actor : ActingObject
                 if(node.id == -1)  
                     return false;
                 
-                Clear(); //진행중인 행위 모두 취소
+                Clear(true, false, false); //진행중인 행위 취소
 
                 // 타겟 위치에 갈 수 없으면 근처로 이동.
                 //정확히 그 위치에 가고 싶은건 위치 지정레벨에서 컨트롤
