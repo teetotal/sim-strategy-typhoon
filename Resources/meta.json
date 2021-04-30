@@ -87,6 +87,7 @@
                 {
                     "prefab": "Cat",
                     "createTime": 10,
+                    "probability": 0,
                     "ability": {
                         "HP": 20,
                         "building": 1,
@@ -117,6 +118,7 @@
                 {
                     "prefab": "DogPolyart",
                     "createTime": 1,
+                    "probability": 30,
                     "ability": {
                         "HP": 10,
                         "building": 1,
@@ -124,7 +126,7 @@
                         "carring": 1,
                         "attack": 2,
                         "attackDistance": 1.5,
-                        "attackSpeed": 0.5,
+                        "attackSpeed": 1,
                         "depense": 10,
                         "moving": 1
                     },
@@ -132,6 +134,28 @@
                         {
                             "resourceId": 2,
                             "amount": 1 
+                        }
+                    ]
+                },
+                {
+                    "prefab": "DogPolyart",
+                    "createTime": 1,
+                    "probability": 0,
+                    "ability": {
+                        "HP": 20,
+                        "building": 1,
+                        "farming": 1,
+                        "carring": 1,
+                        "attack": 2,
+                        "attackDistance": 1.5,
+                        "attackSpeed": 0.5,
+                        "depense": 10,
+                        "moving": 2
+                    },
+                    "wage": [
+                        {
+                            "resourceId": 2,
+                            "amount": 2 
                         }
                     ]
                 }
@@ -146,6 +170,7 @@
                 {
                     "prefab": "Chicken",
                     "createTime": 20,
+                    "probability": 0,
                     "ability": {
                         "HP": 10,
                         "building": 1,
@@ -175,6 +200,7 @@
                 {
                     "prefab": "Rabbit",
                     "createTime": 5,
+                    "probability": 0,
                     "ability": {
                         "HP": 10,
                         "building": 1,
@@ -204,6 +230,7 @@
                 {
                     "prefab": "actor",
                     "createTime": 20,
+                    "probability": 0,
                     "ability": {
                         "HP": 10,
                         "building": 1,
@@ -233,6 +260,7 @@
                 {
                     "prefab": "Dragon",
                     "createTime": 20,
+                    "probability": 0,
                     "ability": {
                         "HP": 10,
                         "building": 1,
@@ -262,6 +290,7 @@
                 {
                     "prefab": "Condor",
                     "createTime": 20,
+                    "probability": 0,
                     "ability": {
                         "HP": 10,
                         "building": 1,
@@ -291,6 +320,7 @@
                 {
                     "prefab": "FlyingChicken",
                     "createTime": 20,
+                    "probability": 0,
                     "ability": {
                         "HP": 10,
                         "building": 1,
@@ -321,6 +351,7 @@
                 {
                     "prefab": "ForestCabin",
                     "earningTime": 10,
+                    "probability": 0,
                     "buildTime": 5,
                     "HP": 100,
                     "costs": [
@@ -351,6 +382,7 @@
                 {
                     "prefab": "House_01",
                     "earningTime": 10,
+                    "probability": 0,
                     "buildTime": 5,
                     "HP": 100,
                     "costs": [
@@ -410,6 +442,7 @@
                 {
                     "prefab": "TurretTower",
                     "earningTime": 10,
+                    "probability": 0,
                     "buildTime": 5,
                     "HP": 100,
                     "defense": {

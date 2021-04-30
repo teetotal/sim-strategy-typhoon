@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-
 public class Levelup : MonoBehaviour
 {
     public Transform canvas;
     float elapse = 0;
     bool isStart = false;
+    GameObject slider, shaman, scrollviewMaterial;
     void Awake()
     {
         LoaderPerspective.Instance.SetUI(Camera.main, ref canvas, OnClickButton);
@@ -19,6 +19,9 @@ public class Levelup : MonoBehaviour
         {
             LoaderPerspective.Instance.AddComponents(OnCreate, OnCreatePost);
         }
+
+        shaman = GameObject.Find("shaman"); //.GetComponent<Animator>().SetBool("levelUp", true);
+        SetMaterialScrollview();
     }
     void Update()
     {
@@ -28,7 +31,20 @@ public class Levelup : MonoBehaviour
         if(elapse > 6)
         {
             Camera.main.GetComponent<Animation>().Stop();
-            GachaManager.Instance.Run();
+            if(GachaManager.Instance.Run())
+            {
+                //성공 이벤트
+            }
+            else
+            {
+                //실패 이벤트
+            }
+            elapse = 0;
+            isStart = false;
+            shaman.GetComponent<Animator>().SetBool("levelUp", false);
+            shaman.GetComponent<Animator>().SetBool("idle", true);
+            SetMaterialScrollview();
+            SetSlider();
             //SceneManager.LoadScene("GamePlay");
         }
         else if(elapse > 4)
@@ -43,10 +59,15 @@ public class Levelup : MonoBehaviour
         switch(obj.name)
         {
             case "scrollview":
-                LoaderPerspective.Instance.CreateScrollViewItems(GeScrollItems(), 10, OnClickButton, obj, false);
+                scrollviewMaterial = obj;
+                //SetMaterialScrollview();
                 break;
             case "scrollview_actors":
                 LoaderPerspective.Instance.CreateScrollViewItems(GeScrollItemsActors(), 10, OnClickButton, obj, false);
+                break;
+            case "slider":
+                slider = obj;
+                SetSlider();
                 break;
             default:
                 break;
@@ -59,7 +80,7 @@ public class Levelup : MonoBehaviour
         switch(name)
         {
             case "levelup":
-                GameObject.Find("shaman").GetComponent<Animator>().SetBool("levelUp", true);
+                shaman.GetComponent<Animator>().SetBool("levelUp", true);
                 isStart = true;
             break;
             case "play":
@@ -95,6 +116,26 @@ public class Levelup : MonoBehaviour
         added = GachaManager.Instance.GetAssignedMaterialCount(itemId);
 
         obj.GetComponentInChildren<Text>().text = string.Format("{0} {1}/{2}", name, added, quantity);
+        SetSlider();
+    }
+
+    void SetMaterialScrollview()
+    {
+        GameObject content = scrollviewMaterial.transform.Find("Viewport").transform.Find("Content").gameObject;
+        for(int n = 0; n < content.transform.childCount; n++)
+        {
+            GameObject.Destroy(content.transform.GetChild(n).gameObject);
+        }
+        //content.transform.DetachChildren();
+        
+        LoaderPerspective.Instance.CreateScrollViewItems(GeScrollItems(), 10, OnClickButton, scrollviewMaterial, false);
+    }
+
+    void SetSlider()
+    {
+        float v = Mathf.Min(1, GachaManager.Instance.GetSuccessProbability());
+        slider.GetComponent<Slider>().value = v;
+        slider.GetComponentInChildren<Text>().text = string.Format("{0}%", Mathf.Round(v*100));
     }
     //----------------------------------------------------------
     List<GameObject> GeScrollItems()
@@ -103,6 +144,9 @@ public class Levelup : MonoBehaviour
         
         foreach(KeyValuePair<int, int> kv in InventoryManager.Instance.items)
         {
+            if(kv.Value == 0)
+                continue;
+
             Item item = ItemManager.Instance.items[kv.Key];
 
             GameObject obj = Resources.Load<GameObject>("LevelUp/levelup_element");

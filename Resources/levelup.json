@@ -56,7 +56,7 @@
             "_Objects":[
                 {
                     "position":{"x":0,"y":2},
-                    "name":"progress",
+                    "name":"slider",
                     "tag":"UI",
                     "prefab": "progress_default",
                     "ui": true,

@@ -339,6 +339,8 @@ public class GamePlay : MonoBehaviour
         
         ((ContextActor)Context.Instance.contexts[Context.Mode.ACTOR]).Clear();
         Context.Instance.SetMode(Context.Mode.NONE);
+        //강화
+        GachaManager.Instance.SetGachaTarget(ActorManager.Instance.actors[mapId], TAG.ACTOR);
         SceneManager.LoadScene("LevelUp");
         /*
         //camera moving

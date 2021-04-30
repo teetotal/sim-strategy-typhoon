@@ -55,6 +55,7 @@ public class Meta
     {
         public string prefab;
         public int createTime;
+        public float probability; //다음 단계 강화 확률
         public Ability ability;
         public List<ResourceIdAmount> wage;
     }
@@ -80,6 +81,7 @@ public class Meta
     {
         public string prefab;
         public float earningTime;
+        public float probability; //다음 단계 강화 확률
         public int buildTime;
         public int HP;
         public Defense defense;

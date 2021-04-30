@@ -6,6 +6,7 @@ using UnityEngine;
 public class GachaManager 
 {
     public Object target;
+    public TAG targetTag;
     public Dictionary<int, int> material = new Dictionary<int, int>(); // 강화 재료. item id, count
     private static readonly Lazy<GachaManager> hInstance = new Lazy<GachaManager>(() => new GachaManager());
     
@@ -19,9 +20,10 @@ public class GachaManager
     {
     }
 
-    public void SetGachaTarget(Object target)
+    public void SetGachaTarget(Object target, TAG tag)
     {
         this.target = target;
+        this.targetTag = tag;
     }
     public bool AddMaterial(int itemId, int amount = 1)
     {
@@ -52,8 +54,15 @@ public class GachaManager
             return 0;
         return material[itemId];
     }
-
-    public bool Run()
+    void ConsumeMaterialInInventory()
+    {
+        foreach(KeyValuePair<int, int> kv in material)
+        {
+            Item item = ItemManager.Instance.items[kv.Key];
+            InventoryManager.Instance.items[kv.Key] -= kv.Value;
+        }   
+    }
+    float GetMaterialPower()
     {
         float sum = 0;
         foreach(KeyValuePair<int, int> kv in material)
@@ -61,9 +70,41 @@ public class GachaManager
             Item item = ItemManager.Instance.items[kv.Key];
             //item level * amount 
             sum += item.v * item.amount * kv.Value;
-        }
-
+        }   
+        return sum;
+    }
+    float GetProbability()
+    {
+        float probability = 0;
         //확률 계산
+        switch(targetTag)
+        {
+            case TAG.ACTOR:
+                probability = MetaManager.Instance.actorInfo[target.id].level[target.level].probability;
+                break;
+            default:
+                break;
+        }
+        return probability;
+    }
+    public float GetSuccessProbability()
+    {
+        return GetMaterialPower() / GetProbability();
+    }
+
+    public bool Run()
+    {
+        float sum = GetMaterialPower();
+        float probability = GetProbability();
+
+        ConsumeMaterialInInventory();
+
+        material.Clear();
+
+        float f = UnityEngine.Random.Range(0.0f, probability);
+        Debug.Log(string.Format("{0}, {1}", f, sum));
+        if(f > sum)
+            return false;
 
         return true;
     }
