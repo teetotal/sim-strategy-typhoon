@@ -4,10 +4,15 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 public class Levelup : MonoBehaviour
 {
+    float elapseMessage = 0; 
+    GameObject messageArea;
+    Text message;
+
     public Transform canvas;
     float elapse = 0;
     bool isStart = false;
     GameObject slider, shaman, scrollviewMaterial;
+    GameObject[] slots;
     void Awake()
     {
         LoaderPerspective.Instance.SetUI(Camera.main, ref canvas, OnClickButton);
@@ -20,8 +25,24 @@ public class Levelup : MonoBehaviour
             LoaderPerspective.Instance.AddComponents(OnCreate, OnCreatePost);
         }
 
+        message = GameObject.Find("message").GetComponent<Text>();
+        SetMessageTargetInfo();
+
+        slots = new GameObject[5] {
+            GameObject.Find("slot-1"),
+            GameObject.Find("slot-2"),
+            GameObject.Find("slot-3"),
+            GameObject.Find("slot-4"),
+            GameObject.Find("slot-5")
+        };
+        for(int n = 0; n < slots.Length; n++)
+        {
+            slots[n].SetActive(false);
+        }
+
         shaman = GameObject.Find("shaman"); //.GetComponent<Animator>().SetBool("levelUp", true);
         SetMaterialScrollview();
+        SetSlider();
     }
     void Update()
     {
@@ -31,13 +52,15 @@ public class Levelup : MonoBehaviour
         if(elapse > 6)
         {
             Camera.main.GetComponent<Animation>().Stop();
-            if(GachaManager.Instance.Run())
+            if(GachaManager.Instance.Levelup())
             {
                 //성공 이벤트
+                SetMessage("성공");
             }
             else
             {
                 //실패 이벤트
+                SetMessage("실패");
             }
             elapse = 0;
             isStart = false;
@@ -58,6 +81,8 @@ public class Levelup : MonoBehaviour
     {
         switch(obj.name)
         {
+            case "message":
+                break;
             case "scrollview":
                 scrollviewMaterial = obj;
                 //SetMaterialScrollview();
@@ -67,7 +92,6 @@ public class Levelup : MonoBehaviour
                 break;
             case "slider":
                 slider = obj;
-                SetSlider();
                 break;
             default:
                 break;
@@ -96,6 +120,12 @@ public class Levelup : MonoBehaviour
     }
     void OnChangeMaterialQuantity(GameObject obj, int itemId, bool isAdd)
     {
+        int assignedMaterials = GachaManager.Instance.GetAssignedMaterialCount();
+        if(isAdd && assignedMaterials >= 5)
+            return;
+        if(!isAdd && assignedMaterials <= 0)
+            return;
+
         string name = ItemManager.Instance.items[itemId].name;
         int quantity = InventoryManager.Instance.items[itemId];
         int added = GachaManager.Instance.GetAssignedMaterialCount(itemId);
@@ -133,9 +163,30 @@ public class Levelup : MonoBehaviour
 
     void SetSlider()
     {
-        float v = Mathf.Min(1, GachaManager.Instance.GetSuccessProbability());
-        slider.GetComponent<Slider>().value = v;
-        slider.GetComponentInChildren<Text>().text = string.Format("{0}%", Mathf.Round(v*100));
+        if(GachaManager.Instance.target != null)
+        {
+            float v = Mathf.Min(1, GachaManager.Instance.GetSuccessProbability());
+            slider.GetComponent<Slider>().value = v;
+            slider.GetComponentInChildren<Text>().text = string.Format("{0}%", Mathf.Round(v*100));
+
+            //icon
+            for(int n = 0; n < slots.Length; n++)
+            {
+                slots[n].SetActive(false);
+            }
+            List<int> list = GachaManager.Instance.GetAssignedMaterialList();
+            for(int n = 0; n < list.Count; n++)
+            {
+                slots[n].SetActive(true);
+                slots[n].GetComponent<RawImage>().texture = Resources.Load<Sprite>(ItemManager.Instance.items[list[n]].prefab).texture;
+            }
+        }
+        else
+        {
+            slider.GetComponent<Slider>().value = 0;
+            slider.GetComponentInChildren<Text>().text = "";
+        }
+        
     }
     //----------------------------------------------------------
     List<GameObject> GeScrollItems()
@@ -161,6 +212,11 @@ public class Levelup : MonoBehaviour
             increase.onClick.AddListener(() => { OnChangeMaterialQuantity(obj, kv.Key, true);});
             decrease.onClick.AddListener(() => { OnChangeMaterialQuantity(obj, kv.Key, false);});
 
+            Sprite sprite = Resources.Load<Sprite>(item.prefab);
+            //sprite = Instantiate(sprite);
+            //GameObject.Find("Image").GetComponent<Image>().sprite = Resources.Load<Sprite>("MagicpotionsFree/potionblue01");
+            obj.GetComponentInChildren<RawImage>().texture = sprite.texture;
+
             list.Add(obj); 
         }
 
@@ -184,5 +240,24 @@ public class Levelup : MonoBehaviour
         }
 
         return list;
+    }
+
+    private void SetMessageTargetInfo()
+    {
+        //target 정보
+        if(GachaManager.Instance.target != null)
+        {
+            string name = MetaManager.Instance.actorInfo[GachaManager.Instance.target.id].name;
+            SetMessage(string.Format("{0} Lv.{1}", name, GachaManager.Instance.target.level));
+        }
+        else
+        {
+            SetMessage("");
+        }
+    }
+
+    private void SetMessage(string sz)
+    {
+        message.text = sz;
     }
 }

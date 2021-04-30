@@ -54,6 +54,28 @@ public class GachaManager
             return 0;
         return material[itemId];
     }
+    public int GetAssignedMaterialCount()
+    {
+        int n = 0;
+        foreach(KeyValuePair<int, int> kv in material)
+        {
+            n += kv.Value;
+        }
+
+        return n;
+    }
+    public List<int> GetAssignedMaterialList()
+    {
+        List<int> list = new List<int>();
+        foreach(KeyValuePair<int, int> kv in material)
+        {
+            for(int n = 0; n < kv.Value; n++)
+            {
+                list.Add(kv.Key);
+            }
+        }
+        return list;
+    }
     void ConsumeMaterialInInventory()
     {
         foreach(KeyValuePair<int, int> kv in material)
@@ -92,7 +114,19 @@ public class GachaManager
         return GetMaterialPower() / GetProbability();
     }
 
-    public bool Run()
+    public bool Levelup()
+    {
+        if(RunGacha())
+        {
+            Debug.Log(string.Format("Levelup success"));
+            target.level++;
+            return true;
+        }
+
+        return false;
+    }
+    //--------------------------------------------------------------
+    private bool RunGacha()
     {
         float sum = GetMaterialPower();
         float probability = GetProbability();

@@ -299,8 +299,8 @@ public class MapManager
             currentMap.Add(new Object[mapMeta.dimension.x, mapMeta.dimension.y]);
         }
 
-        Vector2Int startPosition = new Vector2Int(mapMeta.dimension.x / 2, mapMeta.dimension.y / 2);
-        Map.Prefab prefabInfoDefault = mapMeta.prefabs[mapMeta.defaultVal.prefabId];
+        //Vector2Int startPosition = new Vector2Int(mapMeta.dimension.x / 2, mapMeta.dimension.y / 2);
+        //Map.Prefab prefabInfoDefault = mapMeta.prefabs[mapMeta.defaultVal.prefabId];
         //init map
         
         for(int i = 0; i < map.GetLength(1); i++)
@@ -358,7 +358,13 @@ public class MapManager
         {
             for(int j = 0; j < map.GetLength(0); j++)
             {
-                CreateInstance(idx, prefabInfoDefault.name, new Vector3(j - startPosition.x, -0.1f, i - startPosition.y), idx.ToString(), TAG.BOTTOM, null);
+                //CreateInstance(idx, prefabInfoDefault.name, new Vector3(j - startPosition.x, -0.1f, i - startPosition.y), idx.ToString(), TAG.BOTTOM, null);
+                CreateInstance(idx, 
+                                Bottom.GetBottomPrefab(j, i), 
+                                new Vector3(j - startPosition.x, -0.1f, i - startPosition.y), 
+                                idx.ToString(), 
+                                TAG.BOTTOM, 
+                                null);
                 idx++;
             }
         }

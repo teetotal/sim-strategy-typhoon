@@ -1,6 +1,10 @@
 {
     "inventory": [
         {
+            "itemId": 0,
+            "quantity": 2
+        },
+        {
             "itemId": 1,
             "quantity": 3
         },

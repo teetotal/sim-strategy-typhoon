@@ -26,7 +26,8 @@ public class Context
         public CheckDefenseAttack checkDefenseAttack;
         public OnEarning onEarning;
 
-        public CallbackFunctions(OnCreationEvent onCreationEvent,
+        public CallbackFunctions(
+                                    OnCreationEvent onCreationEvent,
                                     OnCreationFinish onCreationFinish,
                                     OnSelectionEvent onSelectEvent,
                                     OnActorAction onAction,

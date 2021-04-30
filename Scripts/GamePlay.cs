@@ -8,7 +8,7 @@ public class GamePlay : MonoBehaviour
     Callbacks callbacks = new Callbacks();
     GameObject cmObj;
     float cmRatio = 0;
-    Vector3 cmDefault;
+    //Vector3 cmDefault;
     //-------------------
     public Transform canvas;
     private GameObject buildingLayer, actorLayer;

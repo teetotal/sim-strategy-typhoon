@@ -7,10 +7,30 @@
     ],
     "_Subs":[
         {
+            "_Name": "MessageArea",
+            "_BGColor": [1, 1 , 1, 0],
+            "_From": {"x": 0, "y": 23},
+            "_To": {"x": 59, "y": 25},
+            "_GridDim":{"x":1,"y":1},
+            "_Margin":{"x":0, "y":0},
+            "_InnerMargin":{"x":0.0,"y":0},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"message",
+                    "tag":"UI",
+                    "prefab": "text_message",
+                    "ui": true,
+                    "text": "MESSAGE"
+                }
+            ]
+        },
+        {
             "_Name": "left",
-            "_BGColor": [0, 0 , 0, 0.7],
-            "_From": {"x": 0, "y": 8},
-            "_To": {"x": 19, "y": 18},
+            "_BGColor": [0, 0 , 0, 0],
+            "_From": {"x": 0, "y": 10},
+            "_To": {"x": 17, "y": 20},
             "_GridDim":{"x":1,"y":1},
             "_Margin":{"x":10, "y":10},
             "_InnerMargin":{"x":2.0,"y":0},
@@ -27,9 +47,9 @@
         },
         {
             "_Name": "right",
-            "_BGColor": [0, 0 , 0, 0.7],
-            "_From": {"x": 39, "y": 8},
-            "_To": {"x": 59, "y": 18},
+            "_BGColor": [0, 0 , 0, 0],
+            "_From": {"x": 41, "y": 10},
+            "_To": {"x": 59, "y": 20},
             "_GridDim":{"x":1,"y":1},
             "_Margin":{"x":10, "y":10},
             "_InnerMargin":{"x":2.0,"y":0},
@@ -45,17 +65,69 @@
             ]
         },
         {
+            "_Name": "slots",
+            "_BGColor": [1, 1 , 1, 0],
+            "_From": {"x": 20, "y": 7},
+            "_To": {"x": 39, "y": 9},
+            "_GridDim":{"x":5,"y":1},
+            "_Margin":{"x":0, "y":0},
+            "_InnerMargin":{"x":5.0,"y":0},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"slot-1",
+                    "tag":"UI",
+                    "prefab": "LevelUp/rawimage_default",
+                    "ui": true,
+                    "text": "slot1"
+                },
+                {
+                    "position":{"x":1,"y":0},
+                    "name":"slot-2",
+                    "tag":"UI",
+                    "prefab": "LevelUp/rawimage_default",
+                    "ui": true,
+                    "text": "slot2"
+                },
+                {
+                    "position":{"x":2,"y":0},
+                    "name":"slot-3",
+                    "tag":"UI",
+                    "prefab": "LevelUp/rawimage_default",
+                    "ui": true,
+                    "text": "slot3"
+                },
+                {
+                    "position":{"x":3,"y":0},
+                    "name":"slot-4",
+                    "tag":"UI",
+                    "prefab": "LevelUp/rawimage_default",
+                    "ui": true,
+                    "text": "slot4"
+                },
+                {
+                    "position":{"x":4,"y":0},
+                    "name":"slot-5",
+                    "tag":"UI",
+                    "prefab": "LevelUp/rawimage_default",
+                    "ui": true,
+                    "text": "slot5"
+                }
+            ]
+        },
+        {
             "_Name": "progress",
             "_BGColor": [1, 1 , 1, 0],
-            "_From": {"x": 20, "y": 0},
-            "_To": {"x": 39, "y": 7},
-            "_GridDim":{"x":1,"y":4},
-            "_Margin":{"x":10, "y":10},
+            "_From": {"x": 20, "y": 4},
+            "_To": {"x": 39, "y": 6},
+            "_GridDim":{"x":1,"y":1},
+            "_Margin":{"x":0, "y":0},
             "_InnerMargin":{"x":0.0,"y":0},
             "_DrawGridLine": false,
             "_Objects":[
                 {
-                    "position":{"x":0,"y":2},
+                    "position":{"x":0,"y":0},
                     "name":"slider",
                     "tag":"UI",
                     "prefab": "progress_default",
@@ -67,15 +139,15 @@
         {
             "_Name": "bottom",
             "_BGColor": [1, 1 , 1, 0],
-            "_From": {"x": 20, "y": 0},
-            "_To": {"x": 39, "y": 7},
-            "_GridDim":{"x":2,"y":5},
+            "_From": {"x": 22, "y": 2},
+            "_To": {"x": 37, "y": 3},
+            "_GridDim":{"x":2,"y":1},
             "_Margin":{"x":0, "y":0},
             "_InnerMargin":{"x":10.0,"y":0},
             "_DrawGridLine": false,
             "_Objects":[
                 {
-                    "position":{"x":0,"y":1},
+                    "position":{"x":0,"y":0},
                     "name":"levelup",
                     "tag":"UI",
                     "prefab": "button_default",
@@ -83,7 +155,7 @@
                     "text": "LEVEL UP"
                 },
                 {
-                    "position":{"x":1,"y":1},
+                    "position":{"x":1,"y":0},
                     "name":"play",
                     "tag":"UI",
                     "prefab": "button_default",
