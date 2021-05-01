@@ -70,6 +70,36 @@ public class MetaManager
         
         return TAG.MAX;
     }
+    public List<Meta.IdQuantity> GetActorBooty(int actorId, int level)
+    {
+        List<Meta.IdQuantity> list = new List<Meta.IdQuantity>();
+        Meta.Booty booty = MetaManager.Instance.actorInfo[actorId].level[level].booty;
+
+        int totalProbability = 0;
+        for(int n = 0; n < booty.probability.Count; n++)
+        {
+            totalProbability += booty.probability[n];
+        }
+
+        for(int n = 0; n < booty.count; n++)
+        {
+            int winningNumber = UnityEngine.Random.Range(0, totalProbability);
+            Debug.Log(string.Format("winningNumber {0}, {1}", winningNumber, totalProbability));
+
+            int sum = 0;
+            for(int i = 0; i < booty.probability.Count; i++)
+            {
+                sum += booty.probability[i];
+                if(sum >= winningNumber)
+                {
+                    list.Add(booty.items[i]);
+                    break;
+                }
+            }
+        }
+
+        return list;
+    }
 }
 public class MarketManager
 {

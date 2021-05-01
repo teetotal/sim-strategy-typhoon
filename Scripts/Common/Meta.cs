@@ -51,6 +51,19 @@ public class Meta
         public List<ResourceIdAmount> reward;
     }
     [Serializable]
+    public struct IdQuantity
+    {
+        public int id;
+        public int quantity;
+    }
+    [Serializable]
+    public struct Booty //죽었을때 떨구는 전리품 정보
+    {
+        public int count;   //items들 중 몇개를 떨굴 것인가
+        public List<int> probability; //items중 선택될 확률. float로 가면 소수점 이하가 무한히 길어질때 퍼센트 확률과 차이가 크게난다.
+        public List<IdQuantity> items;  //item id, quantity
+    }
+    [Serializable]
     public struct ActorLevelInfo
     {
         public string prefab;
@@ -58,6 +71,7 @@ public class Meta
         public float probability; //다음 단계 강화 확률
         public Ability ability;
         public List<ResourceIdAmount> wage;
+        public Booty booty;
     }
     [Serializable]
     public struct Actor

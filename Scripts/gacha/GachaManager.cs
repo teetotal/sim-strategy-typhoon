@@ -80,8 +80,7 @@ public class GachaManager
     {
         foreach(KeyValuePair<int, int> kv in material)
         {
-            Item item = ItemManager.Instance.items[kv.Key];
-            InventoryManager.Instance.items[kv.Key] -= kv.Value;
+            InventoryManager.Instance.Reduce(kv.Key, kv.Value);
         }   
     }
     float GetMaterialPower()

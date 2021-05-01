@@ -60,7 +60,7 @@ public class InventoryManager
     {
         public List<ItemIdQuantity> inventory;
     }
-
+    //tribe별로 관리해야함!!!!!!!!!!
     public Dictionary<int, int> items = new Dictionary<int, int>(); //item id, quantity
     private static readonly Lazy<InventoryManager> hInstance = new Lazy<InventoryManager>(() => new InventoryManager());
     
@@ -81,5 +81,21 @@ public class InventoryManager
             ItemIdQuantity i = meta.inventory[n];
             items[i.itemId] = i.quantity;
         }
+    }
+    public void Add(int itemId, int quantity)
+    {
+        if(!items.ContainsKey(itemId))
+            items[itemId] = quantity;
+        else
+            items[itemId] += quantity;
+    }
+
+    public bool Reduce(int itemId, int quantity)
+    {
+        if(!items.ContainsKey(itemId) || items[itemId] < quantity)
+            return false;
+        
+        items[itemId] -= quantity;
+        return true;
     }
 }

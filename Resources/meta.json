@@ -104,7 +104,29 @@
                             "resourceId": 0,
                             "amount": 1 
                         }
-                    ]
+                    ],
+                    "booty": {
+                        "count": 1,
+                        "probability": [ 5, 5, 40, 50 ],
+                        "items": [
+                            {
+                                "id": 0,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 1,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 2,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 3,
+                                "quantity": 1
+                            }
+                        ]
+                    }
                 }
             ]
             
@@ -135,7 +157,29 @@
                             "resourceId": 2,
                             "amount": 1 
                         }
-                    ]
+                    ],
+                    "booty": {
+                        "count": 3,
+                        "probability": [ 5, 5, 40, 50 ],
+                        "items": [
+                            {
+                                "id": 0,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 1,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 2,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 3,
+                                "quantity": 1
+                            }
+                        ]
+                    }
                 },
                 {
                     "prefab": "DogPolyart",
@@ -157,7 +201,29 @@
                             "resourceId": 2,
                             "amount": 2 
                         }
-                    ]
+                    ],
+                    "booty": {
+                        "count": 3,
+                        "probability": [ 5, 5, 40, 50 ],
+                        "items": [
+                            {
+                                "id": 0,
+                                "quantity": 3
+                            },
+                            {
+                                "id": 1,
+                                "quantity": 3
+                            },
+                            {
+                                "id": 2,
+                                "quantity": 3
+                            },
+                            {
+                                "id": 3,
+                                "quantity": 3
+                            }
+                        ]
+                    }
                 }
             ]
         },
@@ -187,7 +253,29 @@
                             "resourceId": 0,
                             "amount": 1 
                         }
-                    ]
+                    ],
+                    "booty": {
+                        "count": 1,
+                        "probability": [ 5, 5, 40, 50 ],
+                        "items": [
+                            {
+                                "id": 0,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 1,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 2,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 3,
+                                "quantity": 1
+                            }
+                        ]
+                    }
                 }
             ]
         },
@@ -217,7 +305,29 @@
                             "resourceId": 0,
                             "amount": 1 
                         }
-                    ]
+                    ],
+                    "booty": {
+                        "count": 1,
+                        "probability": [ 5, 5, 40, 50 ],
+                        "items": [
+                            {
+                                "id": 0,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 1,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 2,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 3,
+                                "quantity": 1
+                            }
+                        ]
+                    }
                 }
             ]
         },
@@ -247,7 +357,29 @@
                             "resourceId": 0,
                             "amount": 1 
                         }
-                    ]
+                    ],
+                    "booty": {
+                        "count": 1,
+                        "probability": [ 5, 5, 40, 50 ],
+                        "items": [
+                            {
+                                "id": 0,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 1,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 2,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 3,
+                                "quantity": 1
+                            }
+                        ]
+                    }
                 }
             ]
         },
@@ -277,7 +409,29 @@
                             "resourceId": 0,
                             "amount": 1 
                         }
-                    ]
+                    ],
+                    "booty": {
+                        "count": 1,
+                        "probability": [ 5, 5, 40, 50 ],
+                        "items": [
+                            {
+                                "id": 0,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 1,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 2,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 3,
+                                "quantity": 1
+                            }
+                        ]
+                    }
                 }
             ]
         },
@@ -307,7 +461,29 @@
                             "resourceId": 0,
                             "amount": 1 
                         }
-                    ]
+                    ],
+                    "booty": {
+                        "count": 1,
+                        "probability": [ 5, 5, 40, 50 ],
+                        "items": [
+                            {
+                                "id": 0,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 1,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 2,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 3,
+                                "quantity": 1
+                            }
+                        ]
+                    }
                 }
             ]
         },
@@ -337,7 +513,29 @@
                             "resourceId": 0,
                             "amount": 1 
                         }
-                    ]
+                    ],
+                    "booty": {
+                        "count": 1,
+                        "probability": [ 5, 5, 40, 50 ],
+                        "items": [
+                            {
+                                "id": 0,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 1,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 2,
+                                "quantity": 1
+                            },
+                            {
+                                "id": 3,
+                                "quantity": 1
+                            }
+                        ]
+                    }
                 }
             ]
         }

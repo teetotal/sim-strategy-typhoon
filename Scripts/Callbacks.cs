@@ -37,7 +37,19 @@ public class Callbacks
     }
     public void OnCreationFinish(ActionType type, Object obj)
     {
-        SetMessage(string.Format("OnCreationFinish {0}, {1}, {2}, {3}", type, obj.gameObject.tag, obj.mapId, obj.id));
+        //전리품
+        if(type == ActionType.ACTOR_DIE)
+        {  
+            List<Meta.IdQuantity> booties = MetaManager.Instance.GetActorBooty(obj.id, obj.level);
+            string sz = "";
+            for(int n = 0; n < booties.Count; n++)
+            {
+                Meta.IdQuantity booty = booties[n];
+                sz += string.Format("\n{0} x{1}", ItemManager.Instance.items[booty.id].name, booty.quantity);
+                InventoryManager.Instance.Add(booty.id, booty.quantity);
+            }
+            SetMessage(string.Format("OnCreationFinish booty {0}", sz));
+        }
     }
     public void SetDelivery(Actor actor, int targetMapId, TAG targetBuildingTag)
     {
@@ -199,9 +211,8 @@ public class Callbacks
     {
         for(int n = 0; n < 3; n++)
         {
-            GameObject.Find("resource" + (n+1).ToString()).GetComponentInChildren<Text>().text = string.Format("{0} {1}", 
-                    MetaManager.Instance.resourceInfo[n], 
-                    GameStatusManager.Instance.GetResource(0, n));
+            GameObject.Find("resource" + (n+1).ToString()).GetComponentInChildren<Text>().text = GameStatusManager.Instance.GetResource(0, n).ToString();
+            //string.Format("{0} {1}", MetaManager.Instance.resourceInfo[n], GameStatusManager.Instance.GetResource(0, n));
         }
     }
     private void SetMessage(string sz)

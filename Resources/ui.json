@@ -1,6 +1,6 @@
 {
     "_Name": "main",
-    "_GridDim":{"x":1,"y":30},
+    "_GridDim":{"x":10,"y":30},
     "_Margin":{"x":0.0,"y":0.0},
     "_InnerMargin":{"x":0.0,"y":0.0},
     "_Objects": [
@@ -10,7 +10,7 @@
             "_Name": "MessageArea",
             "_BGColor": [1, 1 , 1, 0],
             "_From": {"x": 0, "y": 23},
-            "_To": {"x": 0, "y": 25},
+            "_To": {"x": 9, "y": 25},
             "_GridDim":{"x":1,"y":1},
             "_Margin":{"x":0, "y":0},
             "_InnerMargin":{"x":0.0,"y":0},
@@ -29,39 +29,39 @@
         {
             "_Name": "top",
             "_BGColor": [1, 1 , 1, 0],
-            "_From": {"x": 0, "y": 26},
-            "_To": {"x": 0, "y": 29},
-            "_GridDim":{"x":12,"y":4},
+            "_From": {"x": 7, "y": 23},
+            "_To": {"x": 9, "y": 29},
+            "_GridDim":{"x":3,"y":4},
             "_Margin":{"x":10, "y":10},
-            "_InnerMargin":{"x":0.0,"y":0},
+            "_InnerMargin":{"x":10,"y":10},
             "_DrawGridLine": false,
             "_Objects":[
                 {
-                    "position":{"x":9,"y":3},
+                    "position":{"x":0,"y":3},
                     "name":"resource1",
                     "tag":"UI",
-                    "prefab": "text_title",
+                    "prefab": "resource_1",
                     "ui": true,
                     "text": "100"
                 },
                 {
-                    "position":{"x":10,"y":3},
+                    "position":{"x":1,"y":3},
                     "name":"resource2",
                     "tag":"UI",
-                    "prefab": "text_title",
+                    "prefab": "resource_2",
                     "ui": true,
                     "text": "90"
                 },
                 {
-                    "position":{"x":11,"y":3},
+                    "position":{"x":2,"y":3},
                     "name":"resource3",
                     "tag":"UI",
-                    "prefab": "text_title",
+                    "prefab": "resource_3",
                     "ui": true,
                     "text": "80"
                 },
                 {
-                    "position":{"x":9,"y":2},
+                    "position":{"x":0,"y":2},
                     "name":"tribe0",
                     "tag":"UI",
                     "prefab": "button_default",
@@ -69,7 +69,7 @@
                     "text": "종족0"
                 },
                 {
-                    "position":{"x":10,"y":2},
+                    "position":{"x":1,"y":2},
                     "name":"tribe1",
                     "tag":"UI",
                     "prefab": "button_default",
@@ -77,7 +77,7 @@
                     "text": "종족1"
                 },
                 {
-                    "position":{"x":11,"y":2},
+                    "position":{"x":2,"y":2},
                     "name":"tribe2",
                     "tag":"UI",
                     "prefab": "button_default",
@@ -85,7 +85,7 @@
                     "text": "종족2"
                 },
                 {
-                    "position":{"x":11,"y":1},
+                    "position":{"x":2,"y":1},
                     "name":"zoomin",
                     "tag":"UI",
                     "prefab": "button_default",
@@ -93,7 +93,7 @@
                     "text": "IN"
                 },
                 {
-                    "position":{"x":11,"y":0},
+                    "position":{"x":2,"y":0},
                     "name":"zoomout",
                     "tag":"UI",
                     "prefab": "button_default",
@@ -106,7 +106,7 @@
             "_Name": "bottom",
             "_BGColor": [1, 1 , 1, 0],
             "_From": {"x": 0, "y": 1},
-            "_To": {"x": 0, "y": 2},
+            "_To": {"x": 9, "y": 2},
             "_GridDim":{"x":12,"y":1},
             "_Margin":{"x":10, "y":0.1},
             "_InnerMargin":{"x":0.0,"y":0},
@@ -124,9 +124,9 @@
         },
         {
             "_Name": "buildings",
-            "_BGColor": [0, 0, 0, 1],
+            "_BGColor": [0, 0, 0, 0.5],
             "_From": {"x": 0, "y": 0},
-            "_To": {"x": 0, "y": 4},
+            "_To": {"x": 9, "y": 4},
             "_GridDim":{"x":1,"y":1},
             "_Margin":{"x":0, "y":0},
             "_InnerMargin":{"x":0.1,"y":0.1},
@@ -143,9 +143,9 @@
         },
         {
             "_Name": "actors",
-            "_BGColor": [0, 0, 0, 1],
+            "_BGColor": [0, 0, 0, 0.5],
             "_From": {"x": 0, "y": 0},
-            "_To": {"x": 0, "y": 4},
+            "_To": {"x": 9, "y": 4},
             "_GridDim":{"x":1,"y":1},
             "_Margin":{"x":0, "y":0},
             "_InnerMargin":{"x":0.1,"y":0.1},
