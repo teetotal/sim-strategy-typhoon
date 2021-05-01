@@ -29,37 +29,32 @@
         {
             "_Name": "top",
             "_BGColor": [1, 1 , 1, 0],
-            "_From": {"x": 7, "y": 23},
-            "_To": {"x": 9, "y": 29},
-            "_GridDim":{"x":3,"y":4},
+            "_From": {"x": 7, "y": 27},
+            "_To": {"x": 9, "y": 28},
+            "_GridDim":{"x":1,"y":1},
+            "_Margin":{"x":10, "y":20},
+            "_InnerMargin":{"x":0,"y":0},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"resource",
+                    "tag":"UI",
+                    "prefab": "resource",
+                    "ui": true
+                }
+            ]
+        },
+        {
+            "_Name": "top2",
+            "_BGColor": [1, 1 , 1, 0],
+            "_From": {"x": 8, "y": 18},
+            "_To": {"x": 9, "y": 25},
+            "_GridDim":{"x":3,"y":3},
             "_Margin":{"x":10, "y":10},
             "_InnerMargin":{"x":10,"y":10},
             "_DrawGridLine": false,
             "_Objects":[
-                {
-                    "position":{"x":0,"y":3},
-                    "name":"resource1",
-                    "tag":"UI",
-                    "prefab": "resource_1",
-                    "ui": true,
-                    "text": "100"
-                },
-                {
-                    "position":{"x":1,"y":3},
-                    "name":"resource2",
-                    "tag":"UI",
-                    "prefab": "resource_2",
-                    "ui": true,
-                    "text": "90"
-                },
-                {
-                    "position":{"x":2,"y":3},
-                    "name":"resource3",
-                    "tag":"UI",
-                    "prefab": "resource_3",
-                    "ui": true,
-                    "text": "80"
-                },
                 {
                     "position":{"x":0,"y":2},
                     "name":"tribe0",

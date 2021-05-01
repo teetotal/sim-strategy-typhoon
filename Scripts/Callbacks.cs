@@ -209,11 +209,19 @@ public class Callbacks
     }
     public void UpdateResourceUI()
     {
-        for(int n = 0; n < 3; n++)
+        int[] v = new int[3]
         {
-            GameObject.Find("resource" + (n+1).ToString()).GetComponentInChildren<Text>().text = GameStatusManager.Instance.GetResource(0, n).ToString();
-            //string.Format("{0} {1}", MetaManager.Instance.resourceInfo[n], GameStatusManager.Instance.GetResource(0, n));
-        }
+            (int)GameStatusManager.Instance.GetResource(0, 0),
+            (int)GameStatusManager.Instance.GetResource(0, 1),
+            (int)GameStatusManager.Instance.GetResource(0, 2)
+        };
+
+        float[] r = new float[2]
+        {
+            0.7f,
+            0.5f
+        };
+        GameObject.Find("resource").GetComponent<ResourceUI>().SetValues(v, r);
     }
     private void SetMessage(string sz)
     {
