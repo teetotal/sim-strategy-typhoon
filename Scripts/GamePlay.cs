@@ -11,7 +11,7 @@ public class GamePlay : MonoBehaviour
     //Vector3 cmDefault;
     //-------------------
     public Transform canvas;
-    private GameObject buildingLayer, actorLayer;
+    private GameObject buildingLayer, actorLayer, inventoryLayer;
 
     //
     int myTribeId = 0; 
@@ -19,7 +19,7 @@ public class GamePlay : MonoBehaviour
     //a*
     List<int> route = new List<int>();
     //float time = 0;
-    GameObject actor_scrollview;
+    GameObject actor_scrollview, inventory_scrollview;
     // Start is called before the first frame update
     void Start()
     {
@@ -33,6 +33,9 @@ public class GamePlay : MonoBehaviour
         LoaderPerspective.Instance.AddComponents(OnCreate, OnCreatePost);
         buildingLayer = GameObject.Find("buildings");
         actorLayer = GameObject.Find("actors");
+        inventory_scrollview = GameObject.Find("inventory");
+        inventoryLayer = GameObject.Find("right");
+        inventoryLayer.SetActive(false);
 
         HideLayers();
         
@@ -114,7 +117,13 @@ public class GamePlay : MonoBehaviour
         switch(obj.name)
         {
             case "scrollview_building":
-                LoaderPerspective.Instance.CreateScrollViewItems(GetBuildingScrollItems(), 15, OnClickButton, obj);
+                List<GameObject> buildingScrollItems = GetBuildingScrollItems();
+                LoaderPerspective.Instance.CreateScrollViewItems(buildingScrollItems
+                                                                , new Vector2(15, 15)
+                                                                , new Vector2(10, 10)
+                                                                , OnClickButton
+                                                                , obj
+                                                                , buildingScrollItems.Count);
                 break;
             case "scrollview_actor":
                 actor_scrollview = obj;
@@ -177,6 +186,20 @@ public class GamePlay : MonoBehaviour
 
         return list;
     }
+    List<GameObject> GetInventoryItems()
+    {
+        List<GameObject> list = new List<GameObject>();
+        foreach(KeyValuePair<int, int> kv in InventoryManager.Instance.GetInventory(myTribeId))
+        {
+            GameObject obj = GameObjectPooling.Instance.Get("inventory_default");
+            Item item = ItemManager.Instance.items[kv.Key];
+            obj.GetComponentInChildren<RawImage>().texture = Resources.Load<Sprite>(item.prefab).texture;
+            obj.transform.Find("Text").GetComponent<Text>().text = "x"+kv.Value.ToString();
+            obj.GetComponentInChildren<Button>().GetComponentInChildren<Text>().text = item.name;
+            list.Add(obj);
+        }
+        return list;
+    }
     /*
         OnClick 처리
     */
@@ -189,19 +212,44 @@ public class GamePlay : MonoBehaviour
             case "zoomin":
                 if(Camera.main.fieldOfView > 5)
                     Camera.main.fieldOfView -= 5;
-                break;
+                return;
             case "zoomout":
                 if(Camera.main.fieldOfView < 25)
                     Camera.main.fieldOfView += 5;
-                break;
+                return;
             case "tribe0":
                 myTribeId = 0;
-                break;
+                return;
             case "tribe1":
                 myTribeId = 1;
-                break;
+                return;
             case "tribe2":
                 myTribeId = 2;
+                return;
+            case "btn_inventory":
+            if(inventoryLayer.activeSelf)
+            {
+                Transform content = inventory_scrollview.transform.Find("Viewport").transform.Find("Content");
+                for(int n = 0; n <  content.childCount; n++)
+                {
+                    GameObjectPooling.Instance.Release("inventory_default", content.GetChild(n).gameObject);
+                    
+                }
+                inventoryLayer.SetActive(false);
+            }
+            else 
+            {
+                inventoryLayer.SetActive(true);
+                LoaderPerspective.Instance.CreateScrollViewItems(GetInventoryItems()
+                    , new Vector2(15, 15)
+                    , new Vector2(10, 10)
+                    , OnClickButton
+                    , inventory_scrollview
+                    , 4);
+            }
+                
+                return;
+            default:
                 break;
         }
 
@@ -328,7 +376,14 @@ public class GamePlay : MonoBehaviour
                                                                         actorLayer.GetComponent<RectTransform>().sizeDelta,
                                                                         actorLayer.transform.position
                                                                         );
-        LoaderPerspective.Instance.CreateScrollViewItems(GetActorScrollItems(building.id, building.level), 15, OnClickButton, actor_scrollview);
+        List<GameObject> list = GetActorScrollItems(building.id, building.level);
+        LoaderPerspective.Instance.CreateScrollViewItems(list
+                                                        , new Vector2(15, 15)
+                                                        , new Vector2(10, 10)
+                                                        , OnClickButton
+                                                        , actor_scrollview
+                                                        , list.Count
+                                                        );
                 
         actorLayer.SetActive(true);
         Context.Instance.SetMode(Context.Mode.UI_ACTOR);

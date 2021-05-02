@@ -88,7 +88,12 @@ public class Levelup : MonoBehaviour
                 //SetMaterialScrollview();
                 break;
             case "scrollview_actors":
-                LoaderPerspective.Instance.CreateScrollViewItems(GeScrollItemsActors(), 10, OnClickButton, obj, false);
+                LoaderPerspective.Instance.CreateScrollViewItems(GeScrollItemsActors()
+                                                                , new Vector2(15, 15)
+                                                                , new Vector2(10, 10)
+                                                                , OnClickButton
+                                                                , obj
+                                                                , 1);
                 break;
             case "slider":
                 slider = obj;
@@ -158,7 +163,12 @@ public class Levelup : MonoBehaviour
         }
         //content.transform.DetachChildren();
         
-        LoaderPerspective.Instance.CreateScrollViewItems(GeScrollItems(), 10, OnClickButton, scrollviewMaterial, false);
+        LoaderPerspective.Instance.CreateScrollViewItems(GeScrollItems()
+                                                        , new Vector2(15, 15)
+                                                        , new Vector2(10, 10)
+                                                        , OnClickButton
+                                                        , scrollviewMaterial
+                                                        , 1);
     }
 
     void SetSlider()
