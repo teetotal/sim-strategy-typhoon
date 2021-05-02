@@ -59,21 +59,40 @@ public abstract class Object
     protected GameObject Instantiate(int tribeId, int mapId, int id, string prefab, TAG tag, bool flying)
     {
         Vector3 position = MapManager.Instance.GetVector3FromMapId(mapId);
+        /*
         GameObject obj = Resources.Load<GameObject>(prefab);
-
-        Meta.Actor actor = MetaManager.Instance.actorInfo[id];
-
         obj = GameObject.Instantiate(obj, Util.AdjustY(position, flying), Quaternion.identity);
+        */
+        GameObject obj = GameObjectPooling.Instance.Get(prefab, Util.AdjustY(position, flying), Quaternion.Euler(0, 180, 0));
+
         obj.tag = MetaManager.Instance.GetTag(tag);
         obj.name = mapId.ToString();
         GameObject parent = MapManager.Instance.defaultGameObjects[mapId];
         obj.transform.SetParent(parent.transform);
 
-        obj.transform.rotation = Quaternion.Euler(0, 180, 0);
-
         this.gameObject = obj;
 
         return gameObject;
+    }
+    protected void DestroyGameObject()
+    {
+        string prefab = "";
+        TAG tag = MetaManager.Instance.GetTag(this.gameObject.tag);
+        this.gameObject.transform.parent = null;
+        
+        switch(tag)
+        {
+            case TAG.ACTOR:
+            prefab = MetaManager.Instance.actorInfo[this.id].level[this.level].prefab;
+            break;
+            case TAG.BUILDING:
+            prefab = MetaManager.Instance.buildingInfo[this.id].level[this.level].prefab;
+            break;
+            case TAG.MOB:
+            prefab = MetaManager.Instance.mobInfo[this.id].prefab;
+            break;
+        }
+        GameObjectPooling.Instance.Release(prefab, this.gameObject);
     }
     public void ShowHP(int totalHP)
     {
@@ -158,11 +177,13 @@ public abstract class Object
         Vector3 pos = gameObject.transform.position;
         return Camera.main.WorldToScreenPoint(new Vector3(pos.x, pos.y + 1, pos.z));
     }
+    /*
     public void DestroyProgress()
     {
         if(progress != null)
             GameObject.DestroyImmediate(progress);
     }
+    */
     /*
     private Vector3 GetColliderSize()
     {

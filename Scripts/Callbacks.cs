@@ -41,19 +41,23 @@ public class Callbacks
     public void OnDie(ActionType type, Object obj, Object from)
     {    
         //전리품
-        if(type == ActionType.ACTOR_DIE)
+        switch(type)
         {  
-            List<Meta.IdQuantity> booties = MetaManager.Instance.GetActorBooty(obj.id, obj.level);
-            
-            //string sz = "";
-            for(int n = 0; n < booties.Count; n++)
+            case ActionType.ACTOR_DIE_FROM_DESTROYED_BUILDING:
+            case ActionType.ACTOR_DIE:
             {
-                Meta.IdQuantity booty = booties[n];
-                //sz += string.Format("\n{0} x{1}", ItemManager.Instance.items[booty.id].name, booty.quantity);
-                InventoryManager.Instance.Add(from.tribeId, booty.id, booty.quantity);
+                List<Meta.IdQuantity> booties = MetaManager.Instance.GetActorBooty(obj.id, obj.level);
+                for(int n = 0; n < booties.Count; n++)
+                {
+                    Meta.IdQuantity booty = booties[n];
+                    InventoryManager.Instance.Add(from.tribeId, booty.id, booty.quantity);
+                }
+                
+                SetMessage(string.Format("OnDie {0} {1} > {2}", type, from.tribeId, obj.tribeId), booties);
+                break;
             }
-            
-            SetMessage(string.Format("OnDie from {0} > {1}", from.tribeId, obj.tribeId), booties);
+            default:
+                break;
         }
     }
     public void SetDelivery(Actor actor, int targetMapId, TAG targetBuildingTag)
@@ -148,9 +152,8 @@ public class Callbacks
     {
         //짐 싣기
         GameObject selectedObj = actor.gameObject;
-        //Debug.Log(string.Format("OnClickForUpgradingActor {0}-{1}", mapId, actorId));
-        GameObject o = Resources.Load<GameObject>("load");
-        o = GameObject.Instantiate(o);
+       
+        GameObject o = GameObjectPooling.Instance.Get("load");
         o.name = "load";
         o.transform.SetParent(selectedObj.transform);
         Vector3 size = selectedObj.GetComponent<BoxCollider>().size;
@@ -165,7 +168,8 @@ public class Callbacks
         }
         else
         {
-            GameObject.DestroyImmediate(load.gameObject);
+            //GameObject.DestroyImmediate(load.gameObject);
+            GameObjectPooling.Instance.Release("load", load.gameObject);
         }
         //resource 차감
         Meta.Building metaBuilding = MetaManager.Instance.buildingInfo[actor.attachedBuilding.id];
@@ -206,6 +210,7 @@ public class Callbacks
     GameObject messageArea;
     Text message;
     GameObject bootiesPanel;
+    Vector2 bootySize;
     public void Init()
     {
         elapseMessage = 0;
@@ -213,6 +218,9 @@ public class Callbacks
         message = GameObject.Find("message").GetComponent<Text>();
         bootiesPanel = GameObject.Find("booties");
         messageArea.SetActive(false);
+
+        GameObject booty = Resources.Load<GameObject>("booty_default");
+        bootySize = booty.GetComponent<RectTransform>().sizeDelta;
     }
     public void UpdateResourceUI()
     {
@@ -241,22 +249,16 @@ public class Callbacks
        
         Vector3 panelPosition = bootiesPanel.transform.position;
         Vector2 panelSize = Vector2.zero;
-        
-        for(int n=0; n < booties.Count; n++)
-        {
-            GameObject booty = Resources.Load<GameObject>("booty_default");
-            Vector2 bootySize = booty.GetComponent<RectTransform>().sizeDelta;
-            
-            if(n == 0)
-            {
-                panelSize = new Vector2(
+
+        panelSize = new Vector2(
                     bootySize.x * booties.Count,
                     bootySize.y
                 );
-                bootiesPanel.GetComponent<RectTransform>().sizeDelta = panelSize;
-            }
-
-            booty = GameObject.Instantiate(booty
+        bootiesPanel.GetComponent<RectTransform>().sizeDelta = panelSize;
+        
+        for(int n=0; n < booties.Count; n++)
+        {
+            GameObject booty = GameObjectPooling.Instance.Get("booty_default"
                                         , new Vector3(panelPosition.x + bootySize.x * n - (panelSize.x * 0.5f) + (bootySize.x * 0.5f), panelPosition.y, panelPosition.z)
                                         , Quaternion.identity);
 
@@ -275,7 +277,8 @@ public class Callbacks
         {
             for(int i = 0; i <bootiesPanel.transform.childCount; i++)
             {
-                GameObject.Destroy(bootiesPanel.transform.GetChild(i).gameObject);
+                if(bootiesPanel.transform.GetChild(i).gameObject.activeSelf)
+                    GameObjectPooling.Instance.Release("booty_default", bootiesPanel.transform.GetChild(i).gameObject);
             }
             messageArea.SetActive(false);
         }

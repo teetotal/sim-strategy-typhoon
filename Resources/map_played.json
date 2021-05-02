@@ -47,12 +47,12 @@
             ],
             "buildings": [
                 {
-                    "mapId": 410,
+                    "mapId": 405,
                     "buildingId": 0,
                     "rotation": 0,
                     "actors": [
                         {
-                            "mapId": 411,
+                            "mapId": 406,
                             "actorId": 1,
                             "HP": 20
                         }

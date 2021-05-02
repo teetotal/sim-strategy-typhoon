@@ -57,7 +57,7 @@ public class BuildingObject : Object
                 underAttackQ.Enqueue(new UnderAttack(obj, node.values[1]));
                 return true;
             case ActionType.BUILDING_DESTROY:
-                action = new Action(node.type, 2);
+                action = new Action(node.type, 2, new List<int>() { node.id, node.values[0] });
                 break;
         }
         actions.Add(action);
@@ -80,14 +80,6 @@ public class BuildingObject : Object
             Instantiate();
         }
         
-
-        //progress
-        /*
-        Vector3 pos = GetProgressPosition();
-        progress = GameObject.Instantiate(Context.Instance.progressPrefab, GetProgressPosition(), Quaternion.identity);
-        progress.name = string.Format("progress-{0}-{1}", mapId, this.id);
-        progress.transform.SetParent(Context.Instance.canvas);
-        */
 
         return true;
     }
@@ -178,12 +170,17 @@ public class BuildingObject : Object
                         for(int n = 0; n < this.actors.Count; n++)
                         {
                             Actor actor = actors[n];
-                            Updater.Instance.AddQ(ActionType.ACTOR_DIE, actor.tribeId, actor.mapId, actor.id, null, false, 0);
+                            Updater.Instance.AddQ(ActionType.ACTOR_DIE_FROM_DESTROYED_BUILDING
+                                                , actor.tribeId
+                                                , actor.mapId
+                                                , action.values[0]
+                                                , new List<int>() { action.values[1] }
+                                                , false, 0);
                         }
                         actions.Clear();
-                        DestroyProgress();
+                        //DestroyProgress();
                         BuildingManager.Instance.objects.Remove(mapId);
-                        GameObject.DestroyImmediate(this.gameObject);
+                        this.DestroyGameObject();
                         MapManager.Instance.DestroyBuilding(mapId);
                         return;
                 }
@@ -209,7 +206,12 @@ public class BuildingObject : Object
                 HideProgress();
                 underAttackQ.Clear();
                 this.actions.Clear();
-                Updater.Instance.AddQ(ActionType.BUILDING_DESTROY, this.tribeId, this.mapId, this.id, null, false);
+                Updater.Instance.AddQ(ActionType.BUILDING_DESTROY
+                                    , this.tribeId
+                                    , this.mapId
+                                    , p.from.mapId
+                                    , new List<int>() { (int)MetaManager.Instance.GetTag(p.from.gameObject.tag) }
+                                    , false);
                 return;
             }
         }

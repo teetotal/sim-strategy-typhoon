@@ -84,7 +84,7 @@ public class MetaManager
         for(int n = 0; n < booty.count; n++)
         {
             int winningNumber = UnityEngine.Random.Range(0, totalProbability);
-            Debug.Log(string.Format("winningNumber {0}, {1}", winningNumber, totalProbability));
+            //Debug.Log(string.Format("winningNumber {0}, {1}", winningNumber, totalProbability));
 
             int sum = 0;
             for(int i = 0; i < booty.probability.Count; i++)
@@ -209,7 +209,7 @@ public class GameStatusManager
     }
     public bool Spend(int tribeId, List<Meta.ResourceIdAmount> resources)
     {
-        Debug.Log("Spend");
+        //Debug.Log("Spend");
         //check validation
         for(int n = 0; n < resources.Count; n++)
         {

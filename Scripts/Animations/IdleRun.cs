@@ -42,7 +42,11 @@ public class IdleRun : IActor
         DisposeParticle();
         if(success)
         {
-            Vector3 pos = this.transform.Find("earningPoint").position;
+            Transform earningPoint = this.transform.Find("earningPoint");
+            if(earningPoint == null)
+                return;
+                
+            Vector3 pos = earningPoint.position;
             GameObject p = GameObject.Instantiate(earningParticle, pos, Quaternion.identity);
             p.name = "particle";
             p.transform.SetParent(this.transform);

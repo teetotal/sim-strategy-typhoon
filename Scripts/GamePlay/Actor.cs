@@ -87,6 +87,7 @@ public class Actor : ActingObject
                 //일부러 null 체크 안함
                 underAttackQ.Enqueue(new UnderAttack(obj, node.values[1]));
                 break;
+            case ActionType.ACTOR_DIE_FROM_DESTROYED_BUILDING:
             case ActionType.ACTOR_DIE:
             /*
             id: from mapId
@@ -146,13 +147,6 @@ public class Actor : ActingObject
         {
             Instantiate();
         }
-
-        //progress
-        /*
-        progress = GameObject.Instantiate(Context.Instance.progressPrefab, GetProgressPosition(), Quaternion.identity);
-        progress.name = string.Format("progress-{0}-{1}", mapId, this.id);
-        progress.transform.SetParent(Context.Instance.canvas);
-        */
 
         return MapManager.Instance.SetCurrentMap(this, TAG.ACTOR); //currentMap에 등록
     }
@@ -268,6 +262,7 @@ public class Actor : ActingObject
                     }
                     return;
                 }
+                case ActionType.ACTOR_DIE_FROM_DESTROYED_BUILDING:
                 case ActionType.ACTOR_DIE:
                     SetAnimation(ActionType.ACTOR_DIE);
                     break;
@@ -282,15 +277,16 @@ public class Actor : ActingObject
                         progress.SetActive(false);
                         Context.Instance.onCreationFinish(action.type, this);
                         break;
+                    case ActionType.ACTOR_DIE_FROM_DESTROYED_BUILDING:
                     case ActionType.ACTOR_DIE:
                         //Context.Instance.onCreationFinish(action.type, this);
                         Context.Instance.onDie(action.type, this, Util.GetObject(action.values[0], (TAG)action.values[1]));
                         //object삭제
-                        GameObject.DestroyImmediate(this.gameObject);
+                        this.DestroyGameObject();
                         ActorManager.Instance.actors.Remove(this.mapId);
                         this.attachedBuilding.RemoveActor(this.mapId);
                         MapManager.Instance.Remove(this.mapId, TAG.ACTOR);
-                        DestroyProgress();
+                        //DestroyProgress();
                         Clear();
                         return;
                     case ActionType.ACTOR_LOAD_RESOURCE:

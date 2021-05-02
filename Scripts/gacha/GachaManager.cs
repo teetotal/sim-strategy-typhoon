@@ -117,7 +117,7 @@ public class GachaManager
     {
         if(RunGacha(tribeId))
         {
-            Debug.Log(string.Format("Levelup success"));
+            //Debug.Log(string.Format("Levelup success"));
             target.level++;
             return true;
         }

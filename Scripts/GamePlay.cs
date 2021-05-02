@@ -27,16 +27,15 @@ public class GamePlay : MonoBehaviour
         if(!LoaderPerspective.Instance.LoadJsonFile("ui"))
         {
             Debug.LogError("ui.json loading failure");
+            return;
         } 
-        else
-        {
-            LoaderPerspective.Instance.AddComponents(OnCreate, OnCreatePost);
-            buildingLayer = GameObject.Find("buildings");
-            actorLayer = GameObject.Find("actors");
 
-            HideLayers();
-        }
+        LoaderPerspective.Instance.AddComponents(OnCreate, OnCreatePost);
+        buildingLayer = GameObject.Find("buildings");
+        actorLayer = GameObject.Find("actors");
 
+        HideLayers();
+        
         callbacks.Init();
         InitSelectionUI();
         callbacks.UpdateResourceUI();
