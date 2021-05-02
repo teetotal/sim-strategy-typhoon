@@ -10,19 +10,26 @@
             "_Name": "MessageArea",
             "_BGColor": [1, 1 , 1, 0],
             "_From": {"x": 0, "y": 23},
-            "_To": {"x": 9, "y": 25},
-            "_GridDim":{"x":1,"y":1},
+            "_To": {"x": 9, "y": 26},
+            "_GridDim":{"x":1,"y":2},
             "_Margin":{"x":0, "y":0},
             "_InnerMargin":{"x":0.0,"y":0},
             "_DrawGridLine": false,
             "_Objects":[
                 {
-                    "position":{"x":0,"y":0},
+                    "position":{"x":0,"y":1},
                     "name":"message",
                     "tag":"UI",
                     "prefab": "text_message",
                     "ui": true,
                     "text": "MESSAGE"
+                },
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"booties",
+                    "tag":"UI",
+                    "prefab": "panel_default",
+                    "ui": true
                 }
             ]
         },
@@ -101,9 +108,9 @@
             "_Name": "bottom",
             "_BGColor": [1, 1 , 1, 0],
             "_From": {"x": 0, "y": 1},
-            "_To": {"x": 9, "y": 2},
+            "_To": {"x": 9, "y": 3},
             "_GridDim":{"x":12,"y":1},
-            "_Margin":{"x":10, "y":0.1},
+            "_Margin":{"x":30, "y":0},
             "_InnerMargin":{"x":0.0,"y":0},
             "_DrawGridLine": false,
             "_Objects":[
@@ -114,6 +121,14 @@
                     "prefab": "button_default",
                     "ui": true,
                     "text": "BUILD"
+                },
+                {
+                    "position":{"x":11,"y":0},
+                    "name":"btn_inventory",
+                    "tag":"UI",
+                    "prefab": "button_default",
+                    "ui": true,
+                    "text": "Inventory"
                 }
             ]
         },

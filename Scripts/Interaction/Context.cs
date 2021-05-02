@@ -25,6 +25,7 @@ public class Context
         public OnDelivery onDelivery;
         public CheckDefenseAttack checkDefenseAttack;
         public OnEarning onEarning;
+        public OnDie onDie;
 
         public CallbackFunctions(
                                     OnCreationEvent onCreationEvent,
@@ -35,7 +36,9 @@ public class Context
                                     OnLoadResource onLoadResource,
                                     OnDelivery onDelivery, 
                                     CheckDefenseAttack checkDefenseAttack,
-                                    OnEarning onEarning)
+                                    OnEarning onEarning,
+                                    OnDie onDie
+                                    )
         {
             this.onCreationEvent = onCreationEvent;
             this.onCreationFinish = onCreationFinish;
@@ -46,6 +49,7 @@ public class Context
             this.onDelivery = onDelivery;
             this.checkDefenseAttack = checkDefenseAttack;
             this.onEarning = onEarning;
+            this.onDie = onDie;
         }
     }
     public delegate void OnSelectionEvent(TAG tag, int mapId, int id, GameObject gameObject);
@@ -64,6 +68,8 @@ public class Context
     public CheckDefenseAttack checkDefenseAttack;
     public delegate void OnCreationFinish(ActionType type, Object obj);
     public OnCreationFinish onCreationFinish;
+    public delegate void OnDie(ActionType type, Object obj, Object from);
+    public OnDie onDie;
     public delegate void OnEarning(Object obj, bool success);
     public OnEarning onEarning;
 
@@ -125,6 +131,7 @@ public class Context
         this.onDelivery = functions.onDelivery;
         this.checkDefenseAttack = functions.checkDefenseAttack;
         this.onEarning = functions.onEarning;
+        this.onDie = functions.onDie;
 
         this.canvas = canvas;
         this.progressPrefab = Resources.Load<GameObject>(progressPrefab);

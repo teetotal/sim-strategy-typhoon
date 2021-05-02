@@ -56,12 +56,18 @@ public class InventoryManager
         public int quantity;
     }
     [Serializable]
+    public struct TribeItems
+    {
+        public int tribeId;
+        public List<ItemIdQuantity> items;
+    }
+    [Serializable]
     public struct Inventory
     {
-        public List<ItemIdQuantity> inventory;
+        public List<TribeItems> inventory;
     }
-    //tribe별로 관리해야함!!!!!!!!!!
-    public Dictionary<int, int> items = new Dictionary<int, int>(); //item id, quantity
+    
+    public Dictionary<int, Dictionary<int, int>> items = new Dictionary<int, Dictionary<int, int>>(); // tribeId, item id, quantity
     private static readonly Lazy<InventoryManager> hInstance = new Lazy<InventoryManager>(() => new InventoryManager());
     
     public static InventoryManager Instance
@@ -78,24 +84,38 @@ public class InventoryManager
         Inventory meta = Json.LoadJsonFile<Inventory>("inventory");
         for(int n=0; n < meta.inventory.Count; n++)
         {
-            ItemIdQuantity i = meta.inventory[n];
-            items[i.itemId] = i.quantity;
+            int tribeId = meta.inventory[n].tribeId;
+            for(int i = 0; i < meta.inventory[n].items.Count; i++)
+            {
+                ItemIdQuantity iq = meta.inventory[n].items[i];
+                Add(tribeId, iq.itemId, iq.quantity);
+            }
         }
     }
-    public void Add(int itemId, int quantity)
+    public Dictionary<int, int> GetInventory(int tribeId)
     {
-        if(!items.ContainsKey(itemId))
-            items[itemId] = quantity;
+        if(!items.ContainsKey(tribeId))
+            return null;
+        
+        return items[tribeId];
+    }
+    public void Add(int tribeId, int itemId, int quantity)
+    {
+        if(!items.ContainsKey(tribeId))
+            items[tribeId] = new Dictionary<int, int>();
+
+        if(!items[tribeId].ContainsKey(itemId))
+            items[tribeId][itemId] = quantity;
         else
-            items[itemId] += quantity;
+            items[tribeId][itemId] += quantity;
     }
 
-    public bool Reduce(int itemId, int quantity)
+    public bool Reduce(int tribeId, int itemId, int quantity)
     {
-        if(!items.ContainsKey(itemId) || items[itemId] < quantity)
+        if(!items.ContainsKey(tribeId) || !items[tribeId].ContainsKey(itemId) || items[tribeId][itemId] < quantity)
             return false;
         
-        items[itemId] -= quantity;
+        items[tribeId][itemId] -= quantity;
         return true;
     }
 }

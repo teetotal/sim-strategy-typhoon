@@ -88,7 +88,11 @@ public class Actor : ActingObject
                 underAttackQ.Enqueue(new UnderAttack(obj, node.values[1]));
                 break;
             case ActionType.ACTOR_DIE:
-                action = new Action(node.type, 2);
+            /*
+            id: from mapId
+            actions[0]: from TAG
+            */
+                action = new Action(node.type, 2, new List<int>() { node.id, node.values[0] });
                 break;
             case ActionType.ACTOR_LOAD_RESOURCE:
                 action = new Action(node.type, 1, new List<int>() { node.id });
@@ -279,7 +283,8 @@ public class Actor : ActingObject
                         Context.Instance.onCreationFinish(action.type, this);
                         break;
                     case ActionType.ACTOR_DIE:
-                        Context.Instance.onCreationFinish(action.type, this);
+                        //Context.Instance.onCreationFinish(action.type, this);
+                        Context.Instance.onDie(action.type, this, Util.GetObject(action.values[0], (TAG)action.values[1]));
                         //object삭제
                         GameObject.DestroyImmediate(this.gameObject);
                         ActorManager.Instance.actors.Remove(this.mapId);
@@ -324,7 +329,9 @@ public class Actor : ActingObject
                 HideProgress();
                 underAttackQ.Clear();
                 this.actions.Clear();
-                Updater.Instance.AddQ(ActionType.ACTOR_DIE, this.tribeId, this.mapId, this.id, null, false);
+                Updater.Instance.AddQ(ActionType.ACTOR_DIE, this.tribeId, this.mapId, p.from.mapId
+                    , new List<int>() { (int)MetaManager.Instance.GetTag(p.from.gameObject.tag) }
+                    , false);
                 return;
             }
 

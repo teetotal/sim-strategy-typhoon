@@ -28,7 +28,7 @@ public class Callbacks
                 UpdateResourceUI();
             else
             {
-                SetMessage(string.Format("Not enough resources {0}, {1}, {2}", q.type, q.mapId, q.id));
+                SetMessage(string.Format("Not enough resources {0}, {1}, {2}", q.type, q.mapId, q.id), null);
                 return false;
             }
         }
@@ -37,18 +37,23 @@ public class Callbacks
     }
     public void OnCreationFinish(ActionType type, Object obj)
     {
+    }
+    public void OnDie(ActionType type, Object obj, Object from)
+    {    
         //전리품
         if(type == ActionType.ACTOR_DIE)
         {  
             List<Meta.IdQuantity> booties = MetaManager.Instance.GetActorBooty(obj.id, obj.level);
-            string sz = "";
+            
+            //string sz = "";
             for(int n = 0; n < booties.Count; n++)
             {
                 Meta.IdQuantity booty = booties[n];
-                sz += string.Format("\n{0} x{1}", ItemManager.Instance.items[booty.id].name, booty.quantity);
-                InventoryManager.Instance.Add(booty.id, booty.quantity);
+                //sz += string.Format("\n{0} x{1}", ItemManager.Instance.items[booty.id].name, booty.quantity);
+                InventoryManager.Instance.Add(from.tribeId, booty.id, booty.quantity);
             }
-            SetMessage(string.Format("OnCreationFinish booty {0}", sz));
+            
+            SetMessage(string.Format("OnDie from {0} > {1}", from.tribeId, obj.tribeId), booties);
         }
     }
     public void SetDelivery(Actor actor, int targetMapId, TAG targetBuildingTag)
@@ -89,7 +94,7 @@ public class Callbacks
             case TAG.BUILDING:
                 if(meta.level[actor.level].ability.attackDistance < MapManager.Instance.GetDistance(actor.GetCurrentMapId(), targetMapId))
                 {
-                    SetMessage("too far target to attack");
+                    SetMessage("too far target to attack", null);
                     return;
                 }
                 if(actor.tribeId != targetObject.tribeId && actor.SetFollowObject(targetMapId, TAG.BUILDING))
@@ -106,7 +111,7 @@ public class Callbacks
             case TAG.ACTOR:
                 if(meta.level[actor.level].ability.attackDistance < MapManager.Instance.GetDistance(actor.GetCurrentMapId(), targetMapId))
                 {
-                    SetMessage("too far target to attack");
+                    SetMessage("too far target to attack", null);
                     return;
                 }
                 if(actor.tribeId != targetObject.tribeId && actor.SetFollowObject(targetMapId, TAG.ACTOR))
@@ -156,7 +161,7 @@ public class Callbacks
         Transform load = actor.gameObject.transform.Find("load");
         if(load == null)
         {
-            SetMessage("Finding the load failure");
+            SetMessage("Finding the load failure", null);
         }
         else
         {
@@ -200,11 +205,13 @@ public class Callbacks
     public float elapseMessage; 
     GameObject messageArea;
     Text message;
+    GameObject bootiesPanel;
     public void Init()
     {
         elapseMessage = 0;
         messageArea = GameObject.Find("MessageArea");
         message = GameObject.Find("message").GetComponent<Text>();
+        bootiesPanel = GameObject.Find("booties");
         messageArea.SetActive(false);
     }
     public void UpdateResourceUI()
@@ -223,11 +230,40 @@ public class Callbacks
         };
         GameObject.Find("resource").GetComponent<ResourceUI>().SetValues(v, r);
     }
-    private void SetMessage(string sz)
+    private void SetMessage(string sz, List<Meta.IdQuantity> booties)
     {
         messageArea.SetActive(true);
         elapseMessage = 0;
         message.text = sz;
+
+        if(booties == null)
+            return;
+       
+        Vector3 panelPosition = bootiesPanel.transform.position;
+        Vector2 panelSize = Vector2.zero;
+        
+        for(int n=0; n < booties.Count; n++)
+        {
+            GameObject booty = Resources.Load<GameObject>("booty_default");
+            Vector2 bootySize = booty.GetComponent<RectTransform>().sizeDelta;
+            
+            if(n == 0)
+            {
+                panelSize = new Vector2(
+                    bootySize.x * booties.Count,
+                    bootySize.y
+                );
+                bootiesPanel.GetComponent<RectTransform>().sizeDelta = panelSize;
+            }
+
+            booty = GameObject.Instantiate(booty
+                                        , new Vector3(panelPosition.x + bootySize.x * n - (panelSize.x * 0.5f) + (bootySize.x * 0.5f), panelPosition.y, panelPosition.z)
+                                        , Quaternion.identity);
+
+            booty.GetComponentInChildren<RawImage>().texture = Resources.Load<Sprite>(ItemManager.Instance.items[booties[n].id].prefab).texture;
+            booty.GetComponentInChildren<Text>().text = string.Format("x{0}", booties[n].quantity);
+            booty.transform.SetParent(bootiesPanel.transform);
+        }
     }
     public void CheckMessageAvailable(float deltaTime)
     {
@@ -237,6 +273,10 @@ public class Callbacks
         elapseMessage += deltaTime;
         if(elapseMessage > 3.0f)
         {
+            for(int i = 0; i <bootiesPanel.transform.childCount; i++)
+            {
+                GameObject.Destroy(bootiesPanel.transform.GetChild(i).gameObject);
+            }
             messageArea.SetActive(false);
         }
     }

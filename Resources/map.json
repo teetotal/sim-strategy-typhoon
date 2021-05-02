@@ -112,7 +112,7 @@
     "nodes": [
         {
             "prefabId": 4,
-            "positions": [ 1, 12, 120, 33, 22, 44],
+            "positions": [ 301, 312, 320, 333, 322, 344],
             "range": {
                 "start": 0,
                 "end": 0
@@ -120,7 +120,7 @@
         },
         {
             "prefabId": 5,
-            "positions": [ 2, 13, 132, 28, 99, 168, 208],
+            "positions": [ 700, 713, 732, 728, 799, 768, 708],
             "range": {
                 "start": 0,
                 "end": 0
@@ -128,7 +128,7 @@
         },
         {
             "prefabId": 6,
-            "positions": [ 5, 72, 88, 150, 200, 250],
+            "positions": [ 505, 572, 588, 500, 550],
             "range": {
                 "start": 0,
                 "end": 0
@@ -153,12 +153,12 @@
     "neutrals": [
         {
             "id": 0,
-            "mapId": 255,
-            "rotation": 90
+            "mapId": 452,
+            "rotation": 0
         },
         {
             "id": 1,
-            "mapId": 128,
+            "mapId": 332,
             "rotation": 90
         }
     ],

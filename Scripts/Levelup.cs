@@ -52,7 +52,7 @@ public class Levelup : MonoBehaviour
         if(elapse > 6)
         {
             Camera.main.GetComponent<Animation>().Stop();
-            if(GachaManager.Instance.Levelup())
+            if(GachaManager.Instance.Levelup(GachaManager.Instance.target.tribeId))
             {
                 //성공 이벤트
                 SetMessage("성공");
@@ -127,7 +127,7 @@ public class Levelup : MonoBehaviour
             return;
 
         string name = ItemManager.Instance.items[itemId].name;
-        int quantity = InventoryManager.Instance.items[itemId];
+        int quantity = InventoryManager.Instance.items[GachaManager.Instance.target.tribeId][itemId];
         int added = GachaManager.Instance.GetAssignedMaterialCount(itemId);
 
         if(isAdd)
@@ -192,8 +192,11 @@ public class Levelup : MonoBehaviour
     List<GameObject> GeScrollItems()
     {
         List<GameObject> list = new List<GameObject>();
+        Dictionary<int, int> items = InventoryManager.Instance.GetInventory(GachaManager.Instance.target.tribeId);
+        if(items == null)
+            return list;
         
-        foreach(KeyValuePair<int, int> kv in InventoryManager.Instance.items)
+        foreach(KeyValuePair<int, int> kv in items)
         {
             if(kv.Value == 0)
                 continue;
@@ -229,7 +232,7 @@ public class Levelup : MonoBehaviour
         {
             GameObject obj = Resources.Load<GameObject>("button_default");
             //GameObject obj = Resources.Load<GameObject>("button_default");
-            if(kv.Value.tribeId == 0)
+            if(kv.Value.tribeId == GachaManager.Instance.target.tribeId)
             {
                 Meta.Actor meta = MetaManager.Instance.actorInfo[kv.Value.id];
                 obj.GetComponentInChildren<Text>().text = meta.name + " lv." + kv.Value.level.ToString();

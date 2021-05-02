@@ -438,7 +438,7 @@ public class MapManager
             case TAG.NEUTRAL:
                 if(buildingObjects.ContainsKey(mapId) == true)
                 {
-                    throw new Exception("Already assigned position. conflict creating building");
+                    throw new Exception(string.Format("Already assigned position. {0}, {1}, {2}", mapId, tag, prefab));
                 }
                 buildingObjects[mapId] = p;
             break;

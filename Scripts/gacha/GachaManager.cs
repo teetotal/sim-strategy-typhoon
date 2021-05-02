@@ -76,11 +76,11 @@ public class GachaManager
         }
         return list;
     }
-    void ConsumeMaterialInInventory()
+    void ConsumeMaterialInInventory(int tribeId)
     {
         foreach(KeyValuePair<int, int> kv in material)
         {
-            InventoryManager.Instance.Reduce(kv.Key, kv.Value);
+            InventoryManager.Instance.Reduce(tribeId, kv.Key, kv.Value);
         }   
     }
     float GetMaterialPower()
@@ -113,9 +113,9 @@ public class GachaManager
         return GetMaterialPower() / GetProbability();
     }
 
-    public bool Levelup()
+    public bool Levelup(int tribeId)
     {
-        if(RunGacha())
+        if(RunGacha(tribeId))
         {
             Debug.Log(string.Format("Levelup success"));
             target.level++;
@@ -125,17 +125,17 @@ public class GachaManager
         return false;
     }
     //--------------------------------------------------------------
-    private bool RunGacha()
+    private bool RunGacha(int tribeId)
     {
         float sum = GetMaterialPower();
         float probability = GetProbability();
 
-        ConsumeMaterialInInventory();
+        ConsumeMaterialInInventory(tribeId);
 
         material.Clear();
 
         float f = UnityEngine.Random.Range(0.0f, probability);
-        Debug.Log(string.Format("{0}, {1}", f, sum));
+        //Debug.Log(string.Format("{0}, {1}", f, sum));
         if(f > sum)
             return false;
 

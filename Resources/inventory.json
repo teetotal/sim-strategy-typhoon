@@ -1,24 +1,39 @@
 {
     "inventory": [
         {
-            "itemId": 0,
-            "quantity": 2
+            "tribeId": 0,
+            "items": [
+                {
+                    "itemId": 0,
+                    "quantity": 2
+                },
+                {
+                    "itemId": 1,
+                    "quantity": 3
+                },
+                {
+                    "itemId": 2,
+                    "quantity": 3
+                },
+                {
+                    "itemId": 3,
+                    "quantity": 3
+                },
+                {
+                    "itemId": 4,
+                    "quantity": 1
+                }
+            ]
         },
         {
-            "itemId": 1,
-            "quantity": 3
+            "tribeId": 1,
+            "items": [
+            ]
         },
         {
-            "itemId": 2,
-            "quantity": 3
-        },
-        {
-            "itemId": 3,
-            "quantity": 3
-        },
-        {
-            "itemId": 4,
-            "quantity": 1
+            "tribeId": 2,
+            "items": []
         }
+        
     ]
 }
