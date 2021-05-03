@@ -16,11 +16,6 @@ public class Lobby : MonoBehaviour
         {
             LoaderPerspective.Instance.AddComponents(OnCreate, OnCreatePost);
         }
-        /*
-        Debug.Log("Lobby start");
-        
-        Debug.Log("Lobby end");
-        */
     }
     void OnCreatePost(GameObject obj, string layerName)
     {
@@ -32,10 +27,12 @@ public class Lobby : MonoBehaviour
         switch(name)
         {
             case "levelup":
-            SceneManager.LoadScene("LevelUp");
+            //SceneManager.LoadScene("LevelUp");
+            Test();
             break;
             case "play":
             SceneManager.LoadScene("GamePlay");
+            
             break;
             default:
             break;
@@ -45,4 +42,15 @@ public class Lobby : MonoBehaviour
     {
         return null;
     } 
+
+    void Test()
+    {
+        int resourceId = 1;
+        bool ret = TradingManager.Instance.Buy(0, resourceId, 10);
+        float sellPrice = TradingManager.Instance.GetSellPrice(resourceId);
+        float buyPrice = TradingManager.Instance.GetBuyPrice(resourceId);
+        int holding = TradingManager.Instance.GetHoding(resourceId);
+
+        Debug.Log(string.Format("ret {0}, sell {1}, buy {2}, holding {3}", ret, sellPrice, buyPrice, holding));
+    }
 }

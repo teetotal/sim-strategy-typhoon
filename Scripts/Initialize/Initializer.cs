@@ -9,7 +9,8 @@ public class Initializer : MonoBehaviour
         InventoryManager.Instance.Load();
         
         MetaManager.Instance.Load();
-        MarketManager.Instance.Load();
+        TradingManager.Instance.Load();
+        //MarketManager.Instance.Load();
 
         MapManager.Instance.Load();
         GameStatusManager.Instance.Load();

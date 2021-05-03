@@ -101,6 +101,7 @@ public class MetaManager
         return list;
     }
 }
+/*
 public class MarketManager
 {
     public MarketStatus marketStatus;
@@ -150,6 +151,7 @@ public class MarketManager
         return marketStatus.standardResourceId;
     }
 }
+*/
 public class GameStatusManager
 {
     GameStatus gameStatus;
@@ -233,7 +235,14 @@ public class GameStatusManager
             resourceInfo[tribeId][resources[n].resourceId] += resources[n].amount;
         }
         return true;
-        
+    }
+    public void AddResource(int tribeId, int resourceId, float amount)
+    {
+        resourceInfo[tribeId][resourceId] += amount;
+    }
+    public void ReduceResource(int tribeId, int resourceId, float amount)
+    {
+        resourceInfo[tribeId][resourceId] -= amount;
     }
 }
 public class TimeManager

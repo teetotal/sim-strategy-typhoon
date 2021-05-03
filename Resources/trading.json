@@ -1,0 +1,29 @@
+{
+    "standardResourceId": 0,
+    "resources": [
+        {
+            "resourceId": 0,
+            "holding": 10000,
+            "standardHolding": -1,
+            "buyFee": 0,
+            "sellFee": 0,
+            "history": []
+        },
+        {
+            "resourceId": 1,
+            "holding": 100,
+            "standardHolding": 100,
+            "buyFee": 0.1,
+            "sellFee": 0.1,
+            "history": []
+        },
+        {
+            "resourceId": 2,
+            "holding": 100,
+            "standardHolding": 100,
+            "buyFee": 0.1,
+            "sellFee": 0.1,
+            "history": []
+        }
+    ]
+}

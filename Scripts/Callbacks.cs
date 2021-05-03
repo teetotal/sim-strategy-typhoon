@@ -179,10 +179,9 @@ public class Callbacks
         {
             int resourceId = metaBuilding.level[actor.attachedBuilding.level].output[n].resourceId;
             int amount = metaActor.level[actor.level].ability.carring;
+
             //tribe
-            GameStatusManager.Instance.resourceInfo[0][resourceId] -= amount;
-            GameStatusManager.Instance.resourceInfo[0][MarketManager.Instance.GetStandardResource()] += 
-                MarketManager.Instance.Exchange(targetBuildingMapId, resourceId, amount);
+            TradingManager.Instance.Sell(actor.tribeId, resourceId, amount);
         }
         UpdateResourceUI();
     }

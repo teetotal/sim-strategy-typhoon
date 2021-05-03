@@ -36,7 +36,8 @@ public class Updater
         MobManager.Instance.Regen();
         //객체 선택 ui
         SelectionUI.Instance.Update();
-        //일정 주기로 update node resource
+        //trading 시세 기록
+        TradingManager.Instance.Update();
     }
 
     private void Fetch(QNode q)
