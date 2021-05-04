@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class UIInventory : IUIInterface
 {
     Button close;
-    int myTribeId;
+    int myTribeId = 0;
     LoaderButtonOnClickCallBack onClickButton;
     GameObject inventory_scrollview;
     GameObject parentLayer;
@@ -30,6 +30,14 @@ public class UIInventory : IUIInterface
     // Update is called once per frame
     public override void UpdateUI()
     {
+        Transform content = inventory_scrollview.transform.Find("Viewport").transform.Find("Content");
+        for(int n = 0; n < content.childCount; n++)
+        {
+            GameObject obj = content.GetChild(n).gameObject;
+            //obj.transform.parent = null;
+            GameObjectPooling.Instance.Release("inventory_default", obj);
+        }
+
         LoaderPerspective.Instance.CreateScrollViewItems(GetInventoryItems()
                     , new Vector2(15, 15)
                     , new Vector2(10, 10)
@@ -52,9 +60,11 @@ public class UIInventory : IUIInterface
         {
             GameObject obj = GameObjectPooling.Instance.Get("inventory_default");
             Item item = ItemManager.Instance.items[kv.Key];
+
             obj.GetComponentInChildren<RawImage>().texture = Resources.Load<Sprite>(item.prefab).texture;
             obj.transform.Find("Text").GetComponent<Text>().text = "x"+kv.Value.ToString();
             obj.GetComponentInChildren<Button>().GetComponentInChildren<Text>().text = item.name;
+
             list.Add(obj);
         }
         return list;
