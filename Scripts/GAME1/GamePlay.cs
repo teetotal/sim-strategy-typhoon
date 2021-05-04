@@ -11,7 +11,7 @@ public class GamePlay : MonoBehaviour
     //Vector3 cmDefault;
     //-------------------
     public Transform canvas;
-    private GameObject buildingLayer, actorLayer, inventoryLayer;
+    private GameObject buildingLayer, actorLayer, inventoryLayer, tradingLayer;
 
     //
     int myTribeId = 0; 
@@ -19,7 +19,9 @@ public class GamePlay : MonoBehaviour
     //a*
     List<int> route = new List<int>();
     //float time = 0;
-    GameObject actor_scrollview, inventory_scrollview;
+    GameObject actor_scrollview;
+    UITrading uiTrading;
+    UIInventory uiInventory;
     // Start is called before the first frame update
     void Start()
     {
@@ -33,9 +35,14 @@ public class GamePlay : MonoBehaviour
         LoaderPerspective.Instance.AddComponents(OnCreate, OnCreatePost);
         buildingLayer = GameObject.Find("buildings");
         actorLayer = GameObject.Find("actors");
-        inventory_scrollview = GameObject.Find("inventory");
-        inventoryLayer = GameObject.Find("right");
+
+        uiInventory = GameObject.Find("inventory").GetComponent<UIInventory>();
+        uiInventory.Init(myTribeId, OnClickButton);
+        inventoryLayer = GameObject.Find("InventoryLayer");
         inventoryLayer.SetActive(false);
+
+        tradingLayer = GameObject.Find("TradingLayer");
+        uiTrading = GameObject.Find("trading").GetComponent<UITrading>();
 
         HideLayers();
         
@@ -186,20 +193,7 @@ public class GamePlay : MonoBehaviour
 
         return list;
     }
-    List<GameObject> GetInventoryItems()
-    {
-        List<GameObject> list = new List<GameObject>();
-        foreach(KeyValuePair<int, int> kv in InventoryManager.Instance.GetInventory(myTribeId))
-        {
-            GameObject obj = GameObjectPooling.Instance.Get("inventory_default");
-            Item item = ItemManager.Instance.items[kv.Key];
-            obj.GetComponentInChildren<RawImage>().texture = Resources.Load<Sprite>(item.prefab).texture;
-            obj.transform.Find("Text").GetComponent<Text>().text = "x"+kv.Value.ToString();
-            obj.GetComponentInChildren<Button>().GetComponentInChildren<Text>().text = item.name;
-            list.Add(obj);
-        }
-        return list;
-    }
+    
     /*
         OnClick 처리
     */
@@ -229,23 +223,12 @@ public class GamePlay : MonoBehaviour
             case "btn_inventory":
             if(inventoryLayer.activeSelf)
             {
-                Transform content = inventory_scrollview.transform.Find("Viewport").transform.Find("Content");
-                for(int n = 0; n <  content.childCount; n++)
-                {
-                    GameObjectPooling.Instance.Release("inventory_default", content.GetChild(n).gameObject);
-                    
-                }
                 inventoryLayer.SetActive(false);
             }
             else 
             {
                 inventoryLayer.SetActive(true);
-                LoaderPerspective.Instance.CreateScrollViewItems(GetInventoryItems()
-                    , new Vector2(15, 15)
-                    , new Vector2(10, 10)
-                    , OnClickButton
-                    , inventory_scrollview
-                    , 4);
+                uiInventory.UpdateInventory();
             }
                 
                 return;
@@ -319,6 +302,12 @@ public class GamePlay : MonoBehaviour
                     int id = Util.GetIdInGame(tag, mapId);
                     Debug.Log(string.Format("buttonI {0} {1} {2}", tag, mapId, id));
                     SelectionUI.Instance.Hide();
+                    if(tag == TAG.NEUTRAL)
+                    {
+                        tradingLayer.SetActive(true);
+                        uiTrading.UpdateTrading();
+
+                    }
                     break;
                 }
             default:

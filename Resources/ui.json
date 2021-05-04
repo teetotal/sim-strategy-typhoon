@@ -1,6 +1,6 @@
 {
     "_Name": "main",
-    "_GridDim":{"x":10,"y":30},
+    "_GridDim":{"x":32,"y":18},
     "_Margin":{"x":0.0,"y":0.0},
     "_InnerMargin":{"x":0.0,"y":0.0},
     "_Objects": [
@@ -9,8 +9,8 @@
         {
             "_Name": "MessageArea",
             "_BGColor": [1, 1 , 1, 0],
-            "_From": {"x": 0, "y": 23},
-            "_To": {"x": 9, "y": 26},
+            "_From": {"x": 0, "y": 12},
+            "_To": {"x": 31, "y": 14},
             "_GridDim":{"x":1,"y":2},
             "_Margin":{"x":0, "y":0},
             "_InnerMargin":{"x":0.0,"y":0},
@@ -36,10 +36,10 @@
         {
             "_Name": "top",
             "_BGColor": [1, 1 , 1, 0],
-            "_From": {"x": 7, "y": 27},
-            "_To": {"x": 9, "y": 28},
+            "_From": {"x": 22, "y": 16},
+            "_To": {"x": 31, "y": 17},
             "_GridDim":{"x":1,"y":1},
-            "_Margin":{"x":10, "y":20},
+            "_Margin":{"x":30, "y":30},
             "_InnerMargin":{"x":0,"y":0},
             "_DrawGridLine": false,
             "_Objects":[
@@ -55,11 +55,11 @@
         {
             "_Name": "top2",
             "_BGColor": [1, 1 , 1, 0],
-            "_From": {"x": 8, "y": 18},
-            "_To": {"x": 9, "y": 25},
+            "_From": {"x": 25, "y": 12},
+            "_To": {"x": 31, "y": 15},
             "_GridDim":{"x":3,"y":3},
-            "_Margin":{"x":10, "y":10},
-            "_InnerMargin":{"x":10,"y":10},
+            "_Margin":{"x":30, "y":0},
+            "_InnerMargin":{"x":5,"y":5},
             "_DrawGridLine": false,
             "_Objects":[
                 {
@@ -107,11 +107,11 @@
         {
             "_Name": "bottom",
             "_BGColor": [1, 1 , 1, 0],
-            "_From": {"x": 0, "y": 1},
-            "_To": {"x": 9, "y": 3},
+            "_From": {"x": 0, "y": 0},
+            "_To": {"x": 31, "y": 2},
             "_GridDim":{"x":12,"y":1},
-            "_Margin":{"x":30, "y":0},
-            "_InnerMargin":{"x":0.0,"y":0},
+            "_Margin":{"x":30, "y":30},
+            "_InnerMargin":{"x":0.0,"y":10},
             "_DrawGridLine": false,
             "_Objects":[
                 {
@@ -136,7 +136,7 @@
             "_Name": "buildings",
             "_BGColor": [0, 0, 0, 0.5],
             "_From": {"x": 0, "y": 0},
-            "_To": {"x": 9, "y": 4},
+            "_To": {"x": 31, "y": 2},
             "_GridDim":{"x":1,"y":1},
             "_Margin":{"x":0, "y":0},
             "_InnerMargin":{"x":0.1,"y":0.1},
@@ -155,10 +155,10 @@
             "_Name": "actors",
             "_BGColor": [0, 0, 0, 0.5],
             "_From": {"x": 0, "y": 0},
-            "_To": {"x": 9, "y": 4},
+            "_To": {"x": 31, "y": 2},
             "_GridDim":{"x":1,"y":1},
             "_Margin":{"x":0, "y":0},
-            "_InnerMargin":{"x":0.1,"y":0.1},
+            "_InnerMargin":{"x":0,"y":0},
             "_DrawGridLine": false,
             "_Objects":[
                 {
@@ -171,10 +171,29 @@
             ]
         },
         {
-            "_Name": "right",
+            "_Name": "TradingLayer",
             "_BGColor": [1, 1 , 1, 0],
-            "_From": {"x": 5, "y": 5},
-            "_To": {"x": 9, "y": 26},
+            "_From": {"x": 11, "y": 6},
+            "_To": {"x": 20, "y": 13},
+            "_GridDim":{"x":1,"y":1},
+            "_Margin":{"x":0, "y":0},
+            "_InnerMargin":{"x":0,"y":0},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"trading",
+                    "tag":"UI",
+                    "prefab": "trading",
+                    "ui": true
+                }
+            ]
+        },
+        {
+            "_Name": "InventoryLayer",
+            "_BGColor": [1, 1 , 1, 0],
+            "_From": {"x": 11, "y": 6},
+            "_To": {"x": 20, "y": 13},
             "_GridDim":{"x":1,"y":1},
             "_Margin":{"x":0, "y":0},
             "_InnerMargin":{"x":0,"y":0},
@@ -184,7 +203,7 @@
                     "position":{"x":0,"y":0},
                     "name":"inventory",
                     "tag":"UI",
-                    "prefab": "scrollview_inventory",
+                    "prefab": "inventory",
                     "ui": true
                 }
             ]

@@ -109,4 +109,8 @@ public class Util
         }
         return null;
     }
+    public static string GetCurrencyString(float n)
+    {
+        return string.Format("{0:N}", n);
+    }
 }
