@@ -11,8 +11,8 @@ public class GamePlay : MonoBehaviour
         TRADING
     }
     Callbacks callbacks = new Callbacks();
-    GameObject cmObj;
-    float cmRatio = 0;
+    //GameObject cmObj;
+    //float cmRatio = 0;
     //Vector3 cmDefault;
     //-------------------
     public Transform canvas;
@@ -411,7 +411,7 @@ public class GamePlay : MonoBehaviour
                     break;
             }
         }
-
+        /*
         if(cmObj != null)
         {
             cmRatio += Time.deltaTime;
@@ -426,6 +426,7 @@ public class GamePlay : MonoBehaviour
             }
                 
         }
+        */
     }
     
     GameObject OnCreate(string layerName,string name, string tag, Vector2 position, Vector2 size)
