@@ -2,20 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-public class UIInventory : MonoBehaviour
+public class UIInventory : IUIInterface
 {
     Button close;
     int myTribeId;
     LoaderButtonOnClickCallBack onClickButton;
     GameObject inventory_scrollview;
+    GameObject parentLayer;
     // Start is called before the first frame update
-    void Start()
+    public override void Init()
     {
+        parentLayer = GameObject.Find("InventoryLayer");
         close = GameObject.Find("inventory_close").GetComponent<Button>();
 
         inventory_scrollview = GameObject.Find("inventory_scrollview");
 
-        close.onClick.AddListener(() => {this.transform.parent.gameObject.SetActive(false);} );
+        close.onClick.AddListener( Close );
         
     }
 
@@ -26,7 +28,7 @@ public class UIInventory : MonoBehaviour
     }
 
     // Update is called once per frame
-    public void UpdateInventory()
+    public override void UpdateUI()
     {
         LoaderPerspective.Instance.CreateScrollViewItems(GetInventoryItems()
                     , new Vector2(15, 15)
@@ -34,6 +36,14 @@ public class UIInventory : MonoBehaviour
                     , this.onClickButton
                     , inventory_scrollview
                     , 4);
+    }
+    public override void Show()
+    {
+        parentLayer.SetActive(true);
+    }
+    public override void Close()
+    {
+        parentLayer.SetActive(false);
     }
     List<GameObject> GetInventoryItems()
     {

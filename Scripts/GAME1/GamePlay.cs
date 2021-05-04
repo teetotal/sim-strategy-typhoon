@@ -5,12 +5,19 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 public class GamePlay : MonoBehaviour
 {
+    enum POPUPID
+    {
+        INVENTORY,
+        TRADING
+    }
     Callbacks callbacks = new Callbacks();
     GameObject cmObj;
     float cmRatio = 0;
     //Vector3 cmDefault;
     //-------------------
     public Transform canvas;
+
+    Dictionary<POPUPID, IUIInterface> popupUI;
     private GameObject buildingLayer, actorLayer, inventoryLayer, tradingLayer;
 
     //
@@ -36,14 +43,13 @@ public class GamePlay : MonoBehaviour
         buildingLayer = GameObject.Find("buildings");
         actorLayer = GameObject.Find("actors");
 
-        uiInventory = GameObject.Find("inventory").GetComponent<UIInventory>();
-        uiInventory.Init(myTribeId, OnClickButton);
-        inventoryLayer = GameObject.Find("InventoryLayer");
-        inventoryLayer.SetActive(false);
-
-        tradingLayer = GameObject.Find("TradingLayer");
-        uiTrading = GameObject.Find("trading").GetComponent<UITrading>();
-
+        popupUI = new Dictionary<POPUPID, IUIInterface>()
+        {
+            { POPUPID.INVENTORY, GameObject.Find("inventory").GetComponent<IUIInterface>() },
+            { POPUPID.TRADING, GameObject.Find("trading").GetComponent<IUIInterface>() }
+        };
+        InitPopup();
+        
         HideLayers();
         
         callbacks.Init();
@@ -221,16 +227,7 @@ public class GamePlay : MonoBehaviour
                 myTribeId = 2;
                 return;
             case "btn_inventory":
-            if(inventoryLayer.activeSelf)
-            {
-                inventoryLayer.SetActive(false);
-            }
-            else 
-            {
-                inventoryLayer.SetActive(true);
-                uiInventory.UpdateInventory();
-            }
-                
+                ShowPopup(POPUPID.INVENTORY);
                 return;
             default:
                 break;
@@ -304,9 +301,7 @@ public class GamePlay : MonoBehaviour
                     SelectionUI.Instance.Hide();
                     if(tag == TAG.NEUTRAL)
                     {
-                        tradingLayer.SetActive(true);
-                        uiTrading.UpdateTrading();
-
+                        ShowPopup(POPUPID.TRADING);
                     }
                     break;
                 }
@@ -437,4 +432,28 @@ public class GamePlay : MonoBehaviour
     {
         return null;
     } 
+
+    //-------------------------------------------------
+    private void InitPopup()
+    {
+        foreach(KeyValuePair<POPUPID, IUIInterface> kv in popupUI)
+        {
+            kv.Value.Init();
+            kv.Value.Close();
+        }
+    }
+    private void ShowPopup(POPUPID key)
+    {
+        HidePopup();
+        popupUI[key].Show();
+        popupUI[key].UpdateUI();
+    }
+
+    private void HidePopup()
+    {
+        foreach(KeyValuePair<POPUPID, IUIInterface> kv in popupUI)
+        {
+            kv.Value.Close();
+        }
+    }
 }

@@ -192,8 +192,8 @@
         {
             "_Name": "InventoryLayer",
             "_BGColor": [1, 1 , 1, 0],
-            "_From": {"x": 11, "y": 6},
-            "_To": {"x": 20, "y": 13},
+            "_From": {"x": 10, "y": 5},
+            "_To": {"x": 21, "y": 13},
             "_GridDim":{"x":1,"y":1},
             "_Margin":{"x":0, "y":0},
             "_InnerMargin":{"x":0,"y":0},
