@@ -22,7 +22,7 @@ public class UITrading : IUIInterface
         resource2_sell = GameObject.Find("trading_resource2_sell").GetComponent<Text>();
         
         close = GameObject.Find("trading_close").GetComponent<Button>();
-        close.onClick.AddListener(Close);
+        close.onClick.AddListener(DisposePopup);
     }
     public override void Show()
     {
@@ -31,6 +31,12 @@ public class UITrading : IUIInterface
     public override void Close()
     {
         parentLayer.SetActive(false);
+    }
+
+    private void DisposePopup()
+    {
+        Close();
+        Context.Instance.SetMode(Context.Mode.NONE);
     }
 
     // Update is called once per frame

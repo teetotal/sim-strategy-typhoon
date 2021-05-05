@@ -17,7 +17,7 @@ public class UIInventory : IUIInterface
 
         inventory_scrollview = GameObject.Find("inventory_scrollview");
 
-        close.onClick.AddListener( Close );
+        close.onClick.AddListener( DisposePopup );
         
     }
 
@@ -52,6 +52,11 @@ public class UIInventory : IUIInterface
     public override void Close()
     {
         parentLayer.SetActive(false);
+    }
+    private void DisposePopup()
+    {
+        Close();
+        Context.Instance.SetMode(Context.Mode.NONE);
     }
     List<GameObject> GetInventoryItems()
     {

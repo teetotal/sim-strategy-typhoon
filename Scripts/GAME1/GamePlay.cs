@@ -445,6 +445,7 @@ public class GamePlay : MonoBehaviour
     }
     private void ShowPopup(POPUPID key)
     {
+        Context.Instance.SetMode(Context.Mode.UI_POPUP);
         HidePopup();
         popupUI[key].Show();
         popupUI[key].UpdateUI();
