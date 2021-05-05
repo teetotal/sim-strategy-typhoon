@@ -4,7 +4,8 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 public class Levelup : MonoBehaviour
 {
-    float elapseMessage = 0; 
+    float accumulate = 50; 
+    Vector3 defaultCameraPos;
     GameObject messageArea;
     Text message;
 
@@ -43,15 +44,24 @@ public class Levelup : MonoBehaviour
         shaman = GameObject.Find("shaman"); //.GetComponent<Animator>().SetBool("levelUp", true);
         SetMaterialScrollview();
         SetSlider();
+
+        defaultCameraPos = Camera.main.transform.position;
     }
     void Update()
     {
         if(!isStart)
             return;
-        elapse += Time.deltaTime;
-        if(elapse > 6)
+        accumulate++;
+        float amount = Time.deltaTime * accumulate;
+        elapse += amount;
+        //float ratio = Time.deltaTime * 100;
+        //elapse += 0.1f;
+        if(elapse >= 360 * 3)
         {
-            Camera.main.GetComponent<Animation>().Stop();
+            Camera.main.transform.position = defaultCameraPos;
+            Camera.main.transform.rotation = Quaternion.Euler(0, 0, 0);
+            //Debug.Log(elapse);
+            //Camera.main.GetComponent<Animation>().Stop();
             if(GachaManager.Instance.Levelup(GachaManager.Instance.target.tribeId))
             {
                 //성공 이벤트
@@ -63,6 +73,7 @@ public class Levelup : MonoBehaviour
                 SetMessage("실패");
             }
             elapse = 0;
+            accumulate = 50;
             isStart = false;
             shaman.GetComponent<Animator>().SetBool("levelUp", false);
             shaman.GetComponent<Animator>().SetBool("idle", true);
@@ -70,10 +81,14 @@ public class Levelup : MonoBehaviour
             SetSlider();
             //SceneManager.LoadScene("GamePlay");
         }
-        else if(elapse > 4)
+        else //if(elapse > 4)
         {
-            Camera.main.GetComponent<Animation>().Play();
-            
+            //Camera.main.GetComponent<Animation>().Play();
+            //Camera.main.fieldOfView = 20;// - (5 * cmRatio);
+            Camera.main.transform.RotateAround(shaman.transform.position, 
+                                                shaman.transform.rotation.eulerAngles, 
+                                                amount
+                                                );
         }
     }
 
@@ -111,6 +126,7 @@ public class Levelup : MonoBehaviour
             case "levelup":
                 shaman.GetComponent<Animator>().SetBool("levelUp", true);
                 isStart = true;
+                
             break;
             case "play":
                 SceneManager.LoadScene("GamePlay");
