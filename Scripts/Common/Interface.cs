@@ -408,7 +408,7 @@ public abstract class ActingObject : Object
 
         if(!isMovingStarted) 
         {
-            SetAnimation(ActionType.ACTOR_MOVING);
+            SetAnimation(ActionType.ACTOR_MOVING); //mob도 걍 ACTOR_MOVING로 쓸까?
             isMovingStarted = true;
         }
 
@@ -478,12 +478,9 @@ public abstract class ActingObject : Object
         {
             switch(type)
             {
+                case ActionType.MOB_MOVING:
                 case ActionType.ACTOR_MOVING:
                     p.SetMoving();
-                    break;
-                case ActionType.ACTOR_MAX:
-                case ActionType.MAX:
-                    p.SetIdle();
                     break;
                 case ActionType.ACTOR_ATTACK:
                     {
@@ -492,8 +489,12 @@ public abstract class ActingObject : Object
                             a.SetAttack();
                     }
                     break;    
+                case ActionType.MOB_DIE:
                 case ActionType.ACTOR_DIE:
                     p.SetDie();
+                    break;
+                default:
+                    p.SetIdle();
                     break;
             }
             

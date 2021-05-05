@@ -9,6 +9,7 @@ public class Instantiation : MonoBehaviour
         MapManager.Instance.CreatePrefabs();
         BuildingManager.Instance.Instantiate();
         NeutralManager.Instance.Instantiate();
+        MobManager.Instance.Instantiate();
         //GameStatusManager.Instance.Load();
         Debug.Log("CreatePrefabs completed");
     }

@@ -54,6 +54,13 @@ public class MobManager
             mobs[q.mapId].AddAction(q);
         }
     }
+    public void Instantiate()
+    {
+        foreach(KeyValuePair<int, Mob> kv in mobs)
+        {
+            kv.Value.Instantiate();
+        }
+    }
 
     public void Regen()
     {

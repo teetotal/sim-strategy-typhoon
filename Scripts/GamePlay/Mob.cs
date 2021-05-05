@@ -26,6 +26,23 @@ public class Mob : ActingObject
             }
             case ActionType.MOB_ATTACK:
                 break;
+            case ActionType.MOB_UNDER_ATTACK:
+            /*
+            id: from mapId
+            actions[0]: from TAG
+            actions[1]: attack amount
+            */
+                Object obj = Util.GetObject(node.id, (TAG)node.values[0]);
+                //일부러 null 체크 안함
+                underAttackQ.Enqueue(new UnderAttack(obj, node.values[1]));
+                break;
+            case ActionType.MOB_DIE:
+            /*
+            id: from mapId
+            actions[0]: from TAG
+            */
+                actions.Add(new Action(node.type, 2, new List<int>() { node.id, node.values[0] }));
+                break;
         }
 
         return true;
@@ -64,9 +81,23 @@ public class Mob : ActingObject
         return action;
     }
 
+    public void Instantiate()
+    {
+        Instantiate(-1, mapId, id, MetaManager.Instance.mobInfo[id].prefab, TAG.MOB, false);
+    }
+
     public override bool Create(int tribeId, int mapId, int id, bool isInstantiate)
     {
         Meta.Mob mob = MetaManager.Instance.meta.mobs[id];
+        //HP
+        this.currentHP = mob.ability.HP;
+        //level
+        this.level = 0;
+
+        this.tribeId = tribeId;
+        this.id = id;
+        this.mapId = mapId;
+
         if(isInstantiate)
             this.Instantiate(tribeId, mapId, id, mob.prefab, TAG.MOB, mob.flyingHeight > 0 ? true: false);
             
@@ -103,6 +134,9 @@ public class Mob : ActingObject
                 case ActionType.MOB_FLYING:
                     Flying(action, mob.flyingHeight);
                     break;
+                case ActionType.MOB_DIE:
+                    SetAnimation(ActionType.MOB_DIE);
+                    break;
             }
 
             //finish
@@ -113,7 +147,14 @@ public class Mob : ActingObject
                     case ActionType.MOB_CREATE:
                         Context.Instance.onCreationFinish(action.type, this);
                         break;
-                    //mob die 추가해야 함
+                    case ActionType.MOB_DIE:
+                        Context.Instance.onDie(action.type, this, Util.GetObject(action.values[0], (TAG)action.values[1]));
+                        Clear();
+                        //object삭제
+                        this.DestroyGameObject();
+                        MobManager.Instance.mobs.Remove(this.mapId);
+                        MapManager.Instance.Remove(this.mapId, TAG.MOB);
+                        return;
                 }
                 actions.RemoveAt(0);
             }
@@ -122,7 +163,42 @@ public class Mob : ActingObject
     }
     public override void UpdateUnderAttack()
     {
-        
+        Meta.Mob meta = MetaManager.Instance.mobInfo[this.id];
+        while(underAttackQ.Count > 0)
+        {
+            UnderAttack p = underAttackQ.Dequeue();
+            
+            this.currentHP -= p.amount;
+
+            //callback
+            Context.Instance.onAttack(p.from, this, p.amount);
+
+            ShowHP(meta.ability.HP);
+            if(this.currentHP <= 0)
+            {
+                HideProgress();
+                underAttackQ.Clear();
+                this.actions.Clear();
+                Updater.Instance.AddQ(ActionType.MOB_DIE, this.tribeId, this.mapId, p.from.mapId
+                    , new List<int>() { (int)MetaManager.Instance.GetTag(p.from.gameObject.tag) }
+                    , false);
+                return;
+            }
+
+            //도망가기
+            /*
+            if(!this.HasActionType(ActionType.ACTOR_ATTACK))
+                Updater.Instance.AddQ(
+                    meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
+                    this.mapId,
+                    MapManager.Instance.GetRandomNearEmptyMapId(this.mapId, 2),
+                    null,
+                    false
+                    );
+            
+            */
+            return;
+        }
     }
 
     public override void UpdateDefence()

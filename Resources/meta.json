@@ -35,19 +35,38 @@
             "movingRange": 1,
             "movingProbability": 100,
             "ability": {
+                "HP": 20,
                 "building": 0,
                 "farming": 0,
                 "carring": 0,
                 "attack": 1,
+                "attackDistance": 2,
+                "attackSpeed": 1,
                 "depense": 1,
-                "moving": 1
+                "moving": 0.5
             },
-            "reward": [
-                {
-                    "resourceId": 0,
-                    "amount": 1 
-                }
-            ]
+            "booty": {
+                "count": 1,
+                "probability": [ 5, 5, 40, 50 ],
+                "items": [
+                    {
+                        "id": 0,
+                        "quantity": 1
+                    },
+                    {
+                        "id": 1,
+                        "quantity": 1
+                    },
+                    {
+                        "id": 2,
+                        "quantity": 1
+                    },
+                    {
+                        "id": 3,
+                        "quantity": 1
+                    }
+                ]
+            }
         },
         {
             "id": 1,
@@ -68,13 +87,7 @@
                 "attack": 1,
                 "depense": 1,
                 "moving": 0.1
-            },
-            "reward": [
-                {
-                    "resourceId": 0,
-                    "amount": 1 
-                }
-            ]
+            }
         }
     ],
     "actors": [

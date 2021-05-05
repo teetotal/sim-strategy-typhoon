@@ -193,7 +193,7 @@ public class Actor : ActingObject
                     break;
                 case ActionType.ACTOR_ATTACK:
                 {
-                    //거리 측정해서 공격 거리보다 멀면 
+                    //공격 거리
                     if(CheckAttacking(meta.level[this.level].ability))
                     {
                         ShowHP(meta.level[this.level].ability.HP);
@@ -201,6 +201,7 @@ public class Actor : ActingObject
                         //죽었는지 확인
                         if(followObject.currentHP > 0 && Attacking())
                         {
+                            //아래 finish코드에 추가 안하고 이렇게 한 이유가 다 있음
                             if(action.currentTime >= action.totalTime)
                             {
                                 //상대방 공격 당함
@@ -210,6 +211,8 @@ public class Actor : ActingObject
                                     at = ActionType.ACTOR_UNDER_ATTACK;
                                 else if(t == TAG.BUILDING)
                                     at = ActionType.BUILDING_UNDER_ATTACK;
+                                else if(t == TAG.MOB)
+                                    at = ActionType.MOB_UNDER_ATTACK;
                                 
                                 Updater.Instance.AddQ(
                                     at,
@@ -222,7 +225,6 @@ public class Actor : ActingObject
                                 action.currentTime = 0;
                                 actions[0] = action;
                             }
-                            
                         }
                         else
                         {
@@ -235,7 +237,7 @@ public class Actor : ActingObject
                     else 
                     {
                         //SetAnimation(ActionType.ACTOR_MAX);
-                        this.Clear(true, false, true);
+                        this.Clear(true, false, false);
                         List<QNode> list = new List<QNode>()
                         {
                             //공격하기

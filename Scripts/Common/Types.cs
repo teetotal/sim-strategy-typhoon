@@ -41,6 +41,7 @@ public enum ActionType
     MOB_FLYING,
     MOB_ATTACK,
     MOB_UNDER_ATTACK,
+    MOB_DIE,
     MOB_MAX,
 
     NEUTRAL_CREATE,

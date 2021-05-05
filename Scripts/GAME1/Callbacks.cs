@@ -40,25 +40,31 @@ public class Callbacks
     }
     public void OnDie(ActionType type, Object obj, Object from)
     {    
+        List<Meta.IdQuantity> booties = null;
         //전리품
         switch(type)
         {  
             case ActionType.ACTOR_DIE_FROM_DESTROYED_BUILDING:
             case ActionType.ACTOR_DIE:
-            {
-                List<Meta.IdQuantity> booties = MetaManager.Instance.GetActorBooty(obj.id, obj.level);
-                for(int n = 0; n < booties.Count; n++)
-                {
-                    Meta.IdQuantity booty = booties[n];
-                    InventoryManager.Instance.Add(from.tribeId, booty.id, booty.quantity);
-                }
-                
-                SetMessage(string.Format("OnDie {0} {1} > {2}", type, from.tribeId, obj.tribeId), booties);
+                booties = MetaManager.Instance.GetActorBooty(obj.id, obj.level);
                 break;
-            }
+            case ActionType.MOB_DIE:
+                booties = MetaManager.Instance.GetMobBooty(obj.id);
+                break;
             default:
                 break;
         }
+
+        if(booties == null)
+            return;
+
+        for(int n = 0; n < booties.Count; n++)
+        {
+            Meta.IdQuantity booty = booties[n];
+            InventoryManager.Instance.Add(from.tribeId, booty.id, booty.quantity);
+        }
+        
+        SetMessage(string.Format("OnDie {0} {1} > {2}", type, from.tribeId, obj.tribeId), booties);
     }
     public void SetDelivery(Actor actor, int targetMapId, TAG targetBuildingTag)
     {
@@ -124,8 +130,10 @@ public class Callbacks
                 }
                 break;
             case TAG.MOB:
-                actor.followObject = MobManager.Instance.mobs[targetMapId];
-                Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.tribeId, actor.mapId, -1, null, false);
+                if(actor.SetFollowObject(targetMapId, TAG.MOB))
+                {
+                    Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.tribeId, actor.mapId, -1, null, false);
+                }
                 break;
             case TAG.BOTTOM:
                 if(actor.mapId != targetMapId && MapManager.Instance.IsEmptyMapId(targetMapId))
@@ -144,7 +152,7 @@ public class Callbacks
     }
     public void OnAttack(Object from, Object to, int amount)
     {
-        //Debug.Log(string.Format("OnAttack {0} -> {1} attack: {2}, HP {3}", from.mapId, to.mapId, amount, to.currentHP));
+        Debug.Log(string.Format("OnAttack {0} -> {1} attack: {2}, HP {3}", from.mapId, to.mapId, amount, to.currentHP));
         //if(to.currentHP <= 0) Debug.Log("OnAttack Die");  
     }
     

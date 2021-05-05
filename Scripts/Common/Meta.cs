@@ -48,7 +48,7 @@ public class Meta
         public int mapCost;
         public int movingRange, movingProbability; //움직임 범위
         public Ability ability;
-        public List<ResourceIdAmount> reward;
+        public Booty booty;
     }
     [Serializable]
     public struct IdQuantity

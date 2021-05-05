@@ -72,8 +72,15 @@ public class MetaManager
     }
     public List<Meta.IdQuantity> GetActorBooty(int actorId, int level)
     {
+        return GetBootyList(MetaManager.Instance.actorInfo[actorId].level[level].booty);
+    }
+    public List<Meta.IdQuantity> GetMobBooty(int mobId)
+    {
+        return GetBootyList(MetaManager.Instance.mobInfo[mobId].booty);
+    }
+    private List<Meta.IdQuantity> GetBootyList(Meta.Booty booty)
+    {
         List<Meta.IdQuantity> list = new List<Meta.IdQuantity>();
-        Meta.Booty booty = MetaManager.Instance.actorInfo[actorId].level[level].booty;
 
         int totalProbability = 0;
         for(int n = 0; n < booty.probability.Count; n++)
