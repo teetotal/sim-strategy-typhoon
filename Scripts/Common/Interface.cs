@@ -273,11 +273,11 @@ public abstract class Object
                 case ActionType.ACTOR_MOVING:
                 case ActionType.MOB_MOVING:
                 {
+                    //여기 손봐야함. !!!!
                     float progression = action.GetProgression(); 
                     int idx = (int)progression;
                     float ratio = progression % 1.0f;
-                    if(ratio < 0.5f && idx > 0)
-                        idx --;
+                    //if(ratio < 0.5f && idx > 0) idx --;
                     this.currentMapId = action.values[idx];
                     break;
                 }
@@ -397,13 +397,32 @@ public abstract class ActingObject : Object
 
         GameObject actor = this.gameObject;
 
+        Vector3 now = Vector3.zero;
+        Vector3 next = Vector3.zero;
+        float r = 0;
+
+        bool ret = action.GetMovingProgression(ref now, ref next, ref r);
+
+        if(!isMovingStarted) 
+        {
+            SetAnimation(ActionType.ACTOR_MOVING); //mob도 걍 ACTOR_MOVING로 쓸까?
+            isMovingStarted = true;
+        }
+
+        actor.transform.rotation = Quaternion.Lerp(actor.transform.rotation, Quaternion.LookRotation(next - actor.transform.position), r);
+        actor.transform.position = Vector3.Lerp(now, next, r);
+
+        if(!ret)
+        {
+            SetAnimation(ActionType.MAX);
+        }
+        
+        return ret;
+        /*
         float progression = action.GetProgression(); 
         int idx = (int)progression; 
         float ratio = progression % 1.0f;
-        /*
-        int idx = (int)action.currentTime;
-        float ratio = action.currentTime % 1.0f;
-        */
+        
         bool flying = false;
 
         if(!isMovingStarted) 
@@ -425,6 +444,7 @@ public abstract class ActingObject : Object
         Vector3 pos = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[idx - 1]), flying);
         Vector3 posNext = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[idx + 0]), flying);
         Vector3 position = Vector3.Lerp(pos, posNext, ratio);
+
         float distance = Vector3.Distance(actor.transform.position, position);
         if(distance > 3)
         {
@@ -436,6 +456,7 @@ public abstract class ActingObject : Object
         actor.transform.rotation = Quaternion.Lerp(actor.transform.rotation, Quaternion.LookRotation(dir), ratio);
 
         return true;
+        */
     }
     protected bool Flying(Action action, float height)
     {

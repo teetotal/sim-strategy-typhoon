@@ -21,22 +21,93 @@ public struct Action
     public float currentTime;     //현재까지 진행된 시간
     public List<int> values;      //기타 추가 정보. 이동시 A* route같은거 담는 용도
 
+    public List<Vector3> list;
+
     public Action(ActionType type, float totalTime = 0, List<int> values = null)
     {
         this.type = type;
         this.currentTime = 0;
         this.totalTime = totalTime;
         this.values = values;
+        list = null;
+
+
+
+        //----------------------------
+        if(type == ActionType.ACTOR_MOVING || type == ActionType.MOB_MOVING)
+        {
+            int totalStep = (this.values.Count - 2) * 2 + 2; //시작과 끝 = 2 + 중간 * 2
+            list = new List<Vector3>();
+            list.Add(GetMapPosition(values[0]));
+
+            Vector3 prev = list[0];
+            for(int n = 1; n < values.Count; n++)
+            {
+                Vector3 p = GetMapPosition(values[n]);
+                list.Add((prev + p) / 2);
+                
+                list.Add(p);
+                prev = p;
+            }
+            //list.Add(GetMapPosition(values[values.Count-1]));
+        }
+        
     }
 
     public float GetProgression()
     {
         if(this.totalTime == 0)
             return 0;
-        if(this.currentTime > this.totalTime)
+        if(this.currentTime >= this.totalTime)
             return this.values[this.values.Count - 1];
 
         return (this.currentTime / this.totalTime) * this.values.Count;
+    }
+
+    float GetProgress()
+    {
+        if(this.totalTime == 0)
+            return 0;
+        //if(this.currentTime > this.totalTime) return 1; //this.values[this.values.Count - 1];
+
+        return (this.currentTime / this.totalTime);
+    }
+
+    public bool GetMovingProgression(ref Vector3 now, ref Vector3 next, ref float ratio)
+    {
+        if(list == null)
+        {
+            Debug.Log("list is null");
+            return false;
+        }
+
+        float progression = GetProgress();
+
+        if(progression >= 1)
+        {
+            now = list[list.Count-1];
+            next = list[list.Count -1];
+            ratio = 1;
+            return false;
+        }
+        
+        float f = (((float)list.Count -1) * progression);
+        int idx = (int)(f);
+        ratio = f % 1.0f;
+        now = list[idx];
+
+        if(idx <= list.Count-2)
+            next = list[idx+1];
+        else
+            next = now;
+        
+        //Debug.Log(string.Format("{0} {1} {2} {3}/{4}", to, from, ratio, this.currentTime, this.totalTime));
+
+        return true;
+    }
+    Vector3 GetMapPosition(int mapId)
+    {
+        return MapManager.Instance.defaultGameObjects[mapId].transform.position;
     }
 }
 /* --------------------------- */
