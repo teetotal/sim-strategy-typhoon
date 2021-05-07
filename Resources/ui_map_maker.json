@@ -83,6 +83,14 @@
                     "prefab": "button_default",
                     "ui": true,
                     "text": "ENVIRONMENT"
+                },
+                {
+                    "position":{"x":2,"y":0},
+                    "name":"btn_neutral",
+                    "tag":"UI",
+                    "prefab": "button_default",
+                    "ui": true,
+                    "text": "NEUTRAL"
                 }
             ]
         },
@@ -118,6 +126,25 @@
                 {
                     "position":{"x":0,"y":0},
                     "name":"scrollview_environment",
+                    "tag":"UI",
+                    "prefab": "scrollview_default",
+                    "ui": true
+                }
+            ]
+        },
+        {
+            "_Name": "neutrals",
+            "_BGColor": [0, 0, 0, 1],
+            "_From": {"x": 0, "y": 0},
+            "_To": {"x": 31, "y": 2},
+            "_GridDim":{"x":1,"y":1},
+            "_Margin":{"x":0, "y":0},
+            "_InnerMargin":{"x":0.1,"y":0.1},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"scrollview_neutral",
                     "tag":"UI",
                     "prefab": "scrollview_default",
                     "ui": true

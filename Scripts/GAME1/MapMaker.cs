@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 public class MapMaker : MonoBehaviour
 {
     public Transform canvas;
-    private GameObject buildingLayer, actorLayer, environmentLayer, tradingLayer;
+    private GameObject buildingLayer, actorLayer, environmentLayer, neutralLayer;
     private GameObject actor_scrollview;
 
     int myTribeId = 0; 
@@ -26,6 +26,7 @@ public class MapMaker : MonoBehaviour
         buildingLayer = GameObject.Find("buildings");
         actorLayer = GameObject.Find("actors");
         environmentLayer = GameObject.Find("environments");
+        neutralLayer = GameObject.Find("neutrals");
 
         HideLayers();
 
@@ -60,6 +61,8 @@ public class MapMaker : MonoBehaviour
             switch(Context.Instance.mode)
             {
                 case Context.Mode.UI_BUILD:
+                case Context.Mode.UI_ENVIRONMENT:
+                case Context.Mode.UI_NEUTRAL:
                     if(!EventSystem.current.IsPointerOverGameObject()) //UI가 클릭되지 않은 경우
                     {
                         HideLayers();
@@ -77,6 +80,7 @@ public class MapMaker : MonoBehaviour
         buildingLayer.SetActive(false);
         actorLayer.SetActive(false);
         environmentLayer.SetActive(false);
+        neutralLayer.SetActive(false);
 
         GameObject.DestroyImmediate(actor_scrollview);
     }
@@ -123,6 +127,9 @@ public class MapMaker : MonoBehaviour
             case Context.Mode.UI_ENVIRONMENT:
                 OnClick_UI_ENVIRONMENT(obj, name);
                 break;
+            case Context.Mode.UI_NEUTRAL:
+                OnClick_UI_NEUTRAL(obj, name);
+                break;
             default:
                 break;
         }
@@ -140,6 +147,10 @@ public class MapMaker : MonoBehaviour
             case "btn_environment":
                 environmentLayer.SetActive(true);
                 Context.Instance.SetMode(Context.Mode.UI_ENVIRONMENT);
+                break;
+            case "btn_neutral":
+                neutralLayer.SetActive(true);
+                Context.Instance.SetMode(Context.Mode.UI_NEUTRAL);
                 break;
             case "buttonX":
                 if(SelectionUI.Instance.selectedObject != null)
@@ -196,6 +207,18 @@ public class MapMaker : MonoBehaviour
             int id = int.Parse(arr[1]);
             Context.Instance.SetMode(Context.Mode.ENVIRONMENT);
             ((ContextEnvironment)Context.Instance.contexts[Context.Mode.ENVIRONMENT]).SetEnvironmentId(id);
+            HideLayers();
+        }
+    }
+
+    void OnClick_UI_NEUTRAL(GameObject obj, string name)
+    {
+        string[] arr = name.Split('-');
+        if(arr.Length >= 2 && arr[0] == "neutral")
+        {
+            int id = int.Parse(arr[1]);
+            Context.Instance.SetMode(Context.Mode.NEUTRAL);
+            ((ContextNeutral)Context.Instance.contexts[Context.Mode.NEUTRAL]).SetNeutralId(id);
             HideLayers();
         }
     }
@@ -260,6 +283,15 @@ public class MapMaker : MonoBehaviour
                                                                 , obj
                                                                 , environmentScrollItems.Count);
                 break;
+            case "scrollview_neutral":
+                List<GameObject> neutralScrollItems = GetNeutralScrollItems();
+                LoaderPerspective.Instance.CreateScrollViewItems(neutralScrollItems
+                                                                , new Vector2(15, 15)
+                                                                , new Vector2(10, 10)
+                                                                , OnClickButton
+                                                                , obj
+                                                                , neutralScrollItems.Count);
+                break;
             case "scrollview_actor":
                 actor_scrollview = obj;
                 break;
@@ -290,6 +322,21 @@ public class MapMaker : MonoBehaviour
             Meta.Environment prefab = MetaManager.Instance.meta.environments[n];
             obj.GetComponentInChildren<Text>().text = prefab.name;
             obj.name = string.Format("environment-{0}", prefab.id);
+            list.Add(Instantiate(obj));
+        }
+
+        return list;
+    }
+
+    List<GameObject> GetNeutralScrollItems()
+    {
+        List<GameObject> list = new List<GameObject>();
+        for(int n = 0; n < MetaManager.Instance.meta.neutrals.Count; n++)
+        {
+            GameObject obj = Resources.Load<GameObject>("button_default");
+            Meta.Neutral prefab = MetaManager.Instance.meta.neutrals[n];
+            obj.GetComponentInChildren<Text>().text = prefab.name;
+            obj.name = string.Format("neutral-{0}", prefab.id);
             list.Add(Instantiate(obj));
         }
 

@@ -14,6 +14,8 @@ public class Context
         UI_POPUP,
         UI_ENVIRONMENT,
         ENVIRONMENT,
+        UI_NEUTRAL,
+        NEUTRAL,
         MAX
     }
 
@@ -99,7 +101,9 @@ public class Context
             { Mode.ACTOR,       new ContextActor()  },
             { Mode.UI_POPUP,    new ContextDummy()  },
             { Mode.UI_ENVIRONMENT,    new ContextDummy()  },
-            { Mode.ENVIRONMENT,    new ContextEnvironment()  }
+            { Mode.ENVIRONMENT,    new ContextEnvironment()  },
+            { Mode.UI_NEUTRAL,    new ContextDummy()  },
+            { Mode.NEUTRAL,    new ContextNeutral()  }
         };
     }
     public void Update()
