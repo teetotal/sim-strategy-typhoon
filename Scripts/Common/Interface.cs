@@ -364,7 +364,7 @@ public abstract class ActingObject : Object
         isMovingStarted = false;
         //Astar
         List<int> route = new List<int>();
-        Astar astar = new Astar(MapManager.Instance.map);
+        Astar astar = new Astar(MapManager.Instance.map, MapManager.Instance.mapMeta.defaultVal.AstarNodeCost);
         Vector2Int from = MapManager.Instance.GetMapPosition(GetCurrentMapId());
         Vector2Int to = MapManager.Instance.GetMapPosition(targetMapId);
         Stack<Astar.Pos> stack = astar.Search(new Astar.Pos(from.x, from.y), new Astar.Pos(to.x, to.y));
@@ -389,7 +389,10 @@ public abstract class ActingObject : Object
             stack.Pop();
         }
 
-        return new Action(type, count / ability.moving, route);
+        Action action = new Action(type, count / ability.moving, route);
+        action.SetMovingRoute(this.gameObject.transform.position);
+
+        return action;
     }
     protected bool Moving(Action action)
     {

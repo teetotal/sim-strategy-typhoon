@@ -30,15 +30,16 @@ public struct Action
         this.totalTime = totalTime;
         this.values = values;
         list = null;
+    }
 
-
-
+    public void SetMovingRoute(Vector3 currentPosition)
+    {
         //----------------------------
         if(type == ActionType.ACTOR_MOVING || type == ActionType.MOB_MOVING)
         {
             int totalStep = (this.values.Count - 2) * 2 + 2; //시작과 끝 = 2 + 중간 * 2
             list = new List<Vector3>();
-            list.Add(GetMapPosition(values[0]));
+            list.Add(currentPosition);  //첫 위치를 오브젝트의 현 위치로 한다.
 
             Vector3 prev = list[0];
             for(int n = 1; n < values.Count; n++)
@@ -49,11 +50,8 @@ public struct Action
                 list.Add(p);
                 prev = p;
             }
-            //list.Add(GetMapPosition(values[values.Count-1]));
         }
-        
     }
-
     public float GetProgression()
     {
         if(this.totalTime == 0)

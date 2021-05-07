@@ -10,6 +10,7 @@ public class Map
     {
         public int cost;
         public int prefabId;
+        public float AstarNodeCost;
     }
     [Serializable]
     public struct Prefab
