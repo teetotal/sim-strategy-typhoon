@@ -1,0 +1,147 @@
+{
+    "_Name": "main",
+    "_GridDim":{"x":32,"y":18},
+    "_Margin":{"x":0.0,"y":0.0},
+    "_InnerMargin":{"x":0.0,"y":0.0},
+    "_Objects": [
+    ],
+    "_Subs":[
+        {
+            "_Name": "top2",
+            "_BGColor": [1, 1 , 1, 0],
+            "_From": {"x": 25, "y": 12},
+            "_To": {"x": 31, "y": 15},
+            "_GridDim":{"x":3,"y":3},
+            "_Margin":{"x":30, "y":0},
+            "_InnerMargin":{"x":5,"y":5},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":2},
+                    "name":"tribe0",
+                    "tag":"UI",
+                    "prefab": "button_default",
+                    "ui": true,
+                    "text": "종족0"
+                },
+                {
+                    "position":{"x":1,"y":2},
+                    "name":"tribe1",
+                    "tag":"UI",
+                    "prefab": "button_default",
+                    "ui": true,
+                    "text": "종족1"
+                },
+                {
+                    "position":{"x":2,"y":2},
+                    "name":"tribe2",
+                    "tag":"UI",
+                    "prefab": "button_default",
+                    "ui": true,
+                    "text": "종족2"
+                },
+                {
+                    "position":{"x":2,"y":1},
+                    "name":"zoomin",
+                    "tag":"UI",
+                    "prefab": "button_default",
+                    "ui": true,
+                    "text": "IN"
+                },
+                {
+                    "position":{"x":2,"y":0},
+                    "name":"zoomout",
+                    "tag":"UI",
+                    "prefab": "button_default",
+                    "ui": true,
+                    "text": "OUT"
+                }
+            ]
+        },
+        {
+            "_Name": "bottom",
+            "_BGColor": [1, 1 , 1, 0],
+            "_From": {"x": 0, "y": 0},
+            "_To": {"x": 31, "y": 2},
+            "_GridDim":{"x":12,"y":1},
+            "_Margin":{"x":30, "y":30},
+            "_InnerMargin":{"x":10.0,"y":10},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"btn_building",
+                    "tag":"UI",
+                    "prefab": "button_default",
+                    "ui": true,
+                    "text": "BUILDING"
+                },
+                {
+                    "position":{"x":1,"y":0},
+                    "name":"btn_environment",
+                    "tag":"UI",
+                    "prefab": "button_default",
+                    "ui": true,
+                    "text": "ENVIRONMENT"
+                }
+            ]
+        },
+        {
+            "_Name": "buildings",
+            "_BGColor": [0, 0, 0, 1],
+            "_From": {"x": 0, "y": 0},
+            "_To": {"x": 31, "y": 2},
+            "_GridDim":{"x":1,"y":1},
+            "_Margin":{"x":0, "y":0},
+            "_InnerMargin":{"x":0.1,"y":0.1},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"scrollview_building",
+                    "tag":"UI",
+                    "prefab": "scrollview_default",
+                    "ui": true
+                }
+            ]
+        },
+        {
+            "_Name": "environments",
+            "_BGColor": [0, 0, 0, 1],
+            "_From": {"x": 0, "y": 0},
+            "_To": {"x": 31, "y": 2},
+            "_GridDim":{"x":1,"y":1},
+            "_Margin":{"x":0, "y":0},
+            "_InnerMargin":{"x":0.1,"y":0.1},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"scrollview_environment",
+                    "tag":"UI",
+                    "prefab": "scrollview_default",
+                    "ui": true
+                }
+            ]
+        },
+        {
+            "_Name": "actors",
+            "_BGColor": [0, 0, 0, 1],
+            "_From": {"x": 0, "y": 0},
+            "_To": {"x": 31, "y": 2},
+            "_GridDim":{"x":1,"y":1},
+            "_Margin":{"x":0, "y":0},
+            "_InnerMargin":{"x":0,"y":0},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"scrollview_actor",
+                    "tag":"UI",
+                    "prefab": "scrollview_default",
+                    "ui": true
+                }
+            ]
+        }
+    ]
+}

@@ -21,6 +21,103 @@
             "name": "식량"
         }
     ],
+    "environments": [
+        {
+            "id": 0,
+            "name": "ForestEmpty",
+            "cost": 0
+        },
+        {
+            "id": 1,
+            "name": "ForestTreeSpruce_01",
+            "cost": -1
+        },
+        {
+            "id": 2,
+            "name": "ForestTreeSpruce_02",
+            "cost": -1
+        },
+        {
+            "id": 3,
+            "name": "ForestTreeSpruce_03",
+            "cost": -1
+        },
+        {
+            "id": 4,
+            "name": "Grass",
+            "cost": 0
+        },
+        {
+            "id": 5,
+            "name": "ForestLake",
+            "cost": 0
+        },
+        {
+            "id": 6,
+            "name": "ForestMushroom01",
+            "cost": 0
+        },
+        {
+            "id": 7,
+            "name": "ForestTreeTrunk_02",
+            "cost": 2
+        },
+        {
+            "id": 8,
+            "name": "ForestFire2",
+            "cost": 2
+        },
+        {
+            "id": 9,
+            "name": "ForestBridge_02",
+            "cost": 2
+        },
+        {
+            "id": 10,
+            "name": "ForestBridge_01",
+            "cost": 2
+        },
+        {
+            "id": 11,
+            "name": "Ground",
+            "cost": 2
+        },
+        {
+            "id": 12,
+            "name": "ForestFire",
+            "cost": 2
+        },
+        {
+            "id": 13,
+            "name": "ForestTree_02",
+            "cost": 2
+        },
+        {
+            "id": 14,
+            "name": "ForestTree_01",
+            "cost": 2
+        },
+        {
+            "id": 15,
+            "name": "ForestEmptyCube",
+            "cost": 2
+        },
+        {
+            "id": 16,
+            "name": "ForestRiverCurve",
+            "cost": 2
+        },
+        {
+            "id": 17,
+            "name": "ForestRiverStraight",
+            "cost": 2
+        },
+        {
+            "id": 18,
+            "name": "ForestEmpty2",
+            "cost": 0
+        }
+    ],
     "mobs": [
         {
             "id": 0,

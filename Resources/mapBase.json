@@ -1,0 +1,20 @@
+{   
+    "grid": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+    },
+    "dimension": {
+        "x": 32,
+        "y": 32
+    },
+    "defaultVal": {
+        "cost": 0,
+        "prefabId": 0,
+        "AstarNodeCost": 0.1
+    },
+    "nodes": [],
+    "mobs": [],
+    "neutrals": [],
+    "tribes": []
+}

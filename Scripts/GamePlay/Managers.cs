@@ -4,6 +4,7 @@ using UnityEngine;
 public class MetaManager
 {
     public Meta meta;
+    public Dictionary<int, Meta.Environment> environmentInfo = new Dictionary<int, Meta.Environment>(); 
     public Dictionary<int, Meta.Building> buildingInfo = new Dictionary<int, Meta.Building>(); // 빌딩 정보
     public Dictionary<int, Meta.Actor> actorInfo = new Dictionary<int, Meta.Actor>(); // actor 정보
     public Dictionary<int, Meta.Mob> mobInfo = new Dictionary<int, Meta.Mob>(); // mob 정보
@@ -24,6 +25,12 @@ public class MetaManager
     public void Load()
     {
         meta = Json.LoadJsonFile<Meta>("meta");
+        //environment
+        for(int n = 0; n < meta.environments.Count; n++)
+        {
+            Meta.Environment e = meta.environments[n];
+            environmentInfo[e.id] = e;
+        }
         //buildingInfo
         for(int n = 0; n < meta.buildings.Count; n++)
         {
@@ -172,9 +179,13 @@ public class GameStatusManager
     private static readonly Lazy<GameStatusManager> hInstance = new Lazy<GameStatusManager>(() => new GameStatusManager());
     public static GameStatusManager Instance { get { return hInstance.Value; } }
     protected GameStatusManager() {}
-    public void Load()
+    public void Load(string savedFile)
     {
-        gameStatus = Json.LoadJsonFile<GameStatus>("map_played");
+        if(savedFile == "")
+            return;
+
+        gameStatus = Json.LoadJsonFile<GameStatus>(savedFile);
+        
         //tribes
         for(int tribeId = 0; tribeId < gameStatus.tribes.Count; tribeId++)
         {

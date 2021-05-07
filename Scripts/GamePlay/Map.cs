@@ -46,7 +46,7 @@ public class Map
         public int rotation;
     }
 
-    public List<Prefab> prefabs;
+    //public List<Prefab> prefabs;
     public Vector3Int grid;
     public Vector2Int dimension;
     public Value defaultVal;
@@ -291,9 +291,9 @@ public class MapManager
         Vector2Int pos = GetMapPosition(mapId);
         return map[pos.x, pos.y];
     }
-    public void Load()
+    public void Load(string fileName)
     {
-        mapMeta = Json.LoadJsonFile<Map>("map");
+        mapMeta = Json.LoadJsonFile<Map>(fileName);
         map = new int[mapMeta.dimension.x, mapMeta.dimension.y];
         for(int n = 0; n < (int)TAG.MAX; n++)
         {
@@ -315,7 +315,8 @@ public class MapManager
         for(int n = 0; n < mapMeta.nodes.Count; n++)
         {
             Map.Node node = mapMeta.nodes[n];
-            Map.Prefab prefabInfo = mapMeta.prefabs[node.prefabId];
+            //Map.Prefab prefabInfo = mapMeta.prefabs[node.prefabId];
+            Meta.Environment prefabInfo = MetaManager.Instance.environmentInfo[node.prefabId];
 
             //positions
             for(int i = 0; i < node.positions.Count; i++)
@@ -352,7 +353,8 @@ public class MapManager
         buildingObjects.Clear();
 
         Vector2Int startPosition = new Vector2Int(mapMeta.dimension.x / 2, mapMeta.dimension.y / 2);
-        Map.Prefab prefabInfoDefault = mapMeta.prefabs[mapMeta.defaultVal.prefabId];
+        //Map.Prefab prefabInfoDefault = mapMeta.prefabs[mapMeta.defaultVal.prefabId];
+        Meta.Environment prefabInfoDefault = MetaManager.Instance.environmentInfo[mapMeta.defaultVal.prefabId];
         //init map
         int idx = 0;
         for(int i = 0; i < map.GetLength(1); i++)
@@ -373,7 +375,8 @@ public class MapManager
         for(int n = 0; n < mapMeta.nodes.Count; n++)
         {
             Map.Node node = mapMeta.nodes[n];
-            Map.Prefab prefabInfo = mapMeta.prefabs[node.prefabId];
+            //Map.Prefab prefabInfo = mapMeta.prefabs[node.prefabId];
+            Meta.Environment prefabInfo = MetaManager.Instance.environmentInfo[node.prefabId];
 
             //positions
             for(int i = 0; i < node.positions.Count; i++)

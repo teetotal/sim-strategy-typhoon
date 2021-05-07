@@ -5,10 +5,10 @@
 public class Bottom{
     public static string GetBottomPrefab(int x, int y)
     {
-        int count = MapManager.Instance.mapMeta.prefabs.Count;
+        int count = MetaManager.Instance.environmentInfo.Count;
         int[] arr = new int[5] { 0, 0, 0, 0, 18 };
         int n = UnityEngine.Random.Range(0, arr.Length);
-        string prefab = MapManager.Instance.mapMeta.prefabs[arr[n]].name;
+        string prefab = MetaManager.Instance.environmentInfo[arr[n]].name;
         //MapManager.Instance.mapMeta.defaultVal.prefabId
         return prefab;
     }

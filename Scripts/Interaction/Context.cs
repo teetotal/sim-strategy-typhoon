@@ -12,6 +12,8 @@ public class Context
         UI_ACTOR,
         ACTOR,
         UI_POPUP,
+        UI_ENVIRONMENT,
+        ENVIRONMENT,
         MAX
     }
 
@@ -95,7 +97,9 @@ public class Context
             { Mode.BUILD,       new ContextBuild()  },
             { Mode.UI_ACTOR,    new ContextCreatingActor()  },
             { Mode.ACTOR,       new ContextActor()  },
-            { Mode.UI_POPUP,    new ContextDummy()  }
+            { Mode.UI_POPUP,    new ContextDummy()  },
+            { Mode.UI_ENVIRONMENT,    new ContextDummy()  },
+            { Mode.ENVIRONMENT,    new ContextEnvironment()  }
         };
     }
     public void Update()

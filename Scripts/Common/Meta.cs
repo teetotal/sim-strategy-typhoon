@@ -125,8 +125,16 @@ public class Meta
         public Vector2Int dimension;
         public List<ActorIdMax> actors;
     }
+    [Serializable]
+    public struct Environment
+    {
+        public int id;
+        public string name;
+        public int cost;
+    }
 
     public List<string> tags;
+    public List<Environment> environments;
     public List<IdName> resources;
     public List<Mob> mobs;
     public List<Actor> actors;

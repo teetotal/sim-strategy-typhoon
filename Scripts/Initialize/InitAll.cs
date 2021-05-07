@@ -1,10 +1,8 @@
 ﻿using UnityEngine;
 
-public class Initializer : MonoBehaviour
+public class InitAll : MonoBehaviour
 {
     public string map, savedFile;
-
-    // Start is called before the first frame update
     void Awake()
     {
         ItemManager.Instance.Load();
@@ -15,5 +13,11 @@ public class Initializer : MonoBehaviour
 
         MapManager.Instance.Load(map);
         GameStatusManager.Instance.Load(savedFile);
+
+        GameObjectPooling.Instance.Reset();
+        MapManager.Instance.CreatePrefabs();
+        BuildingManager.Instance.Instantiate();
+        NeutralManager.Instance.Instantiate();
+        MobManager.Instance.Instantiate();
     }
 }
