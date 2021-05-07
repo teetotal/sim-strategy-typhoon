@@ -11,6 +11,5 @@ public class Instantiation : MonoBehaviour
         NeutralManager.Instance.Instantiate();
         MobManager.Instance.Instantiate();
         //GameStatusManager.Instance.Load();
-        Debug.Log("CreatePrefabs completed");
     }
 }

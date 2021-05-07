@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 public class MapMaker : MonoBehaviour
 {
     public Transform canvas;
-    private GameObject buildingLayer, actorLayer, environmentLayer, neutralLayer;
+    private GameObject buildingLayer, actorLayer, environmentLayer, neutralLayer, mobLayer;
     private GameObject actor_scrollview;
 
     int myTribeId = 0; 
@@ -27,8 +27,10 @@ public class MapMaker : MonoBehaviour
         actorLayer = GameObject.Find("actors");
         environmentLayer = GameObject.Find("environments");
         neutralLayer = GameObject.Find("neutrals");
+        mobLayer = GameObject.Find("mobs");
 
         HideLayers();
+        InitSelectionUI();
 
         Context.CallbackFunctions functions = new Context.CallbackFunctions(
             OnCreationEvent,
@@ -74,6 +76,44 @@ public class MapMaker : MonoBehaviour
             }
         }
     }
+    void InitSelectionUI()
+    {
+        //UI
+        string[] arr = new string[4] {"text_title", "select_ui_building", "select_ui_actor", "select_ui"};
+        GameObject[] uiObjs = new GameObject[4];
+        for(int n = 0; n < arr.Length; n++)
+        {
+            uiObjs[n] = GameObject.Instantiate(Resources.Load<GameObject>(arr[n]));
+            uiObjs[n].transform.SetParent(canvas);
+        }
+
+        //for building
+        Button[] btns = uiObjs[1].GetComponentsInChildren<Button>();
+        for(int n = 0; n < btns.Length; n++)
+        {
+            Button obj = btns[n];
+            obj.onClick.AddListener(()=>{ OnClickButton(obj.gameObject); });
+        }
+        
+        //for actor
+        Button btn = uiObjs[2].GetComponentInChildren<Button>();
+        btn.onClick.AddListener(()=>{ OnClickButton(btn.gameObject);});
+
+        //for neutral
+        Button btnNeutral = uiObjs[3].GetComponentInChildren<Button>();
+        btnNeutral.onClick.AddListener(()=>{ OnClickButton(btnNeutral.gameObject);});
+
+
+        SelectionUI.Instance.Init(
+            new List<SelectionUI.UI>(){
+                new SelectionUI.UI(TAG.BUILDING, uiObjs[0], uiObjs[1]),
+                new SelectionUI.UI(TAG.ACTOR, uiObjs[0], uiObjs[2]),
+                new SelectionUI.UI(TAG.MOB, uiObjs[0], uiObjs[3]),
+                new SelectionUI.UI(TAG.NEUTRAL, uiObjs[0], uiObjs[3]),
+                new SelectionUI.UI(TAG.ENVIRONMENT, uiObjs[0], uiObjs[1]),
+            }
+        );
+    }
 
     void HideLayers()
     {
@@ -81,6 +121,7 @@ public class MapMaker : MonoBehaviour
         actorLayer.SetActive(false);
         environmentLayer.SetActive(false);
         neutralLayer.SetActive(false);
+        mobLayer.SetActive(false);
 
         GameObject.DestroyImmediate(actor_scrollview);
     }
@@ -130,6 +171,9 @@ public class MapMaker : MonoBehaviour
             case Context.Mode.UI_NEUTRAL:
                 OnClick_UI_NEUTRAL(obj, name);
                 break;
+            case Context.Mode.UI_MOB:
+                OnClick_UI_MOB(obj, name);
+                break;
             default:
                 break;
         }
@@ -152,16 +196,25 @@ public class MapMaker : MonoBehaviour
                 neutralLayer.SetActive(true);
                 Context.Instance.SetMode(Context.Mode.UI_NEUTRAL);
                 break;
+            case "btn_mob":
+                mobLayer.SetActive(true);
+                Context.Instance.SetMode(Context.Mode.UI_MOB);
+                break;
             case "buttonX":
                 if(SelectionUI.Instance.selectedObject != null)
                 {
                     int mapId = SelectionUI.Instance.GetSelectedMapId();
-                    Object building = BuildingManager.Instance.objects[mapId];
-                    
-                    if(BuildingManager.Instance.objects[mapId].actions.Count == 0)
-                        Updater.Instance.AddQ(ActionType.BUILDING_DESTROY, building.tribeId, mapId, -1, null, true);
+                    //environment 찾기
+                    if(MapManager.Instance.environments.ContainsKey(mapId))
+                    {
+                        MapManager.Instance.DestroyEnvironment(mapId);
+                    } 
                     else
-                        Debug.Log("The Building has actions");
+                    {
+                        //building 찾기
+                        Object building = BuildingManager.Instance.objects[mapId];
+                        Updater.Instance.AddQ(ActionType.BUILDING_DESTROY, building.tribeId, mapId, -1, null, true);
+                    }
                 }
                 SelectionUI.Instance.Hide();
                 break;
@@ -219,6 +272,17 @@ public class MapMaker : MonoBehaviour
             int id = int.Parse(arr[1]);
             Context.Instance.SetMode(Context.Mode.NEUTRAL);
             ((ContextNeutral)Context.Instance.contexts[Context.Mode.NEUTRAL]).SetNeutralId(id);
+            HideLayers();
+        }
+    }
+    void OnClick_UI_MOB(GameObject obj, string name)
+    {
+        string[] arr = name.Split('-');
+        if(arr.Length >= 2 && arr[0] == "mob")
+        {
+            int id = int.Parse(arr[1]);
+            Context.Instance.SetMode(Context.Mode.MOB);
+            ((ContextMob)Context.Instance.contexts[Context.Mode.MOB]).SetMobId(id);
             HideLayers();
         }
     }
@@ -292,6 +356,15 @@ public class MapMaker : MonoBehaviour
                                                                 , obj
                                                                 , neutralScrollItems.Count);
                 break;
+            case "scrollview_mob":
+                List<GameObject> mobScrollItems = GetMobScrollItems();
+                LoaderPerspective.Instance.CreateScrollViewItems(mobScrollItems
+                                                                , new Vector2(15, 15)
+                                                                , new Vector2(10, 10)
+                                                                , OnClickButton
+                                                                , obj
+                                                                , mobScrollItems.Count);
+                break;
             case "scrollview_actor":
                 actor_scrollview = obj;
                 break;
@@ -343,6 +416,21 @@ public class MapMaker : MonoBehaviour
         return list;
     }
 
+    List<GameObject> GetMobScrollItems()
+    {
+        List<GameObject> list = new List<GameObject>();
+        for(int n = 0; n < MetaManager.Instance.meta.mobs.Count; n++)
+        {
+            GameObject obj = Resources.Load<GameObject>("button_default");
+            Meta.Mob prefab = MetaManager.Instance.meta.mobs[n];
+            obj.GetComponentInChildren<Text>().text = prefab.name;
+            obj.name = string.Format("mob-{0}", prefab.id);
+            list.Add(Instantiate(obj));
+        }
+
+        return list;
+    }
+
     List<GameObject> GetActorScrollItems(int buildingId, int level)
     {
         List<GameObject> list = new List<GameObject>();
@@ -382,6 +470,15 @@ public class MapMaker : MonoBehaviour
     }
     public void OnSelected(TAG tag, int mapId, int id, GameObject gameObject)
     {
+        if(tag == TAG.BOTTOM)
+            return;
+
+        //Debug.Log(string.Format("OnSelected {0} {1} {2}", tag, mapId, id));
+        Object obj = Util.GetObject(mapId, tag);
+        int tribeId = obj != null ? obj.tribeId : -1;
+        SelectionUI.Instance.Activate(tag, gameObject, new string[1] { 
+            string.Format("{0} {1} {2}", Util.GetNameInGame(tag, id),  tribeId, mapId )
+            });
     }
     //Actor 모든 행동 이벤트
     public void OnActorAction(Actor actor, TAG tag, int targetMapId)

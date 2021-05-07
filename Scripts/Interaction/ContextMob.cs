@@ -1,12 +1,13 @@
+
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ContextEnvironment : IContext
+public class ContextMob : IContext
 {
     List<GameObject> areaObjects = new List<GameObject>();
     
     int selectedTribeId = -1;
-    Meta.Environment selectedEnvironment;
+    Meta.Mob selectedMob;
     int selectedMapId = -1;
     bool isAvailableChoice = false;
 
@@ -39,18 +40,15 @@ public class ContextEnvironment : IContext
         //Debug.Log("[ContextBuild] OnTouchRelease");
         if(isAvailableChoice)
         {
-            MapManager.Instance.AssignEnvironment(selectedMapId, selectedEnvironment.id, true);
-            /*
             //Updater.Instance.AddQ(ActionType.BUILDING_CREATE, selectedTribeId, selectedMapId, selectedBuilding.id, null);
             GameObject parent = MapManager.Instance.defaultGameObjects[selectedMapId];
             MapManager.Instance.CreateInstance(selectedMapId, 
-                        selectedEnvironment.name, 
+                        selectedMob.prefab, 
                         parent.transform.position + new Vector3(0, 0.1f, 0), 
                         selectedMapId.ToString(),
                         TAG.ENVIRONMENT,
                         parent
                         );
-            */
 
             Context.Instance.SetMode(Context.Mode.NONE);
             Clear();
@@ -61,9 +59,9 @@ public class ContextEnvironment : IContext
         
     }
     //----------------------------------------------------
-    public void SetEnvironmentId(int id)
+    public void SetMobId(int id)
     {
-        selectedEnvironment = MetaManager.Instance.environmentInfo[id];
+        selectedMob = MetaManager.Instance.mobInfo[id];
     }
     private void Clear()
     {

@@ -16,6 +16,8 @@ public class Context
         ENVIRONMENT,
         UI_NEUTRAL,
         NEUTRAL,
+        UI_MOB,
+        MOB,
         MAX
     }
 
@@ -103,7 +105,9 @@ public class Context
             { Mode.UI_ENVIRONMENT,    new ContextDummy()  },
             { Mode.ENVIRONMENT,    new ContextEnvironment()  },
             { Mode.UI_NEUTRAL,    new ContextDummy()  },
-            { Mode.NEUTRAL,    new ContextNeutral()  }
+            { Mode.NEUTRAL,    new ContextNeutral()  },
+            { Mode.UI_MOB,    new ContextDummy()  },
+            { Mode.MOB,    new ContextMob()  }
         };
     }
     public void Update()

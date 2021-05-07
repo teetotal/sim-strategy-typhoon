@@ -47,6 +47,8 @@ public class Util
                 return MetaManager.Instance.mobInfo[id].name;
             case TAG.NEUTRAL:
                 return MetaManager.Instance.neutralInfo[id].name;
+            case TAG.ENVIRONMENT:
+                return MetaManager.Instance.environmentInfo[id].name;
         }
 
         return string.Empty;

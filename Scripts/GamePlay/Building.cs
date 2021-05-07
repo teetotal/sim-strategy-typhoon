@@ -57,7 +57,7 @@ public class BuildingObject : Object
                 underAttackQ.Enqueue(new UnderAttack(obj, node.values[1]));
                 return true;
             case ActionType.BUILDING_DESTROY:
-                action = new Action(node.type, 2, new List<int>() { node.id, node.values[0] });
+                action = new Action(node.type, 2, new List<int>() { node.id, node.values == null ? (int)ActionType.MAX : node.values[0] });
                 break;
         }
         actions.Add(action);

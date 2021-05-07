@@ -55,7 +55,7 @@ public class Callbacks
                 break;
         }
 
-        if(booties == null)
+        if(booties == null || from == null)
             return;
 
         for(int n = 0; n < booties.Count; n++)
