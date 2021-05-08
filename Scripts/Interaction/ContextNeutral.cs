@@ -39,16 +39,7 @@ public class ContextNeutral : IContext
         //Debug.Log("[ContextBuild] OnTouchRelease");
         if(isAvailableChoice)
         {
-            //Updater.Instance.AddQ(ActionType.BUILDING_CREATE, selectedTribeId, selectedMapId, selectedBuilding.id, null);
-            GameObject parent = MapManager.Instance.defaultGameObjects[selectedMapId];
-            MapManager.Instance.CreateInstance(selectedMapId, 
-                        selectedNeutral.prefab, 
-                        parent.transform.position + new Vector3(0, 0.1f, 0), 
-                        selectedMapId.ToString(),
-                        TAG.ENVIRONMENT,
-                        parent
-                        );
-
+            NeutralManager.Instance.Create(selectedMapId, selectedNeutral.id, 0, true);
             Context.Instance.SetMode(Context.Mode.NONE);
             Clear();
         }

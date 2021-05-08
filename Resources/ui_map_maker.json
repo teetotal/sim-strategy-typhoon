@@ -7,6 +7,62 @@
     ],
     "_Subs":[
         {
+            "_Name": "lefttop",
+            "_BGColor": [1, 1 , 1, 0],
+            "_From": {"x": 0, "y": 16},
+            "_To": {"x": 16, "y": 17},
+            "_GridDim":{"x":3,"y":1},
+            "_Margin":{"x":30, "y":30},
+            "_InnerMargin":{"x":5,"y":5},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"filepath",
+                    "tag":"UI",
+                    "prefab": "input_default",
+                    "ui": true,
+                    "text": "file path"
+                }
+            ]
+        },
+        {
+            "_Name": "top",
+            "_BGColor": [1, 1 , 1, 0],
+            "_From": {"x": 20, "y": 16},
+            "_To": {"x": 31, "y": 17},
+            "_GridDim":{"x":3,"y":1},
+            "_Margin":{"x":30, "y":30},
+            "_InnerMargin":{"x":5,"y":5},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"resource0",
+                    "tag":"UI",
+                    "prefab": "input_default",
+                    "ui": true,
+                    "text": "resource0"
+                },
+                {
+                    "position":{"x":1,"y":0},
+                    "name":"resource1",
+                    "tag":"UI",
+                    "prefab": "input_default",
+                    "ui": true,
+                    "text": "resource1"
+                },
+                {
+                    "position":{"x":2,"y":0},
+                    "name":"resource2",
+                    "tag":"UI",
+                    "prefab": "input_default",
+                    "ui": true,
+                    "text": "resource2"
+                }
+            ]
+        },
+        {
             "_Name": "top2",
             "_BGColor": [1, 1 , 1, 0],
             "_From": {"x": 25, "y": 12},
@@ -99,6 +155,14 @@
                     "prefab": "button_default",
                     "ui": true,
                     "text": "MOB"
+                },
+                {
+                    "position":{"x":11,"y":0},
+                    "name":"btn_save",
+                    "tag":"UI",
+                    "prefab": "button_default",
+                    "ui": true,
+                    "text": "SAVE"
                 }
             ]
         },

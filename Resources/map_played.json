@@ -60,5 +60,19 @@
                 }
             ]
         }
+    ],
+    "neutrals": [
+        {
+            "mapId": 405,
+            "neutralId": 0,
+            "rotation": 0
+        }
+    ],
+    "mobs": [
+        {
+            "mapId": 406,
+            "mobId": 0,
+            "amount": 3
+        }
     ]
 }

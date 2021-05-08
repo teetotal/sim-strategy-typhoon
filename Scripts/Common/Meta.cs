@@ -180,14 +180,14 @@ public class GameStatus
         public float rotation;
     }
     [Serializable]
-    public class MapIdActorIdHP
+    public struct MapIdActorIdHP
     {
         public int mapId;
         public int actorId;
         public int HP;
     }
     [Serializable]
-    public class ResourceIdAmount
+    public struct ResourceIdAmount
     {
         public int resourceId;
         public int amount;
@@ -198,10 +198,27 @@ public class GameStatus
         public List<MapIdActorIdHP> actors;
     }
     [Serializable]
-    public class Tribe
+    public struct Tribe
     {
         public List<ResourceIdAmount> resources;
         public List<Building> buildings;
     }
+
+    [Serializable]
+    public struct Neutral
+    {
+        public int mapId;
+        public int neutralId;
+        public float rotation;
+    }
+    [Serializable]
+    public struct Mob
+    {
+        public int mapId;
+        public int mobId;
+        public int amount;
+    }
     public List<Tribe> tribes;
+    public List<Neutral> neutrals;
+    public List<Mob> mobs;
 }

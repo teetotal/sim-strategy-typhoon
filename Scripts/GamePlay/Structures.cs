@@ -123,6 +123,11 @@ public class NeutralBuilding: Object
         this.mapId = mapId;
         this.id = id;
 
+        if(isInstantiate)
+        {
+            Instantiate();
+        }
+
         return true;
     }
     public void Instantiate()

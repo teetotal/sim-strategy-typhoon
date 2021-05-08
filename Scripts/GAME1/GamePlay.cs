@@ -400,6 +400,7 @@ public class GamePlay : MonoBehaviour
             //------------------------------
             switch(Context.Instance.mode)
             {
+                case Context.Mode.UI_ACTOR:
                 case Context.Mode.UI_BUILD:
                     if(!EventSystem.current.IsPointerOverGameObject()) //UI가 클릭되지 않은 경우
                     {

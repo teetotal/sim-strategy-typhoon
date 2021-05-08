@@ -52,6 +52,8 @@ public class MapMaker : MonoBehaviour
                                 "CubeGreen", 
                                 "CubeRed"
                                 );
+        //update 중지
+        Updater.Instance.enableUpdate = false;
     }
 
     // Update is called once per frame
@@ -62,6 +64,7 @@ public class MapMaker : MonoBehaviour
             //------------------------------
             switch(Context.Instance.mode)
             {
+                case Context.Mode.UI_ACTOR:
                 case Context.Mode.UI_BUILD:
                 case Context.Mode.UI_ENVIRONMENT:
                 case Context.Mode.UI_NEUTRAL:
@@ -109,7 +112,7 @@ public class MapMaker : MonoBehaviour
                 new SelectionUI.UI(TAG.BUILDING, uiObjs[0], uiObjs[1]),
                 new SelectionUI.UI(TAG.ACTOR, uiObjs[0], uiObjs[2]),
                 new SelectionUI.UI(TAG.MOB, uiObjs[0], uiObjs[3]),
-                new SelectionUI.UI(TAG.NEUTRAL, uiObjs[0], uiObjs[3]),
+                new SelectionUI.UI(TAG.NEUTRAL, uiObjs[0], uiObjs[1]),
                 new SelectionUI.UI(TAG.ENVIRONMENT, uiObjs[0], uiObjs[1]),
             }
         );
@@ -209,6 +212,10 @@ public class MapMaker : MonoBehaviour
                     {
                         MapManager.Instance.DestroyEnvironment(mapId);
                     } 
+                    else if(NeutralManager.Instance.objects.ContainsKey(mapId)) //neutral 찾기 
+                    {
+                        NeutralManager.Instance.Destroy(mapId);
+                    }
                     else
                     {
                         //building 찾기
