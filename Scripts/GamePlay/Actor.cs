@@ -156,6 +156,16 @@ public class Actor : ActingObject
         Meta.Actor meta = MetaManager.Instance.actorInfo[id];
         Instantiate(tribeId, mapId, id, meta.level[this.level].prefab, TAG.ACTOR, meta.flying);
     }
+    public void Destroy()
+    {
+        //object삭제
+        this.DestroyGameObject();
+        ActorManager.Instance.actors.Remove(this.mapId);
+        this.attachedBuilding.RemoveActor(this.mapId);
+        MapManager.Instance.Remove(this.mapId, TAG.ACTOR);
+        //DestroyProgress();
+        Clear();
+    }
 
     //동시에 진행 못하고 순차적으로함. 이래야 아래 같은 시퀀스가 가능해짐
     //창고에 간다 -> 물건을 실는다 -> 시장에 가서 판다.
@@ -283,13 +293,7 @@ public class Actor : ActingObject
                     case ActionType.ACTOR_DIE:
                         //Context.Instance.onCreationFinish(action.type, this);
                         Context.Instance.onDie(action.type, this, Util.GetObject(action.values[0], (TAG)action.values[1]));
-                        //object삭제
-                        this.DestroyGameObject();
-                        ActorManager.Instance.actors.Remove(this.mapId);
-                        this.attachedBuilding.RemoveActor(this.mapId);
-                        MapManager.Instance.Remove(this.mapId, TAG.ACTOR);
-                        //DestroyProgress();
-                        Clear();
+                        Destroy();
                         return;
                     case ActionType.ACTOR_LOAD_RESOURCE:
                         /*

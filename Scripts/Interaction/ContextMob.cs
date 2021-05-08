@@ -41,6 +41,7 @@ public class ContextMob : IContext
         if(isAvailableChoice)
         {
             //Updater.Instance.AddQ(ActionType.BUILDING_CREATE, selectedTribeId, selectedMapId, selectedBuilding.id, null);
+            /*
             GameObject parent = MapManager.Instance.defaultGameObjects[selectedMapId];
             MapManager.Instance.CreateInstance(selectedMapId, 
                         selectedMob.prefab, 
@@ -49,6 +50,9 @@ public class ContextMob : IContext
                         TAG.ENVIRONMENT,
                         parent
                         );
+            
+            */
+            MobManager.Instance.Create(selectedMapId, selectedMapId, selectedMob.id, 0, true);
 
             Context.Instance.SetMode(Context.Mode.NONE);
             Clear();

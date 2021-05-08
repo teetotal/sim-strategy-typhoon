@@ -184,7 +184,8 @@ public class GameStatus
     {
         public int mapId;
         public int actorId;
-        public int HP;
+        public float HP;
+        public float rotation;
     }
     [Serializable]
     public struct ResourceIdAmount
@@ -218,7 +219,15 @@ public class GameStatus
         public int mobId;
         public int amount;
     }
+    [Serializable]
+    public struct Environment
+    {
+        public int mapId;
+        public int environmentId;
+        public float rotation;
+    }
     public List<Tribe> tribes;
     public List<Neutral> neutrals;
     public List<Mob> mobs;
+    public List<Environment> environments;
 }

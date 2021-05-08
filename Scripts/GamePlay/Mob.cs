@@ -86,6 +86,15 @@ public class Mob : ActingObject
         Instantiate(-1, mapId, id, MetaManager.Instance.mobInfo[id].prefab, TAG.MOB, false);
     }
 
+    public void Destroy()
+    {
+        Clear();
+        //object삭제
+        this.DestroyGameObject();
+        MobManager.Instance.mobs.Remove(this.mapId);
+        MapManager.Instance.Remove(this.mapId, TAG.MOB);
+    }
+
     public override bool Create(int tribeId, int mapId, int id, bool isInstantiate)
     {
         Meta.Mob mob = MetaManager.Instance.meta.mobs[id];
@@ -149,11 +158,7 @@ public class Mob : ActingObject
                         break;
                     case ActionType.MOB_DIE:
                         Context.Instance.onDie(action.type, this, Util.GetObject(action.values[0], (TAG)action.values[1]));
-                        Clear();
-                        //object삭제
-                        this.DestroyGameObject();
-                        MobManager.Instance.mobs.Remove(this.mapId);
-                        MapManager.Instance.Remove(this.mapId, TAG.MOB);
+                        Destroy();
                         return;
                 }
                 actions.RemoveAt(0);

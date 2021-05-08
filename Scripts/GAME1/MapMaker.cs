@@ -82,8 +82,8 @@ public class MapMaker : MonoBehaviour
     void InitSelectionUI()
     {
         //UI
-        string[] arr = new string[4] {"text_title", "select_ui_building", "select_ui_actor", "select_ui"};
-        GameObject[] uiObjs = new GameObject[4];
+        string[] arr = new string[2] {"text_title", "select_ui_building"};
+        GameObject[] uiObjs = new GameObject[2];
         for(int n = 0; n < arr.Length; n++)
         {
             uiObjs[n] = GameObject.Instantiate(Resources.Load<GameObject>(arr[n]));
@@ -97,7 +97,7 @@ public class MapMaker : MonoBehaviour
             Button obj = btns[n];
             obj.onClick.AddListener(()=>{ OnClickButton(obj.gameObject); });
         }
-        
+        /*
         //for actor
         Button btn = uiObjs[2].GetComponentInChildren<Button>();
         btn.onClick.AddListener(()=>{ OnClickButton(btn.gameObject);});
@@ -105,13 +105,13 @@ public class MapMaker : MonoBehaviour
         //for neutral
         Button btnNeutral = uiObjs[3].GetComponentInChildren<Button>();
         btnNeutral.onClick.AddListener(()=>{ OnClickButton(btnNeutral.gameObject);});
-
+        */
 
         SelectionUI.Instance.Init(
             new List<SelectionUI.UI>(){
                 new SelectionUI.UI(TAG.BUILDING, uiObjs[0], uiObjs[1]),
-                new SelectionUI.UI(TAG.ACTOR, uiObjs[0], uiObjs[2]),
-                new SelectionUI.UI(TAG.MOB, uiObjs[0], uiObjs[3]),
+                new SelectionUI.UI(TAG.ACTOR, uiObjs[0], uiObjs[1]),
+                new SelectionUI.UI(TAG.MOB, uiObjs[0], uiObjs[1]),
                 new SelectionUI.UI(TAG.NEUTRAL, uiObjs[0], uiObjs[1]),
                 new SelectionUI.UI(TAG.ENVIRONMENT, uiObjs[0], uiObjs[1]),
             }
@@ -151,6 +151,9 @@ public class MapMaker : MonoBehaviour
                 return;
             case "tribe2":
                 myTribeId = 2;
+                return;
+            case "btn_save":
+                Save();
                 return;
             default:
                 break;
@@ -215,6 +218,14 @@ public class MapMaker : MonoBehaviour
                     else if(NeutralManager.Instance.objects.ContainsKey(mapId)) //neutral 찾기 
                     {
                         NeutralManager.Instance.Destroy(mapId);
+                    }
+                    else if(MobManager.Instance.mobs.ContainsKey(mapId)) //mob 찾기 
+                    {
+                        MobManager.Instance.mobs[mapId].Destroy();
+                    }
+                    else if(ActorManager.Instance.actors.ContainsKey(mapId)) //actor 찾기 
+                    {
+                        ActorManager.Instance.actors[mapId].Destroy();
                     }
                     else
                     {
@@ -459,6 +470,110 @@ public class MapMaker : MonoBehaviour
         }
 
         return list;
+    }
+    void Save()
+    {
+        GameStatus save = new GameStatus();
+
+        GameStatus.ResourceIdAmount r0 = new GameStatus.ResourceIdAmount();
+        r0.resourceId = 0;
+        r0.amount = int.Parse(GameObject.Find("resource0").GetComponent<InputField>().text);
+
+        GameStatus.ResourceIdAmount r1 = new GameStatus.ResourceIdAmount();
+        r1.resourceId = 1;
+        r1.amount = int.Parse(GameObject.Find("resource1").GetComponent<InputField>().text);
+
+        GameStatus.ResourceIdAmount r2 = new GameStatus.ResourceIdAmount();
+        r2.resourceId = 2;
+        r2.amount = int.Parse(GameObject.Find("resource2").GetComponent<InputField>().text);
+        
+        SortedDictionary<int, List<BuildingObject>> temp = new SortedDictionary<int, List<BuildingObject>>();
+        foreach(KeyValuePair<int, BuildingObject> kv in BuildingManager.Instance.objects)
+        {
+            int tribeId = kv.Value.tribeId;
+            if(!temp.ContainsKey(tribeId))
+            {
+                temp[tribeId] = new List<BuildingObject>();
+            }
+
+            temp[tribeId].Add(kv.Value);
+        }
+        //tribes
+        save.tribes = new List<GameStatus.Tribe>();
+
+        foreach(KeyValuePair<int, List<BuildingObject>> kv in temp)
+        {
+            GameStatus.Tribe tribe = new GameStatus.Tribe();
+            //resource
+            tribe.resources = new List<GameStatus.ResourceIdAmount>(new GameStatus.ResourceIdAmount[3] {r0, r1, r2});
+            //building
+            tribe.buildings = new List<GameStatus.Building>();
+            for(int n = 0; n < kv.Value.Count; n++)
+            {
+                BuildingObject obj = kv.Value[n];
+
+                GameStatus.Building building = new GameStatus.Building();
+                building.mapId = obj.mapId;
+                building.buildingId = obj.id;
+                building.rotation = obj.gameObject.transform.rotation.eulerAngles.y;
+
+                //actor
+                building.actors = new List<GameStatus.MapIdActorIdHP>();
+                for(int i = 0; i < kv.Value[n].actors.Count; i++)
+                {
+                    Actor actor = kv.Value[n].actors[i];
+                    GameStatus.MapIdActorIdHP p = new GameStatus.MapIdActorIdHP();
+                    p.mapId = actor.mapId;
+                    p.actorId = actor.id;
+                    p.HP = actor.currentHP;
+                    p.rotation = actor.gameObject.transform.rotation.eulerAngles.y;
+                    building.actors.Add(p);
+                }
+
+                tribe.buildings.Add(building);
+            }
+
+            save.tribes.Add(tribe);
+        }
+        
+        //mob
+        save.mobs = new List<GameStatus.Mob>();
+        foreach(KeyValuePair<int, Mob> kv in MobManager.Instance.mobs)
+        {
+            GameStatus.Mob mob = new GameStatus.Mob();
+            mob.mapId = kv.Value.attachedId;
+            mob.mobId = kv.Value.id;
+            mob.amount = 1;
+            save.mobs.Add(mob);
+        }
+
+        //environment
+        save.environments = new List<GameStatus.Environment>();
+        foreach(KeyValuePair<int, MapManager.Environment> kv in MapManager.Instance.environments)
+        {
+            GameStatus.Environment env = new GameStatus.Environment();
+            env.mapId = kv.Key;
+            env.environmentId = kv.Value.id;
+            env.rotation = kv.Value.gameObject.transform.rotation.eulerAngles.y;
+
+            save.environments.Add(env);
+        }
+
+        //neutral
+        save.neutrals = new List<GameStatus.Neutral>();
+        foreach(KeyValuePair<int, NeutralBuilding> kv in NeutralManager.Instance.objects)
+        {
+            GameStatus.Neutral neutral = new GameStatus.Neutral();
+            neutral.mapId = kv.Key;
+            neutral.neutralId = kv.Value.id;
+            neutral.rotation = kv.Value.gameObject.transform.rotation.eulerAngles.y;
+
+            save.neutrals.Add(neutral);
+        }
+        string path = GameObject.Find("filepath").GetComponent<InputField>().text;
+        path = Json.SaveJsonFile(path, save);
+
+        Debug.Log(string.Format("Save {0}", path));
     }
 
     //-----------------------------------------------

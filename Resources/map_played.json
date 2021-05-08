@@ -24,7 +24,8 @@
                         {
                             "mapId": 404,
                             "actorId": 1,
-                            "HP": 20
+                            "HP": 20,
+                            "rotation": 0
                         }
                     ]
                 }
@@ -54,7 +55,8 @@
                         {
                             "mapId": 406,
                             "actorId": 1,
-                            "HP": 20
+                            "HP": 20,
+                            "rotation": 0
                         }
                     ]
                 }
@@ -73,6 +75,13 @@
             "mapId": 406,
             "mobId": 0,
             "amount": 3
+        }
+    ],
+    "environments": [
+        {
+            "mapId": 0,
+            "environmentId": 0,
+            "rotation": 0
         }
     ]
 }

@@ -109,7 +109,38 @@ public abstract class Object
         {
             txt.text = "";
         }
+    }
+    public bool Levelup()
+    {
+        float HP = 0;
+        switch(MetaManager.Instance.GetTag(this.gameObject.tag))
+        {
+            case TAG.ACTOR:
+            {
+                if(this.level + 1 >= MetaManager.Instance.actorInfo[this.id].level.Count)
+                {
+                    return false;
+                }
 
+                HP = MetaManager.Instance.actorInfo[this.id].level[this.level +1].ability.HP;
+                break;
+            }
+            case TAG.BUILDING:
+            {
+                if(this.level + 1 >= MetaManager.Instance.buildingInfo[this.id].level.Count)
+                {
+                    return false;
+                }
+                HP = MetaManager.Instance.buildingInfo[this.id].level[this.level+1].HP;
+                break;
+            }
+            default:
+                break;
+        }
+        this.level++;
+        this.currentHP = HP;
+
+        return true;
     }
     public bool IsCreating()
     {

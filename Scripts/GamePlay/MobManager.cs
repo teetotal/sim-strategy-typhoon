@@ -33,12 +33,17 @@ public class MobManager
             if(!Context.Instance.onCreationEvent(q))
                 return;
 
+            /*
             Mob obj = new Mob();
             obj.attachedId = q.mapId;   //소속 위치 
             if(obj.Create(q.tribeId, mapId, q.id, true))
             {
                 mobs[obj.mapId] = obj;
             }
+            */
+            Mob obj = Create(mapId, q.mapId, q.id, 0, true);
+            if(obj == null)
+                return;
 
             //routine 추가
             obj.routine = new List<QNode>()
@@ -60,6 +65,20 @@ public class MobManager
         {
             kv.Value.Instantiate();
         }
+    }
+    public Mob Create(int mapId, int regenMapId, int id, float roatation, bool isInstantiate)
+    {
+        Meta.Mob meta = MetaManager.Instance.mobInfo[id];
+
+        Mob obj = new Mob();
+        obj.attachedId = regenMapId;   //소속 위치 
+        if(obj.Create(-1, mapId, id, isInstantiate))
+        {
+            mobs[obj.mapId] = obj;
+            return obj;
+        }
+
+        return null;
     }
 
     public void Regen()
