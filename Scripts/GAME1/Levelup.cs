@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+//최고 레벨인지 체크하는 로직 필요
 public class Levelup : MonoBehaviour
 {
     float accumulate = 50; 

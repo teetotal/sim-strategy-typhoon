@@ -1,0 +1,105 @@
+{
+    "_Name": "load_map",
+    "_GridDim":{"x":32,"y":18},
+    "_Margin":{"x":0.0,"y":0.0},
+    "_InnerMargin":{"x":0.0,"y":0.0},
+    "_Objects": [
+    ],
+    "_Subs":[
+        {
+            "_Name": "file_list",
+            "_BGColor": [0, 0 , 0, 0.5],
+            "_From": {"x": 8, "y": 1},
+            "_To": {"x": 10, "y": 16},
+            "_GridDim":{"x":1,"y":1},
+            "_Margin":{"x":0, "y": 30},
+            "_InnerMargin":{"x":0,"y":0},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"files",
+                    "tag":"UI",
+                    "prefab": "scrollview_vertical",
+                    "ui": true
+                }
+            ]
+        },
+        {
+            "_Name": "title",
+            "_BGColor": [0, 0 , 0, 0.7],
+            "_From": {"x": 11, "y": 15},
+            "_To": {"x": 24, "y": 16},
+            "_GridDim":{"x":1,"y":1},
+            "_Margin":{"x": 0, "y": 30},
+            "_InnerMargin":{"x":30,"y": 30},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"selectedFile",
+                    "tag":"UI",
+                    "prefab": "text_bestfit",
+                    "ui": true,
+                    "text": "file name"
+                }
+            ]
+        },
+        {
+            "_Name": "detail",
+            "_BGColor": [0, 0 , 0, 0.5],
+            "_From": {"x": 11, "y": 11},
+            "_To": {"x": 24, "y": 15},
+            "_GridDim":{"x":1,"y":1},
+            "_Margin":{"x": 0, "y": 30},
+            "_InnerMargin":{"x":30,"y": 30},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"info",
+                    "tag":"UI",
+                    "prefab": "text_default",
+                    "ui": true,
+                    "text": "file detail"
+                }
+            ]
+        },
+        {
+            "_Name": "submit",
+            "_BGColor": [0, 0 , 0, 0.5],
+            "_From": {"x": 11, "y": 1},
+            "_To": {"x": 24, "y": 3},
+            "_GridDim":{"x":3,"y":1},
+            "_Margin":{"x": 0, "y": 30},
+            "_InnerMargin":{"x": 10,"y": 30},
+            "_DrawGridLine": false,
+            "_Objects":[
+                {
+                    "position":{"x":0,"y":0},
+                    "name":"submit",
+                    "tag":"UI",
+                    "prefab": "button_default",
+                    "ui": true,
+                    "text": "Load"
+                },
+                {
+                    "position":{"x":1,"y":0},
+                    "name":"delete",
+                    "tag":"UI",
+                    "prefab": "button_default",
+                    "ui": true,
+                    "text": "Delete"
+                },
+                {
+                    "position":{"x":2,"y":0},
+                    "name":"new",
+                    "tag":"UI",
+                    "prefab": "button_default",
+                    "ui": true,
+                    "text": "New"
+                }
+            ]
+        }
+    ]
+}
