@@ -38,12 +38,13 @@ public class ItemManager
 
     public void Load()
     {
-       meta = Json.LoadJsonFile<ItemMeta>("items");
-       for(int n=0; n < meta.items.Count; n++)
-       {
-           Item item = meta.items[n];
-           items[item.id] = item;
-       }
+        items.Clear();
+        meta = Json.LoadJsonFile<ItemMeta>("items");
+        for(int n=0; n < meta.items.Count; n++)
+        {
+            Item item = meta.items[n];
+            items[item.id] = item;
+        }
     }
 }
 
@@ -81,6 +82,8 @@ public class InventoryManager
     }
     public void Load()
     {
+        items.Clear();
+        
         Inventory meta = Json.LoadJsonFile<Inventory>("inventory");
         for(int n=0; n < meta.inventory.Count; n++)
         {

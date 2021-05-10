@@ -17,6 +17,10 @@ public class MobManager
     protected MobManager()
     {
     }
+    public void Clear()
+    {
+        mobs.Clear();
+    }
     public void Fetch(QNode q)
     {
         if(q.type == ActionType.MOB_CREATE)

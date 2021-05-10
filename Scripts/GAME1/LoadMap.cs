@@ -75,9 +75,12 @@ public class LoadMap : MonoBehaviour
         switch(obj.name)
         {
             case "new":
+            InitManager.Instance.SetJsonPath("mapBase", "");
             SceneManager.LoadScene("MapMaker");
             break;
             case "load":
+            InitManager.Instance.SetJsonPath("mapBase", filePath);
+            SceneManager.LoadScene("MapMaker");
             break;
             case "delete":
             {

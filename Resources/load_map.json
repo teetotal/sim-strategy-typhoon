@@ -77,7 +77,7 @@
             "_Objects":[
                 {
                     "position":{"x":0,"y":0},
-                    "name":"submit",
+                    "name":"load",
                     "tag":"UI",
                     "prefab": "button_default",
                     "ui": true,

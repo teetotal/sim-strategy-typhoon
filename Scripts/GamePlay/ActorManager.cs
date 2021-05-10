@@ -15,6 +15,10 @@ public class ActorManager
     protected ActorManager()
     {
     }
+    public void Clear()
+    {
+        actors.Clear();
+    }
     public void Fetch(QNode q)
     {
         int mapId = q.mapId;

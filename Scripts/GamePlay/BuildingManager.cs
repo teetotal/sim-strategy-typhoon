@@ -15,7 +15,10 @@ public class BuildingManager
     protected BuildingManager()
     {
     }
-
+    public void Clear()
+    {
+        objects.Clear();
+    }
     public void Fetch(QNode q)
     {
         if(q.type == ActionType.BUILDING_CREATE)

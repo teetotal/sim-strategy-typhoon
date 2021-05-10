@@ -67,7 +67,7 @@ public class ContextNone : IContext
                     id = NeutralManager.Instance.objects[mapId].id;
                     break;
                 case TAG.ENVIRONMENT:
-                    id = MapManager.Instance.environments[mapId].id;
+                    id = EnvironmentManager.Instance.environments[mapId].id;
                     break;
             }
             Context.Instance.onSelectEvent(tag, mapId, id, selectedObj);

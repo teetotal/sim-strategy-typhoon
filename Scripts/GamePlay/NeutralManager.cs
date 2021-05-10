@@ -16,6 +16,11 @@ public class NeutralManager
     {
     }
 
+    public void Clear()
+    {
+        objects.Clear();
+    }
+
     public void Fetch(QNode q)
     {
         switch(q.type)

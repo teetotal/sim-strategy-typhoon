@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 
 public class MapMaker : MonoBehaviour
@@ -15,6 +16,9 @@ public class MapMaker : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        InitManager.Instance.Initialize();
+        InitManager.Instance.Instantiate();
+
         LoaderPerspective.Instance.SetUI(Camera.main, ref canvas, OnClickButton);
         if(!LoaderPerspective.Instance.LoadJsonFile("ui_map_maker"))
         {
@@ -155,6 +159,9 @@ public class MapMaker : MonoBehaviour
             case "btn_save":
                 Save();
                 return;
+            case "btn_load_scene":
+                SceneManager.LoadScene("LoadMap");
+                return;
             default:
                 break;
         }
@@ -211,9 +218,9 @@ public class MapMaker : MonoBehaviour
                 {
                     int mapId = SelectionUI.Instance.GetSelectedMapId();
                     //environment 찾기
-                    if(MapManager.Instance.environments.ContainsKey(mapId))
+                    if(EnvironmentManager.Instance.environments.ContainsKey(mapId))
                     {
-                        MapManager.Instance.DestroyEnvironment(mapId);
+                        EnvironmentManager.Instance.DestroyEnvironment(mapId);
                     } 
                     else if(NeutralManager.Instance.objects.ContainsKey(mapId)) //neutral 찾기 
                     {
@@ -386,6 +393,18 @@ public class MapMaker : MonoBehaviour
             case "scrollview_actor":
                 actor_scrollview = obj;
                 break;
+            case "resource0":
+                obj.GetComponent<InputField>().text = GameStatusManager.Instance.resourceInfo[0][0].ToString();
+                break;
+            case "resource1":
+                obj.GetComponent<InputField>().text = GameStatusManager.Instance.resourceInfo[0][1].ToString();
+                break;
+            case "resource2":
+                obj.GetComponent<InputField>().text = GameStatusManager.Instance.resourceInfo[0][2].ToString();
+                break;
+            case "filepath":
+                obj.GetComponent<InputField>().text = InitManager.Instance.savedFilePath;
+                break;
             default:
                 break;
         }
@@ -549,7 +568,7 @@ public class MapMaker : MonoBehaviour
 
         //environment
         save.environments = new List<GameStatus.Environment>();
-        foreach(KeyValuePair<int, MapManager.Environment> kv in MapManager.Instance.environments)
+        foreach(KeyValuePair<int, EnvironmentManager.Environment> kv in EnvironmentManager.Instance.environments)
         {
             GameStatus.Environment env = new GameStatus.Environment();
             env.mapId = kv.Key;

@@ -44,6 +44,12 @@ public class TradingManager
 
     public void Load()
     {
+        holdings.Clear();
+        standardHoldings.Clear();
+        buyFees.Clear();
+        sellFees.Clear();
+        marketPriceHistory.Clear();
+
         TradingInfo info = Json.LoadJsonFileFromResources<TradingInfo>("trading");
 
         standardResourceId = info.standardResourceId;

@@ -39,7 +39,7 @@ public class ContextEnvironment : IContext
         //Debug.Log("[ContextBuild] OnTouchRelease");
         if(isAvailableChoice)
         {
-            MapManager.Instance.AssignEnvironment(selectedMapId, selectedEnvironment.id, true);
+            EnvironmentManager.Instance.Create(selectedMapId, selectedEnvironment.id, 0, true);
             /*
             //Updater.Instance.AddQ(ActionType.BUILDING_CREATE, selectedTribeId, selectedMapId, selectedBuilding.id, null);
             GameObject parent = MapManager.Instance.defaultGameObjects[selectedMapId];

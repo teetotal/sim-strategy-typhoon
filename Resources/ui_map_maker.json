@@ -157,6 +157,14 @@
                     "text": "MOB"
                 },
                 {
+                    "position":{"x":10,"y":0},
+                    "name":"btn_load_scene",
+                    "tag":"UI",
+                    "prefab": "button_default",
+                    "ui": true,
+                    "text": "LOAD SCENE"
+                },
+                {
                     "position":{"x":11,"y":0},
                     "name":"btn_save",
                     "tag":"UI",

@@ -57,21 +57,10 @@ public class Map
 
 public class MapManager
 {
-    public struct Environment
-    {
-        public int id;
-        public GameObject gameObject;
-
-        public Environment(int id, GameObject gameObject)
-        {
-            this.id = id;
-            this.gameObject = gameObject;
-        }
-    }
     public Map mapMeta;
     public List<GameObject> defaultGameObjects = new List<GameObject>();
     public Dictionary<int, GameObject> buildingObjects = new Dictionary<int, GameObject>();
-    public Dictionary<int, Environment> environments = new Dictionary<int, Environment>(); //mapId , id
+    
     public int[,] map;
     public List<Object[,]> currentMap = new List<Object[,]>(); //현재 위치 저장 맵. 일단은 여러개가 같은 위치에 있어도 하나의 객체만 저장한다.
     private static readonly Lazy<MapManager> hInstance = new Lazy<MapManager>(() => new MapManager());
@@ -305,6 +294,8 @@ public class MapManager
     }
     public void Load(string fileName)
     {
+        currentMap.Clear();
+        
         mapMeta = Json.LoadJsonFile<Map>(fileName);
         map = new int[mapMeta.dimension.x, mapMeta.dimension.y];
         for(int n = 0; n < (int)TAG.MAX; n++)
@@ -334,7 +325,7 @@ public class MapManager
             for(int i = 0; i < node.positions.Count; i++)
             {
                 int mapId = node.positions[i];
-                AssignEnvironment(mapId, node.prefabId, false);
+                EnvironmentManager.Instance.Create(mapId, node.prefabId, 0, false);
                 /*
                 Vector2Int position = GetMapPosition(mapId);
                 map[position.x, position.y] = prefabInfo.cost;
@@ -351,7 +342,7 @@ public class MapManager
                     Vector2Int position = GetMapPosition(mapId);
                     map[position.x, position.y] = prefabInfo.cost;
                     */
-                    AssignEnvironment(mapId, prefabInfo.id, false);
+                    EnvironmentManager.Instance.Create(mapId, prefabInfo.id, 0, false);
                 }
             }
         }
@@ -504,33 +495,7 @@ public class MapManager
         Vector2Int position = GetMapPosition(mapId);
         map[position.x, position.y] = -1;
     }
-    public void AssignEnvironment(int mapId, int id, bool isInstantiate)
-    {
-        Vector2Int position = GetMapPosition(mapId);
-        Meta.Environment meta = MetaManager.Instance.environmentInfo[id];
-        map[position.x, position.y] = meta.cost;
-        GameObject obj = null;
-
-        if(isInstantiate)
-        {
-            GameObject parent = defaultGameObjects[mapId];
-            obj = CreateInstance(mapId, 
-                    meta.name, 
-                    parent.transform.position + new Vector3(0, 0.1f, 0), 
-                    mapId.ToString(),
-                    TAG.ENVIRONMENT,
-                    parent
-                    );
-        }
-        environments[mapId] = new Environment(id, obj);
-    }
-    public void DestroyEnvironment(int mapId)
-    {
-        DestroyBuilding(mapId);
-        GameObject.Destroy(environments[mapId].gameObject);
-        environments.Remove(mapId);
-        buildingObjects.Remove(mapId);
-    }
+    
     /*
     private GameObject Construct(int id, string prefab, int mapCost, TAG tag)
     {
