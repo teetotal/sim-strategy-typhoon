@@ -5,7 +5,7 @@ using UnityEngine;
 public class Updater 
 {
     private Queue<QNode> queue = new Queue<QNode>();
-    public bool enableUpdate = true;
+    public bool onlyBasicUpdate = false;
 
     private static readonly Lazy<Updater> hInstance = new Lazy<Updater>(() => new Updater());
  
@@ -27,14 +27,14 @@ public class Updater
             Fetch(queue.Dequeue());     
         }
 
-        if(enableUpdate)
+        //building event 처리
+        BuildingManager.Instance.Update(onlyBasicUpdate);
+        //actor event 처리
+        ActorManager.Instance.Update(onlyBasicUpdate);
+        //mob
+        MobManager.Instance.Update(onlyBasicUpdate);
+        if(!onlyBasicUpdate)
         {
-            //building event 처리
-            BuildingManager.Instance.Update();
-            //actor event 처리
-            ActorManager.Instance.Update();
-            //mob
-            MobManager.Instance.Update();
             //mob regen
             MobManager.Instance.Regen();
             //객체 선택 ui
@@ -42,6 +42,7 @@ public class Updater
             //trading 시세 기록
             TradingManager.Instance.Update();
         }
+        
     }
 
     private void Fetch(QNode q)

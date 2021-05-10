@@ -57,7 +57,7 @@ public class MapMaker : MonoBehaviour
                                 "CubeRed"
                                 );
         //update 중지
-        Updater.Instance.enableUpdate = false;
+        Updater.Instance.onlyBasicUpdate = true;
     }
 
     // Update is called once per frame

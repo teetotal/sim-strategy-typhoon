@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class LoadMap : MonoBehaviour
 {
     public Transform canvas;
-    string filePath;
+    string filePath = "";
     // Start is called before the first frame update
     void Start()
     {
@@ -79,6 +79,11 @@ public class LoadMap : MonoBehaviour
             SceneManager.LoadScene("MapMaker");
             break;
             case "load":
+            if(filePath == "")
+            {
+                Debug.LogError("file is not selected");
+                return;
+            }
             InitManager.Instance.SetJsonPath("mapBase", filePath);
             SceneManager.LoadScene("MapMaker");
             break;

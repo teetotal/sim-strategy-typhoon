@@ -424,20 +424,6 @@ public class MapManager
                 }
             }
         }
-
-        //SetNeutrals
-        foreach(KeyValuePair<int, NeutralBuilding> kv in NeutralManager.Instance.objects)
-        {
-            int mapId = kv.Value.mapId;
-            GameObject parent = defaultGameObjects[mapId];
-            kv.Value.gameObject = CreateInstance(mapId, 
-                                                MetaManager.Instance.neutralInfo[kv.Value.id].prefab, 
-                                                parent.transform.position + new Vector3(0, 0.1f, 0), 
-                                                mapId.ToString(),
-                                                TAG.NEUTRAL,
-                                                parent
-                                                );
-        }
     }
     public GameObject CreateInstance(int mapId, string prefab, Vector3 position, string name, TAG tag, GameObject parent)
     {
@@ -466,21 +452,17 @@ public class MapManager
 
         return p;
     }
-    /*
-    private void SetNeutrals()
-    {
-        for(int n = 0; n < mapMeta.neutrals.Count; n++)
-        {
-            Map.Neutral ne = mapMeta.neutrals[n];
-            Updater.Instance.AddQ(ActionType.NEUTRAL_CREATE, -1, ne.mapId, ne.id, new List<int>() { ne.rotation }, true);
-        }
-    }
-    */
+    
+    //잡다한 destroy 함수들 죄다 정리할 필요 있음
     public void Remove(int mapId, TAG tag)
     {
         Vector2Int pos = GetMapPosition(mapId);
         map[pos.x, pos.y] = mapMeta.defaultVal.cost;
         currentMap[(int)tag][pos.x, pos.y] = null;
+        if(buildingObjects.ContainsKey(mapId))
+        {
+            buildingObjects.Remove(mapId);
+        }
     }
     public void DestroyBuilding(int mapId)
     {

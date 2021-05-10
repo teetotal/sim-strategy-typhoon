@@ -118,7 +118,7 @@ public class MobManager
             Updater.Instance.AddQ(ActionType.MOB_CREATE, -1, meta.mapId, meta.id, null, true);
         }
     }
-    public void Update()
+    public void Update(bool onlyBasicUpdate)
     {
         List<Mob> list = new List<Mob>();
         foreach(KeyValuePair<int, Mob> kv in mobs)
@@ -129,9 +129,12 @@ public class MobManager
         for(int n = 0; n < list.Count; n++)
         {
             list[n].Update();
-            list[n].UpdateUIPosition();
-            list[n].UpdateUnderAttack();
-            list[n].UpdateDefence();
+            if(!onlyBasicUpdate)
+            {
+                list[n].UpdateUIPosition();
+                list[n].UpdateUnderAttack();
+                list[n].UpdateDefence();
+            }
         }
     }
 }

@@ -93,7 +93,7 @@ public class BuildingManager
         }
     }
     */
-    public void Update()
+    public void Update(bool onlyBasicUpdate)
     {
         List<BuildingObject> list = new List<BuildingObject>();
         foreach(KeyValuePair<int, BuildingObject> kv in objects)
@@ -104,10 +104,13 @@ public class BuildingManager
         for(int n = 0; n < list.Count; n++)
         {
             list[n].Update();
-            list[n].UpdateUIPosition();
-            list[n].UpdateUnderAttack();
-            list[n].UpdateDefence();
-            list[n].UpdateEarning();
+            if(!onlyBasicUpdate)
+            {
+                list[n].UpdateUIPosition();
+                list[n].UpdateUnderAttack();
+                list[n].UpdateDefence();
+                list[n].UpdateEarning();
+            }
         }
     }
 }

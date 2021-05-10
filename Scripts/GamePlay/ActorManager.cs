@@ -68,7 +68,7 @@ public class ActorManager
         return null;
     }
     
-    public void Update()
+    public void Update(bool onlyBasicUpdate)
     {
         List<Actor> list = new List<Actor>();
         foreach(KeyValuePair<int, Actor> kv in actors)
@@ -79,10 +79,14 @@ public class ActorManager
         for(int n = 0; n < list.Count; n++)
         {
             list[n].Update();
-            list[n].UpdateUIPosition();
-            list[n].UpdateUnderAttack();
-            list[n].UpdateDefence();
-            list[n].UpdateEarning();
+            if(!onlyBasicUpdate)
+            {
+                list[n].UpdateUIPosition();
+                list[n].UpdateUnderAttack();
+                list[n].UpdateDefence();
+                list[n].UpdateEarning();
+            }
+            
         }
     }
 }
