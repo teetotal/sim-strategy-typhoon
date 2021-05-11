@@ -9,6 +9,7 @@ public class ContextBuild : IContext
     Meta.Building selectedBuilding;
     int selectedMapId = -1;
     bool isAvailableChoice = false;
+    public bool immediately = false;
 
     public void Init()
     {
@@ -39,7 +40,7 @@ public class ContextBuild : IContext
         //Debug.Log("[ContextBuild] OnTouchRelease");
         if(isAvailableChoice)
         {
-            Updater.Instance.AddQ(ActionType.BUILDING_CREATE, selectedTribeId, selectedMapId, selectedBuilding.id, null);
+            Updater.Instance.AddQ(ActionType.BUILDING_CREATE, selectedTribeId, selectedMapId, selectedBuilding.id, null, immediately);
             Context.Instance.SetMode(Context.Mode.NONE);
             Clear();
         }
@@ -49,10 +50,11 @@ public class ContextBuild : IContext
         
     }
     //----------------------------------------------------
-    public void SetBuildingId(int tribeId, int id)
+    public void SetBuildingId(int tribeId, int id, bool immediately)
     {
         selectedTribeId = tribeId;
         selectedBuilding = MetaManager.Instance.buildingInfo[id];
+        this.immediately = immediately;
     }
     private void Clear()
     {

@@ -46,6 +46,7 @@ public class Meta
         public int level;
         public int regenTime, regenProbability; //regenTime 간격으로 1/regenProbability 확률로 생성
         public int mapCost;
+        public int max;//최대 regen
         public int movingRange, movingProbability; //움직임 범위
         public Ability ability;
         public Booty booty;

@@ -31,8 +31,9 @@ public class Lobby : MonoBehaviour
             Test();
             break;
             case "play":
+            InitManager.Instance.SetJsonPath("mapBase", "scenario1");
+            InitManager.Instance.Initialize();
             SceneManager.LoadScene("GamePlay");
-            
             break;
             default:
             break;

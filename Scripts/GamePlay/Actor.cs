@@ -23,7 +23,7 @@ public class Actor : ActingObject
         switch(node.type)
         {
             case ActionType.ACTOR_CREATE:
-                action = new Action(ActionType.ACTOR_CREATE, node.immediately ? 0 : meta.level[this.level].createTime, null);
+                action = new Action(ActionType.ACTOR_CREATE, node.immediately ? 0 : meta.level[this.level].createTime, null, node.immediately);
                 //if(node.values != null && node.values.Count == 1) this.currentHP = node.values[0];
                 break;
             case ActionType.ACTOR_MOVING_1_STEP:
@@ -93,7 +93,7 @@ public class Actor : ActingObject
             id: from mapId
             actions[0]: from TAG
             */
-                action = new Action(node.type, 2, new List<int>() { node.id, node.values[0] });
+                action = new Action(node.type, 2, new List<int>() { node.id, node.values[0] }, node.immediately);
                 break;
             case ActionType.ACTOR_LOAD_RESOURCE:
                 action = new Action(node.type, 1, new List<int>() { node.id });
@@ -179,7 +179,12 @@ public class Actor : ActingObject
         {
             Action action = actions[0];
             Meta.Actor meta = MetaManager.Instance.actorInfo[this.id];
-            action.currentTime += Time.deltaTime;
+
+            if(action.immediately)
+                action.currentTime = action.totalTime;
+            else
+                action.currentTime += Time.deltaTime;
+                
             actions[0] = action;
 
             switch(action.type)

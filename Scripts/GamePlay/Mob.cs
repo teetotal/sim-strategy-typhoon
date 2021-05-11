@@ -189,19 +189,20 @@ public class Mob : ActingObject
                     , false);
                 return;
             }
-
-            //도망가기
-            /*
-            if(!this.HasActionType(ActionType.ACTOR_ATTACK))
+            else
+            {
+                //도망가기
+                /*
+                if(!this.HasActionType(ActionType.ACTOR_ATTACK))
                 Updater.Instance.AddQ(
-                    meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
+                    meta.flyingHeight > 0 ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
                     this.mapId,
                     MapManager.Instance.GetRandomNearEmptyMapId(this.mapId, 2),
                     null,
                     false
                     );
-            
-            */
+                */
+            }
             return;
         }
     }

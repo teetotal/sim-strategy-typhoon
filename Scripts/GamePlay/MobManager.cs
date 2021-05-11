@@ -3,6 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 public class MobManager
 {
+    struct RegenCounting
+    {
+        public int mobId;
+        public int amount;
+
+        public RegenCounting(int mobId, int amount)
+        {
+            this.mobId = mobId;
+            this.amount = amount;
+        }
+    }
     float time;
     int lastRegenTime = 0;
     public Dictionary<int, Mob> mobs = new Dictionary<int, Mob>();
@@ -48,15 +59,6 @@ public class MobManager
             Mob obj = Create(mapId, q.mapId, q.id, 0, true);
             if(obj == null)
                 return;
-
-            //routine 추가
-            obj.routine = new List<QNode>()
-            {
-                new QNode(
-                    meta.flyingHeight == 0 ? ActionType.MOB_MOVING : ActionType.MOB_FLYING, 
-                    -1, -1, -1, null, false, -1)
-            };
-            
         }
         else
         {
@@ -79,6 +81,14 @@ public class MobManager
         if(obj.Create(-1, mapId, id, isInstantiate))
         {
             mobs[obj.mapId] = obj;
+
+            //routine 추가
+            obj.routine = new List<QNode>()
+            {
+                new QNode(
+                    meta.flyingHeight == 0 ? ActionType.MOB_MOVING : ActionType.MOB_FLYING, 
+                    -1, -1, -1, null, false, -1)
+            };
             return obj;
         }
 
@@ -93,29 +103,30 @@ public class MobManager
             return;
 
         //소속된 위치 정보가 있어야 함
-        Dictionary<int, Dictionary<int, int>> cnts = new Dictionary<int, Dictionary<int, int>>(); //소속 위치, mob id, count
+        Dictionary<int, RegenCounting> cnts = new Dictionary<int, RegenCounting>(); //소속 위치, mob id, count
         foreach(KeyValuePair<int, Mob> kv in mobs)
         {
             if(!cnts.ContainsKey(kv.Value.attachedId))
             {
-                cnts[kv.Value.attachedId] = new Dictionary<int, int>();
-                cnts[kv.Value.attachedId][kv.Value.id] = 0;
+                cnts[kv.Value.attachedId] = new RegenCounting(kv.Value.id, 1);
             }
-                
-
-            cnts[kv.Value.attachedId][kv.Value.id]++;
+            else
+            {
+                RegenCounting p = cnts[kv.Value.attachedId];
+                p.amount++;
+                cnts[kv.Value.attachedId] = p;
+            }
         }
 
-        for(int n = 0; n < MapManager.Instance.mapMeta.mobs.Count; n++)
+        foreach(KeyValuePair<int, RegenCounting> kv in cnts)
         {
-            Map.Mob meta = MapManager.Instance.mapMeta.mobs[n];
-            if(meta.max == 0)
-                continue;
-
-            if(cnts.ContainsKey(meta.mapId) && cnts[meta.mapId].ContainsKey(meta.id) && meta.max < cnts[meta.mapId][meta.id])
-                continue;
-
-            Updater.Instance.AddQ(ActionType.MOB_CREATE, -1, meta.mapId, meta.id, null, true);
+            int regenMapId = kv.Key;
+            RegenCounting v = kv.Value;
+            Meta.Mob meta = MetaManager.Instance.mobInfo[v.mobId];
+            if(meta.max > v.amount)
+            {
+                Updater.Instance.AddQ(ActionType.MOB_CREATE, -1, regenMapId, v.mobId, null, true);
+            }
         }
     }
     public void Update(bool onlyBasicUpdate)

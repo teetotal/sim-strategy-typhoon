@@ -20,16 +20,18 @@ public struct Action
     public float totalTime;       //Action이 적용되는 총 시간
     public float currentTime;     //현재까지 진행된 시간
     public List<int> values;      //기타 추가 정보. 이동시 A* route같은거 담는 용도
+    public bool immediately;
 
     public List<Vector3> list;
 
-    public Action(ActionType type, float totalTime = 0, List<int> values = null)
+    public Action(ActionType type, float totalTime = 0, List<int> values = null, bool immediately = false)
     {
         this.type = type;
         this.currentTime = 0;
         this.totalTime = totalTime;
         this.values = values;
         list = null;
+        this.immediately = immediately;
     }
 
     public void SetMovingRoute(Vector3 currentPosition)

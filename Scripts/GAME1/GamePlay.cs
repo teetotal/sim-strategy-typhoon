@@ -32,6 +32,8 @@ public class GamePlay : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        InitManager.Instance.Instantiate();
+        
         LoaderPerspective.Instance.SetUI(Camera.main, ref canvas, OnClickButton);
         if(!LoaderPerspective.Instance.LoadJsonFile("ui"))
         {
@@ -330,7 +332,7 @@ public class GamePlay : MonoBehaviour
         {
             int id = int.Parse(arr[1]);
             Context.Instance.SetMode(Context.Mode.BUILD);
-            ((ContextBuild)Context.Instance.contexts[Context.Mode.BUILD]).SetBuildingId(myTribeId, id);
+            ((ContextBuild)Context.Instance.contexts[Context.Mode.BUILD]).SetBuildingId(myTribeId, id, false);
             HideLayers();
         }
     }

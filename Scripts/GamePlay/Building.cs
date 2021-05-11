@@ -31,7 +31,7 @@ public class BuildingObject : Object
         switch(node.type)
         {
             case ActionType.BUILDING_CREATE:
-                action = new Action(node.type, meta.level[this.level].buildTime);
+                action = new Action(node.type, meta.level[this.level].buildTime, null, node.immediately);
                 break;
             case ActionType.BUILDING_DEFENSE:
             {
@@ -57,7 +57,7 @@ public class BuildingObject : Object
                 underAttackQ.Enqueue(new UnderAttack(obj, node.values[1]));
                 return true;
             case ActionType.BUILDING_DESTROY:
-                action = new Action(node.type, 2, new List<int>() { node.id, node.values == null ? (int)ActionType.MAX : node.values[0] });
+                action = new Action(node.type, 2, new List<int>() { node.id, node.values == null ? (int)ActionType.MAX : node.values[0] }, node.immediately);
                 break;
         }
         actions.Add(action);
@@ -113,7 +113,11 @@ public class BuildingObject : Object
             if(progress != null)
                 progress.transform.position = GetProgressPosition(); //position
 
-            action.currentTime += Time.deltaTime;
+            if(action.immediately)
+                action.currentTime = action.totalTime;
+            else
+                action.currentTime += Time.deltaTime;
+
             actions[0] = action;
 
             switch(action.type)
@@ -175,7 +179,8 @@ public class BuildingObject : Object
                                                 , actor.mapId
                                                 , action.values[0]
                                                 , new List<int>() { action.values[1] }
-                                                , false, 0);
+                                                , action.immediately
+                                                , 0);
                         }
                         actions.Clear();
                         //DestroyProgress();

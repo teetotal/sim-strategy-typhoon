@@ -70,6 +70,12 @@ public class GameStatusManager
             GameStatus.Environment environment = gameStatus.environments[n];
             EnvironmentManager.Instance.Create(environment.mapId, environment.environmentId, environment.rotation, false);
         }
+        //mob
+        for(int n = 0; n < gameStatus.mobs.Count; n++)
+        {
+            GameStatus.Mob mob = gameStatus.mobs[n];
+            MobManager.Instance.Create(mob.mapId, mob.mapId, mob.mobId, 0, false);
+        }
     }
     public float GetResource(int tribeId, int resourceId)
     {

@@ -51,7 +51,7 @@ public class Map
     public Vector2Int dimension;
     public Value defaultVal;
     public List<Node> nodes;
-    public List<Mob> mobs;
+    //public List<Mob> mobs;
     public List<Neutral> neutrals;
 }
 

@@ -272,7 +272,7 @@ public class MapMaker : MonoBehaviour
         {
             int id = int.Parse(arr[1]);
             Context.Instance.SetMode(Context.Mode.BUILD);
-            ((ContextBuild)Context.Instance.contexts[Context.Mode.BUILD]).SetBuildingId(myTribeId, id);
+            ((ContextBuild)Context.Instance.contexts[Context.Mode.BUILD]).SetBuildingId(myTribeId, id, true);
             HideLayers();
         }
     }
@@ -321,7 +321,7 @@ public class MapMaker : MonoBehaviour
             //actor에 대한 cost 처리
             int mapId = ((ContextCreatingActor)Context.Instance.contexts[Context.Mode.UI_ACTOR]).selectedMapId;
             //building정보에서 tribe정보를 actor에 반영하기 때문에 tribeId는 몰라도 된다. 
-            Updater.Instance.AddQ(ActionType.ACTOR_CREATE, -1, mapId, id, null, false);
+            Updater.Instance.AddQ(ActionType.ACTOR_CREATE, -1, mapId, id, null, true);
             Context.Instance.SetMode(Context.Mode.NONE);
             HideLayers();
         }

@@ -127,7 +127,7 @@
             "level": 1,
             "regenTime": 10,
             "regenProbability": 100,
-            "max": 0,
+            "max": 5,
             "mapCost": 1,
             "movingRange": 1,
             "movingProbability": 100,
