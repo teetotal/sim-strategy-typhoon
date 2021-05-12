@@ -6,8 +6,10 @@ using UnityEngine.UI;
 public class Mob : ActingObject
 {
     public int attachedId;
+    float elapseRoutine = 0;
     public override bool AddAction(QNode node)
     {
+        Meta.Mob meta = MetaManager.Instance.mobInfo[this.id];
         switch(node.type)
         {
             case ActionType.MOB_CREATE:
@@ -25,6 +27,7 @@ public class Mob : ActingObject
                 return false;
             }
             case ActionType.MOB_ATTACK:
+                actions.Add(new Action(node.type, meta.ability.attackSpeed)); //공격 속도
                 break;
             case ActionType.MOB_UNDER_ATTACK:
             /*
@@ -121,8 +124,17 @@ public class Mob : ActingObject
     {
         if(actions.Count == 0)
         {
-            if(Util.Random(MetaManager.Instance.mobInfo[this.id].movingProbability))
-                ApplyRoutine();
+            elapseRoutine += Time.deltaTime;
+            if(elapseRoutine > 1)
+            {
+                if(Util.Random(MetaManager.Instance.mobInfo[this.id].movingProbability))
+                {
+                    ApplyRoutine();
+                }
+
+                elapseRoutine = 0;
+            }
+            
         }
 
         List<int> removeActionIds = new List<int>();
@@ -192,16 +204,15 @@ public class Mob : ActingObject
             else
             {
                 //도망가기
-                /*
-                if(!this.HasActionType(ActionType.ACTOR_ATTACK))
-                Updater.Instance.AddQ(
-                    meta.flyingHeight > 0 ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
-                    this.mapId,
-                    MapManager.Instance.GetRandomNearEmptyMapId(this.mapId, 2),
-                    null,
-                    false
-                    );
-                */
+                if(!this.HasActionType(ActionType.MOB_ATTACK))
+                    Updater.Instance.AddQ(
+                        meta.flyingHeight > 0 ? ActionType.MOB_FLYING : ActionType.MOB_MOVING, 
+                        this.tribeId,
+                        this.mapId,
+                        MapManager.Instance.GetRandomNearEmptyMapId(this.mapId, meta.movingRange),
+                        null,
+                        false
+                        );
             }
             return;
         }

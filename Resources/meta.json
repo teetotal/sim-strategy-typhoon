@@ -121,16 +121,16 @@
     "mobs": [
         {
             "id": 0,
-            "name": "병아리",
-            "prefab": "Chick",
+            "name": "나쁜로봇",
+            "prefab": "robot",
             "flyingHeight": 0,
             "level": 1,
             "regenTime": 10,
             "regenProbability": 100,
             "max": 5,
             "mapCost": 1,
-            "movingRange": 1,
-            "movingProbability": 100,
+            "movingRange": 2,
+            "movingProbability": 10,
             "ability": {
                 "HP": 20,
                 "building": 0,
@@ -140,7 +140,7 @@
                 "attackDistance": 2,
                 "attackSpeed": 1,
                 "depense": 1,
-                "moving": 0.5
+                "moving": 1
             },
             "booty": {
                 "count": 1,

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Robot : IActor
+public class Robot : IActorAttacking
 {
     public GameObject earningParticle;
     Animator animator;
@@ -17,6 +17,7 @@ public class Robot : IActor
     {
         animator.SetBool("Walk", false);
         animator.SetBool("Run", false);
+        animator.SetBool("Attack", false);
 
         animator.SetBool("Idle", true);
         
@@ -25,6 +26,7 @@ public class Robot : IActor
     public override void SetMoving()
     {
         animator.SetBool("Idle", false);
+        animator.SetBool("Attack", false);
 
         int n = UnityEngine.Random.Range(0, 3);
         if(n == 0)
@@ -43,8 +45,18 @@ public class Robot : IActor
         animator.SetBool("Walk", false);
         animator.SetBool("Run", false);
         animator.SetBool("Idle", false);
+        animator.SetBool("Attack", false);
         
         animator.SetBool("Die", true);
+    }
+    public override void SetAttack()
+    {
+        animator.SetBool("Walk", false);
+        animator.SetBool("Run", false);
+        animator.SetBool("Idle", false);
+        animator.SetBool("Die", false);
+
+        animator.SetBool("Attack", true);
     }
     public override void Earning(bool success)
     {
