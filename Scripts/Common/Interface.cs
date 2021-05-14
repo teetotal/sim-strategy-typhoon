@@ -77,7 +77,7 @@ public abstract class Object
         this.tag = tag;
         this.currentHP = HP;
         this.level = level;
-        
+
         ObjectManager.Instance.Add(this);
     }
     
@@ -367,9 +367,9 @@ public abstract class ActingObject : Object
         this.routine = routine;
         routineIdx = 0;
     }
-    public bool SetFollowObject(int mapId, TAG tag)
+    public bool SetFollowObject(Object obj)
     {
-        followObject = Util.GetObject(mapId, tag);
+        followObject = obj;
         if(followObject == null)
             return false;
         return true;

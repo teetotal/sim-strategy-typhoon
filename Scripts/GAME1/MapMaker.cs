@@ -622,7 +622,7 @@ public class MapMaker : MonoBehaviour
             });
     }
     //Actor 모든 행동 이벤트
-    public void OnActorAction(Actor actor, TAG tag, int targetMapId)
+    public void OnActorAction(Actor actor, GameObject target)
     {
     }
     public void OnAttack(Object from, Object to, int amount)

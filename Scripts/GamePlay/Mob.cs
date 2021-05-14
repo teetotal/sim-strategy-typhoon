@@ -7,8 +7,18 @@ public class Mob : ActingObject
 {
     public int attachedId;
     float elapseRoutine = 0;
+    
     public override bool AddAction(QNode node)
     {
+        if(this.HasActionType(ActionType.MOB_DIE))
+        {
+            return false;
+        }
+        if(node.type == ActionType.MOB_DIE)
+        {
+            actions.Clear();
+        }
+
         Meta.Mob meta = MetaManager.Instance.mobInfo[this.id];
         switch(node.type)
         {
@@ -41,7 +51,7 @@ public class Mob : ActingObject
                 break;
             case ActionType.MOB_DIE:
             /*
-            id: from mapId
+            id: from seq
             actions[0]: from TAG
             */
                 actions.Add(new Action(node.type, 2, new List<int>() { node.id, node.values[0] }));
@@ -162,7 +172,7 @@ public class Mob : ActingObject
                         Context.Instance.onCreationFinish(action.type, this);
                         break;
                     case ActionType.MOB_DIE:
-                        Context.Instance.onDie(action.type, this, Util.GetObject(action.values[0], (TAG)action.values[1]));
+                        Context.Instance.onDie(action.type, this, ObjectManager.Instance.Get(action.values[0]));
                         Destroy();
                         return;
                 }
@@ -189,7 +199,7 @@ public class Mob : ActingObject
                 HideProgress();
                 underAttackQ.Clear();
                 this.actions.Clear();
-                Updater.Instance.AddQ(ActionType.MOB_DIE, this.tribeId, this.mapId, p.from.mapId
+                Updater.Instance.AddQ(ActionType.MOB_DIE, this.tribeId, this.mapId, p.from.seq
                     , new List<int>() { (int)MetaManager.Instance.GetTag(p.from.gameObject.tag) }
                     , false);
                 return;

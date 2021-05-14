@@ -150,6 +150,7 @@ public class Actor : ActingObject
     }
     public void Destroy()
     {
+        ObjectManager.Instance.Remove(this.seq);
         //object삭제
         this.DestroyGameObject();
         ActorManager.Instance.actors.Remove(this.mapId);

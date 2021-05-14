@@ -86,14 +86,8 @@ public class ContextActor : IContext
         GameObject obj = Touch.Instance.GetTouchedObject3D();
         if(obj != null)
         {
-            Actor actor = (Actor)selectedObject;
-            Meta.Actor meta = MetaManager.Instance.actorInfo[actor.id];
-
-            int target = Util.GetIntFromGameObjectName(obj.name);
-            TAG tag = MetaManager.Instance.GetTag(obj.tag);
-
             Context.Instance.SetMode(Context.Mode.NONE);
-            Context.Instance.onAction(actor, tag, target);
+            Context.Instance.onAction((Actor)selectedObject, obj);
         } 
         else
         {

@@ -61,7 +61,7 @@ public class Context
     }
     public delegate void OnSelectionEvent(TAG tag, int mapId, int id, GameObject gameObject);
     public OnSelectionEvent onSelectEvent;
-    public delegate void OnActorAction(Actor actor, TAG targetTag, int targetMapId);
+    public delegate void OnActorAction(Actor actor, GameObject target);
     public OnActorAction onAction;
     public delegate bool OnCreationEvent(QNode q);
     public OnCreationEvent onCreationEvent;

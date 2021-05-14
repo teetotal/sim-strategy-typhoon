@@ -93,60 +93,70 @@ public class Callbacks
             });
     }
     //Actor 모든 행동 이벤트
-    public void OnActorAction(Actor actor, TAG tag, int targetMapId)
+    public void OnActorAction(Actor actor, GameObject target)
     {
         //Debug.Log(string.Format("OnAction {0}, {1}, {2}, {3}", mapId, id, tag, targetMapId));
         Meta.Actor meta = MetaManager.Instance.actorInfo[actor.id];
-        Object targetObject = Util.GetObject(targetMapId, tag);
+        TAG tag = MetaManager.Instance.GetTag(target.tag);
+        int targetId = Util.GetIntFromGameObjectName(target.name);
+
+        if(tag == TAG.BOTTOM || tag == TAG.ENVIRONMENT)
+        {   
+            if(actor.mapId != targetId && MapManager.Instance.IsEmptyMapId(targetId))
+            {
+                Updater.Instance.AddQ(
+                    meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
+                    actor.tribeId,
+                    actor.mapId, 
+                    targetId, 
+                    null,
+                    false);
+            }
+            return;
+        }
+
+        Object targetObject = ObjectManager.Instance.Get(targetId);
         
         switch(tag)
         {
             case TAG.BUILDING:
-                if(meta.level[actor.level].ability.attackDistance < MapManager.Instance.GetDistance(actor.GetCurrentMapId(), targetMapId))
+                if(meta.level[actor.level].ability.attackDistance < MapManager.Instance.GetDistance(actor.GetCurrentMapId(), targetObject.mapId))
                 {
                     SetMessage("too far target to attack", null);
                     return;
                 }
-                if(actor.tribeId != targetObject.tribeId && actor.SetFollowObject(targetMapId, TAG.BUILDING))
+
+                if(actor.tribeId != targetObject.tribeId && actor.SetFollowObject(targetObject))
                 {
                    Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.tribeId, actor.mapId, -1, null, false);
                 }
                 break;
+
             case TAG.NEUTRAL:
-                NeutralBuilding targetBuilding = NeutralManager.Instance.objects[targetMapId];
-                Meta.Neutral targetMeta = MetaManager.Instance.neutralInfo[targetBuilding.id]; 
+                Meta.Neutral targetMeta = MetaManager.Instance.neutralInfo[targetObject.id]; 
                 if(targetMeta.type == (int)BuildingType.MARKET)
-                    SetDelivery(actor, targetMapId, TAG.NEUTRAL);
+                    SetDelivery(actor, targetObject.mapId, TAG.NEUTRAL);
                 break;
+
             case TAG.ACTOR:
-                if(meta.level[actor.level].ability.attackDistance < MapManager.Instance.GetDistance(actor.GetCurrentMapId(), targetMapId))
+                if(meta.level[actor.level].ability.attackDistance < MapManager.Instance.GetDistance(actor.GetCurrentMapId(), targetObject.GetCurrentMapId()))
                 {
                     SetMessage("too far target to attack", null);
                     return;
                 }
-                if(actor.tribeId != targetObject.tribeId && actor.SetFollowObject(targetMapId, TAG.ACTOR))
+                if(actor.tribeId != targetObject.tribeId && actor.SetFollowObject(targetObject))
                 {
                     Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.tribeId, actor.mapId, -1, null, false);
                 }
                 break;
+
             case TAG.MOB:
-                if(actor.SetFollowObject(targetMapId, TAG.MOB))
+                if(actor.SetFollowObject(targetObject))
                 {
                     Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.tribeId, actor.mapId, -1, null, false);
                 }
                 break;
-            case TAG.BOTTOM:
-                if(actor.mapId != targetMapId && MapManager.Instance.IsEmptyMapId(targetMapId))
-                {
-                    Updater.Instance.AddQ(
-                        meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
-                        actor.tribeId,
-                        actor.mapId, 
-                        targetMapId, 
-                        null,
-                        false);
-                }
-                break;
+            
         }
         SelectionUI.Instance.Hide();
     }
