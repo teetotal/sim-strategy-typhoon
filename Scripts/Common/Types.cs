@@ -57,3 +57,22 @@ public enum ItemType
     GACHA_MATERIAL, //강화 재료
     MAX
 }
+
+//장착용 아이템
+public enum ItemInstallationType
+{
+    HEAD = 0,
+    L_SHOULDER,
+    R_SHOULDER,
+    MAX
+}
+
+//발동형 아이템
+public enum ItemForceType
+{
+    MOVING,
+    ATTACK,
+    ATTACK_DISTANCE,
+    ATTACK_SPEED,
+    MAX
+}

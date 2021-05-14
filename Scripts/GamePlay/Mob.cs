@@ -78,7 +78,7 @@ public class Mob : ActingObject
         //Mob map id변경
         this.mapId = to;
         GameObject parent = MapManager.Instance.defaultGameObjects[to];
-        gameObject.name = this.mapId.ToString();
+        //gameObject.name = this.mapId.ToString();
         gameObject.transform.SetParent(parent.transform);
 
         return action;
@@ -86,7 +86,8 @@ public class Mob : ActingObject
 
     public void Instantiate()
     {
-        Instantiate(-1, mapId, id, MetaManager.Instance.mobInfo[id].prefab, TAG.MOB, false);
+        Meta.Mob meta = MetaManager.Instance.mobInfo[id];
+        Instantiate(meta.prefab, meta.flyingHeight > 0 ? true: false);
     }
 
     public void Destroy()
@@ -100,21 +101,13 @@ public class Mob : ActingObject
 
     public override bool Create(int tribeId, int mapId, int id, bool isInstantiate)
     {
-        Meta.Mob mob = MetaManager.Instance.meta.mobs[id];
-        //HP
-        this.currentHP = mob.ability.HP;
-        //level
-        this.level = 0;
-
-        this.tribeId = tribeId;
-        this.id = id;
-        this.mapId = mapId;
+        Meta.Mob meta = MetaManager.Instance.mobInfo[id];
+        this.Init(tribeId, id, mapId, TAG.MOB, meta.ability.HP, 0);
 
         if(isInstantiate)
-            this.Instantiate(tribeId, mapId, id, mob.prefab, TAG.MOB, mob.flyingHeight > 0 ? true: false);
+            this.Instantiate();
             
-        MapManager.Instance.SetMapId(mapId, mob.mapCost);
-
+        MapManager.Instance.SetMapId(mapId, meta.mapCost);
         MapManager.Instance.SetCurrentMap(this, TAG.MOB);
         
         return true;
@@ -127,7 +120,7 @@ public class Mob : ActingObject
             elapseRoutine += Time.deltaTime;
             if(elapseRoutine > 1)
             {
-                if(Util.Random(MetaManager.Instance.mobInfo[this.id].movingProbability))
+                if(this.currentHP > 0 && Util.Random(MetaManager.Instance.mobInfo[this.id].movingProbability))
                 {
                     ApplyRoutine();
                 }

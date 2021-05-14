@@ -120,7 +120,7 @@ public class Actor : ActingObject
         //actor map id변경
         this.mapId = target;
         GameObject parent = MapManager.Instance.defaultGameObjects[target];
-        gameObject.name = this.mapId.ToString();
+        //gameObject.name = this.mapId.ToString();
         gameObject.transform.SetParent(parent.transform);
     }
     
@@ -132,15 +132,7 @@ public class Actor : ActingObject
             return false;
         
         Meta.Actor meta = MetaManager.Instance.actorInfo[id];
-        
-        //HP
-        this.currentHP = meta.level[0].ability.HP;
-        //level
-        this.level = 0;
-
-        this.tribeId = tribeId;
-        this.id = id;
-        this.mapId = mapId;
+        this.Init(tribeId, id, mapId, TAG.ACTOR, meta.level[0].ability.HP, 0);
 
         //prefab 생성
         if(isInstantiate)
@@ -154,7 +146,7 @@ public class Actor : ActingObject
     public void Instantiate()
     {
         Meta.Actor meta = MetaManager.Instance.actorInfo[id];
-        Instantiate(tribeId, mapId, id, meta.level[this.level].prefab, TAG.ACTOR, meta.flying);
+        Instantiate(meta.level[this.level].prefab, meta.flying);
     }
     public void Destroy()
     {
@@ -208,75 +200,7 @@ public class Actor : ActingObject
                     break;
                 case ActionType.ACTOR_ATTACK:
                 {
-                    //공격 거리
-                    if(CheckAttacking(meta.level[this.level].ability))
-                    {
-                        ShowHP(meta.level[this.level].ability.HP);
-                        //attack
-                        //죽었는지 확인
-                        if(followObject.currentHP > 0 && Attacking())
-                        {
-                            //아래 finish코드에 추가 안하고 이렇게 한 이유가 다 있음
-                            if(action.currentTime >= action.totalTime)
-                            {
-                                //상대방 공격 당함
-                                TAG t = MetaManager.Instance.GetTag(followObject.gameObject.tag);
-                                ActionType at = ActionType.MAX;
-                                if(t == TAG.ACTOR)
-                                    at = ActionType.ACTOR_UNDER_ATTACK;
-                                else if(t == TAG.BUILDING)
-                                    at = ActionType.BUILDING_UNDER_ATTACK;
-                                else if(t == TAG.MOB)
-                                    at = ActionType.MOB_UNDER_ATTACK;
-                                
-                                Updater.Instance.AddQ(
-                                    at,
-                                    followObject.tribeId,
-                                    followObject.mapId, 
-                                    this.mapId,
-                                    new List<int>() { (int)TAG.ACTOR, meta.level[this.level].ability.attack },
-                                    true
-                                );
-                                action.currentTime = 0;
-                                actions[0] = action;
-                            }
-                        }
-                        else
-                        {
-                            Clear(true, true, false);
-                            SetAnimation(ActionType.ACTOR_MAX);
-                            this.HideProgress();
-                        }
-                        return;
-                    } 
-                    else 
-                    {
-                        //SetAnimation(ActionType.ACTOR_MAX);
-                        this.Clear(true, false, false);
-                        List<QNode> list = new List<QNode>()
-                        {
-                            //공격하기
-                            new QNode(ActionType.ACTOR_ATTACK,
-                                this.tribeId,
-                                this.mapId, 
-                                -1,
-                                null,
-                                false,
-                                -1
-                                ),
-                            //따라가기. 이동을 먼저 넣으면 mapid정보가 바뀌니까 뒤에 넣고 actions 순서를 바꾼다.
-                            new QNode(meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING_1_STEP,
-                                this.tribeId,
-                                this.mapId, 
-                                MapManager.Instance.GetRandomNearEmptyMapId(followObject.GetCurrentMapId(), (int)meta.level[this.level].ability.attackDistance),
-                                null,
-                                false,
-                                0
-                                ),
-                        };
-                        
-                        Updater.Instance.AddQs(list);
-                    }
+                    Attack(meta.level[this.level].ability, TAG.ACTOR, meta.flying);
                     return;
                 }
                 case ActionType.ACTOR_DIE_FROM_DESTROYED_BUILDING:

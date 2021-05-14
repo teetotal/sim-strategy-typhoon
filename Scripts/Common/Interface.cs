@@ -33,9 +33,22 @@ public abstract class IActorAttacking : IActor
     public abstract void SetAttack();
 }
 
-//기본 struct
+//기본 struct. TAG추가. 장착 아이템 추가. 순간 발동 아이템 추가.
 public abstract class Object
 {
+    //추가
+    public struct ForceItem // 발동형 아이템
+    {
+        public float elapse;
+        public float totalTime;
+        public Meta.Ability forceItem; 
+    }
+    public int seq;
+    public Meta.Ability[] installationItems = new Meta.Ability[(int)ItemInstallationType.MAX]; //장착 아이템
+    public ForceItem forceItem;
+    public TAG tag;
+    //-----
+
     public GameObject gameObject;
     public int tribeId = -1;
     public int mapId;
@@ -55,18 +68,26 @@ public abstract class Object
     public abstract void UpdateDefence();
     public abstract void UpdateUnderAttack();
     public abstract void UpdateEarning();
+
+    protected void Init(int tribeId, int id, int mapId, TAG tag, float HP, int level)
+    {
+        this.tribeId = tribeId;
+        this.id = id;
+        this.mapId = mapId;
+        this.tag = tag;
+        this.currentHP = HP;
+        this.level = level;
+        
+        ObjectManager.Instance.Add(this);
+    }
     
-    protected GameObject Instantiate(int tribeId, int mapId, int id, string prefab, TAG tag, bool flying)
+    protected GameObject Instantiate(string prefab, bool flying)
     {
         Vector3 position = MapManager.Instance.GetVector3FromMapId(mapId);
-        /*
-        GameObject obj = Resources.Load<GameObject>(prefab);
-        obj = GameObject.Instantiate(obj, Util.AdjustY(position, flying), Quaternion.identity);
-        */
         GameObject obj = GameObjectPooling.Instance.Get(prefab, Util.AdjustY(position, flying), Quaternion.Euler(0, 180, 0));
 
         obj.tag = MetaManager.Instance.GetTag(tag);
-        obj.name = mapId.ToString();
+        obj.name = this.seq.ToString(); //mapId.ToString();
         GameObject parent = MapManager.Instance.defaultGameObjects[mapId];
         obj.transform.SetParent(parent.transform);
 
@@ -452,45 +473,6 @@ public abstract class ActingObject : Object
         }
         
         return ret;
-        /*
-        float progression = action.GetProgression(); 
-        int idx = (int)progression; 
-        float ratio = progression % 1.0f;
-        
-        bool flying = false;
-
-        if(!isMovingStarted) 
-        {
-            SetAnimation(ActionType.ACTOR_MOVING); //mob도 걍 ACTOR_MOVING로 쓸까?
-            isMovingStarted = true;
-        }
-
-        if(idx == 0)
-            return true;
-
-        if(idx >= route.Count)
-        {
-            SetAnimation(ActionType.MAX);
-            actor.transform.position = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[route.Count - 1]), flying);
-            return false;
-        }
-        
-        Vector3 pos = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[idx - 1]), flying);
-        Vector3 posNext = Util.AdjustY(MapManager.Instance.GetVector3FromMapId(route[idx + 0]), flying);
-        Vector3 position = Vector3.Lerp(pos, posNext, ratio);
-
-        float distance = Vector3.Distance(actor.transform.position, position);
-        if(distance > 3)
-        {
-            Debug.LogError(string.Format("too much distance. {0} mapid {1} -> {2}", distance, route[idx - 1], route[idx]));
-        }
-        actor.transform.position = position;
-
-        Vector3 dir = posNext - actor.transform.position;
-        actor.transform.rotation = Quaternion.Lerp(actor.transform.rotation, Quaternion.LookRotation(dir), ratio);
-
-        return true;
-        */
     }
     protected bool Flying(Action action, float height)
     {
@@ -516,13 +498,101 @@ public abstract class ActingObject : Object
         
         return true;
     }
+    protected void Attack(Meta.Ability ability, TAG tag, bool isFlying)
+    {
+        Action action = this.actions[0];
+        ActionType attackAction = ActionType.MAX;
+        ActionType movingAction = ActionType.MAX;
+
+        switch(tag)
+        {
+            case TAG.ACTOR:
+                attackAction = ActionType.ACTOR_ATTACK;
+                movingAction = isFlying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING_1_STEP;
+            break;
+            case TAG.MOB:
+                attackAction = ActionType.MOB_ATTACK;
+                movingAction = isFlying ? ActionType.MOB_FLYING : ActionType.MOB_MOVING;
+            break;
+        }
+        //공격 거리
+        if(CheckAttacking(ability))
+        {
+            ShowHP(ability.HP);
+            //attack
+            //죽었는지 확인
+            if(followObject.currentHP > 0 && Attacking())
+            {
+                //아래 finish코드에 추가 안하고 이렇게 한 이유가 다 있음
+                if(action.currentTime >= action.totalTime)
+                {
+                    //상대방 공격 당함
+                    TAG t = MetaManager.Instance.GetTag(followObject.gameObject.tag);
+                    ActionType at = ActionType.MAX;
+                    if(t == TAG.ACTOR)
+                        at = ActionType.ACTOR_UNDER_ATTACK;
+                    else if(t == TAG.BUILDING)
+                        at = ActionType.BUILDING_UNDER_ATTACK;
+                    else if(t == TAG.MOB)
+                        at = ActionType.MOB_UNDER_ATTACK;
+                    
+                    Updater.Instance.AddQ(
+                        at,
+                        followObject.tribeId,
+                        followObject.mapId, 
+                        this.mapId,
+                        new List<int>() { (int)tag, ability.attack },
+                        true
+                    );
+                    action.currentTime = 0;
+                    actions[0] = action;
+                }
+            }
+            else
+            {
+                Clear(true, true, false);
+                SetAnimation(ActionType.MAX);
+                this.HideProgress();
+            }
+            return;
+        } 
+        else 
+        {
+            //SetAnimation(ActionType.ACTOR_MAX);
+            this.Clear(true, false, false);
+            List<QNode> list = new List<QNode>()
+            {
+                //공격하기
+                new QNode(attackAction,
+                    this.tribeId,
+                    this.mapId, 
+                    -1,
+                    null,
+                    false,
+                    -1
+                    ),
+                //따라가기. 이동을 먼저 넣으면 mapid정보가 바뀌니까 뒤에 넣고 actions 순서를 바꾼다.
+                new QNode(movingAction,
+                    this.tribeId,
+                    this.mapId, 
+                    MapManager.Instance.GetRandomNearEmptyMapId(followObject.GetCurrentMapId(), (int)ability.attackDistance),
+                    null,
+                    false,
+                    0
+                    ),
+            };
+            
+            Updater.Instance.AddQs(list);
+        }
+        return;
+    }
     protected bool Attacking()
     {
         if(followObject == null)
             return false;
 
         this.gameObject.transform.LookAt(followObject.gameObject.transform.position);
-        SetAnimation(ActionType.ACTOR_ATTACK);
+        SetAnimation(ActionType.ACTOR_ATTACK); //mob, actor 모두 공통으로 처리
         return true;
     }
     public void SetAnimation(ActionType type)

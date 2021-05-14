@@ -93,7 +93,7 @@ public class NeutralManager
 
     public void Destroy(int mapId)
     {
-        MapManager.Instance.DestroyBuilding(mapId);
+        MapManager.Instance.Remove(mapId, TAG.NEUTRAL);
         GameObject.Destroy(objects[mapId].gameObject); //map maker 에서만 쓰이니까 풀링 안한다.
         objects.Remove(mapId);
 

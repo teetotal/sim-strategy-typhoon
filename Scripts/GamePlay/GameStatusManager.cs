@@ -57,6 +57,7 @@ public class GameStatusManager
                 }
             }
         }
+        
         //Neutral
         for(int n=0; n < gameStatus.neutrals.Count; n++)
         {

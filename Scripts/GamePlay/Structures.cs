@@ -121,9 +121,7 @@ public class NeutralBuilding: Object
     }
     public override bool Create(int tribeId, int mapId, int id, bool isInstantiate)
     {
-        this.tribeId = -1;
-        this.mapId = mapId;
-        this.id = id;
+        this.Init(-1, id, mapId, TAG.NEUTRAL, -1, 0);
 
         if(isInstantiate)
         {
@@ -135,7 +133,7 @@ public class NeutralBuilding: Object
     public void Instantiate()
     {
         Meta.Neutral meta = MetaManager.Instance.neutralInfo[id];
-        Instantiate(-1, mapId, id, meta.prefab, TAG.NEUTRAL, false);
+        Instantiate(meta.prefab, false);
     }
 
     public override void Update()

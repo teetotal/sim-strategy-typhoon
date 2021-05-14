@@ -139,7 +139,7 @@
                 "attack": 1,
                 "attackDistance": 2,
                 "attackSpeed": 1,
-                "depense": 1,
+                "depense": true,
                 "moving": 1
             },
             "booty": {
@@ -182,7 +182,7 @@
                 "farming": 0,
                 "carring": 0,
                 "attack": 1,
-                "depense": 1,
+                "depense": false,
                 "moving": 0.1
             }
         }
@@ -206,7 +206,7 @@
                         "attack": 1,
                         "attackDistance": 2,
                         "attackSpeed": 1,
-                        "depense": 10,
+                        "depense": false,
                         "moving": 1
                     },
                     "wage": [
@@ -259,7 +259,7 @@
                         "attack": 2,
                         "attackDistance": 1.5,
                         "attackSpeed": 1,
-                        "depense": 10,
+                        "depense": true,
                         "moving": 1
                     },
                     "wage": [
@@ -303,7 +303,7 @@
                         "attack": 2,
                         "attackDistance": 1.5,
                         "attackSpeed": 0.5,
-                        "depense": 10,
+                        "depense": true,
                         "moving": 2
                     },
                     "wage": [
@@ -355,7 +355,7 @@
                         "attack": 1,
                         "attackDistance": 2,
                         "attackSpeed": 1,
-                        "depense": 1,
+                        "depense": false,
                         "moving": 1
                     },
                     "wage": [
@@ -407,7 +407,7 @@
                         "attack": 1,
                         "attackDistance": 2,
                         "attackSpeed": 1,
-                        "depense": 1,
+                        "depense": false,
                         "moving": 2
                     },
                     "wage": [
@@ -459,7 +459,7 @@
                         "attack": 1,
                         "attackDistance": 2,
                         "attackSpeed": 1,
-                        "depense": 1,
+                        "depense": true,
                         "moving": 1.5
                     },
                     "wage": [
@@ -511,7 +511,7 @@
                         "attack": 1,
                         "attackDistance": 2,
                         "attackSpeed": 1,
-                        "depense": 1,
+                        "depense": false,
                         "moving": 2
                     },
                     "wage": [
@@ -563,7 +563,7 @@
                         "attack": 1,
                         "attackDistance": 2,
                         "attackSpeed": 1,
-                        "depense": 1,
+                        "depense": false,
                         "moving": 3
                     },
                     "wage": [
@@ -615,7 +615,7 @@
                         "attack": 1,
                         "attackDistance": 2,
                         "attackSpeed": 1,
-                        "depense": 1,
+                        "depense": false,
                         "moving": 1
                     },
                     "wage": [

@@ -27,7 +27,7 @@ public class Meta
         public int attack;
         public float attackDistance;
         public float attackSpeed;
-        public float depense;
+        public bool depense;
         public float moving;
     }
     [Serializable]

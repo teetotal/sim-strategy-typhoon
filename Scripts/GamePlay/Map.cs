@@ -82,18 +82,6 @@ public class MapManager
         map[toPos.x, toPos.y] = map[fromPos.x, fromPos.y];
         map[fromPos.x, fromPos.y] = mapMeta.defaultVal.cost;
     }
-    //regarding object
-    /*
-    public GameObject GetBuildingObject(int id)
-    {
-        if(buildingObjects.ContainsKey(id) == false)
-        {
-            return null;
-        }
-
-        return buildingObjects[id];
-    }
-    */
     //regarding position
     public void SetMapId(int mapId, int cost)
     {
@@ -464,39 +452,10 @@ public class MapManager
             buildingObjects.Remove(mapId);
         }
     }
-    public void DestroyBuilding(int mapId)
-    {
-        Vector2Int pos = GetMapPosition(mapId);
-        map[pos.x, pos.y] = mapMeta.defaultVal.cost;
-        //GameObject.DestroyImmediate(buildingObjects[mapId]);
-        //buildingObjects.Remove(mapId);
-    }
    
     public void AssignBuilding(int mapId)
     {
         Vector2Int position = GetMapPosition(mapId);
         map[position.x, position.y] = -1;
     }
-    
-    /*
-    private GameObject Construct(int id, string prefab, int mapCost, TAG tag)
-    {
-        GameObject parent = defaultGameObjects[id];
-        Vector2Int position = GetMapPosition(id);
-        map[position.x, position.y] = mapCost;
-
-        GameObject obj = Resources.Load<GameObject>(prefab);
-        obj = GameObject.Instantiate(obj, new Vector3(parent.transform.position.x, parent.transform.position.y + 0.1f, parent.transform.position.z), Quaternion.identity);
-        obj.tag = MetaManager.Instance.GetTag(tag);
-        obj.name = id.ToString();
-        obj.transform.SetParent(parent.transform);
-        if(buildingObjects.ContainsKey(id) == true)
-        {
-            throw new Exception("Already assigned position. conflict creating building");
-        }
-        buildingObjects[id] = obj;
-
-        return obj;
-    }
-    */
 }

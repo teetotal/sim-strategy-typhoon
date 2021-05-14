@@ -37,7 +37,7 @@ public class ContextCreatingActor : IContext
 }
 public class ContextActor : IContext
 {
-    public int selectedMapId;
+    public Object selectedObject;
     GameObject point;
     
     public void Init()
@@ -46,7 +46,7 @@ public class ContextActor : IContext
     }
     public void Reset()
     {
-        selectedMapId = -1;
+        selectedObject = null;
     }
 
     public void OnMove()
@@ -86,7 +86,7 @@ public class ContextActor : IContext
         GameObject obj = Touch.Instance.GetTouchedObject3D();
         if(obj != null)
         {
-            Actor actor = ActorManager.Instance.actors[selectedMapId];
+            Actor actor = (Actor)selectedObject;
             Meta.Actor meta = MetaManager.Instance.actorInfo[actor.id];
 
             int target = Util.GetIntFromGameObjectName(obj.name);
@@ -104,8 +104,8 @@ public class ContextActor : IContext
     {
     }
     //-------------------------------------
-    public void SetSelectedActor(int mapId)
+    public void SetSelectedActor(Object obj)
     {
-        selectedMapId = mapId;
+        selectedObject = obj;
     }
 }

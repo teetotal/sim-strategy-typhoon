@@ -66,28 +66,23 @@ public class BuildingObject : Object
     
     public override bool Create(int tribeId, int mapId, int id, bool isInstantiate)
     {
-        this.tribeId = tribeId;
-        this.mapId = mapId;
-        this.id = id;
         this.currentMapId = mapId;
-        this.currentHP = MetaManager.Instance.buildingInfo[id].level[this.level].HP;
-        this.level = 0;
+        this.elapsedDefense = 0;
 
-        elapsedDefense = 0;
+        this.Init(tribeId, id, mapId, TAG.BUILDING, MetaManager.Instance.buildingInfo[id].level[0].HP, 0);
 
         if(isInstantiate)
         {
             Instantiate();
         }
         
-
         return true;
     }
 
     public void Instantiate()
     {
         Meta.Building meta = MetaManager.Instance.buildingInfo[id];
-        Instantiate(tribeId, mapId, id, meta.level[level].prefab, TAG.BUILDING, false);
+        Instantiate(meta.level[level].prefab, false);
     }
     public void RemoveActor(int mapId)
     {
@@ -186,7 +181,7 @@ public class BuildingObject : Object
                         //DestroyProgress();
                         BuildingManager.Instance.objects.Remove(mapId);
                         this.DestroyGameObject();
-                        MapManager.Instance.DestroyBuilding(mapId);
+                        MapManager.Instance.Remove(mapId, TAG.BUILDING);
                         return;
                 }
                 actions.RemoveAt(0);

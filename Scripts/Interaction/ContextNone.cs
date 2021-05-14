@@ -39,6 +39,24 @@ public class ContextNone : IContext
         selectedObj = Touch.Instance.GetTouchedObject3D();
         if(selectedObj)
         {
+            int seq = int.Parse(Util.GetObjectName(selectedObj));
+            Object obj = ObjectManager.Instance.Get(seq);
+            if(obj != null) //environment나 bottom은 null
+            {
+                if(obj.tag == TAG.ACTOR && obj.currentHP > 0)
+                {
+                    Context.Instance.SetMode(Context.Mode.ACTOR);
+                    ((ContextActor)Context.Instance.contexts[Context.Mode.ACTOR]).SetSelectedActor(obj);
+                }
+                Context.Instance.onSelectEvent(obj.tag, obj.mapId, obj.id, selectedObj);
+            }
+            else
+            {
+                Debug.Log("Null!!");
+            }
+            
+            /*
+
             TAG tag = MetaManager.Instance.GetTag(selectedObj.tag);
             int mapId = GetSelectedMapId(); 
             int id = -1;
@@ -70,14 +88,10 @@ public class ContextNone : IContext
                     id = EnvironmentManager.Instance.environments[mapId].id;
                     break;
             }
-            Context.Instance.onSelectEvent(tag, mapId, id, selectedObj);
-            Reset();
+            */
+            //Context.Instance.onSelectEvent(tag, mapId, id, selectedObj);
         }
-        else
-        {
-            Reset();
-        }
-        
+        Reset();
     }
     public void OnDrag()
     {

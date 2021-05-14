@@ -123,67 +123,40 @@ public class MetaManager
         return list;
     }
 }
-/*
-public class MarketManager
+
+public class ObjectManager
 {
-    public MarketStatus marketStatus;
-    public Dictionary<int, Dictionary<int, float>> exchangeInfo = new Dictionary<int, Dictionary<int, float>>();
-    private static readonly Lazy<MarketManager> hInstance = new Lazy<MarketManager>(() => new MarketManager());
-    public static MarketManager Instance
+    public Dictionary<int, Object> objects = new Dictionary<int, Object>();
+    int seq = 0;
+    private static readonly Lazy<ObjectManager> hInstance = new Lazy<ObjectManager>(() => new ObjectManager());
+ 
+    public static ObjectManager Instance
     {
         get {
             return hInstance.Value;
         } 
     }
-    protected MarketManager()
-    {
-    }
-    public void Load()
-    {
-        marketStatus = Json.LoadJsonFile<MarketStatus>("market_price");
 
-        for(int n = 0; n < marketStatus.markets.Count; n++)
-        {
-            MarketStatus.Market market = marketStatus.markets[n];
-            if(exchangeInfo.ContainsKey(market.mapId) == false)
-            {
-                exchangeInfo[market.mapId] = new Dictionary<int, float>();
-            }
-            for(int m = 0; m < market.exchanges.Count; m++)
-            {
-                exchangeInfo[market.mapId][market.exchanges[m].resourceId] = market.exchanges[m].rate;
-            }
-        }
-    }
-    public float GetExchangeRatio(int marketMapId, int resourceId)
+    protected ObjectManager()
     {
-        if(!exchangeInfo.ContainsKey(marketMapId) || !exchangeInfo[marketMapId].ContainsKey(resourceId))
-            return -1.0f;
-        return exchangeInfo[marketMapId][resourceId];
     }
-    public float Exchange(int marketMapId, int resourceId, float amount)
-    {
-        float ratio = GetExchangeRatio(marketMapId, resourceId);
-        if(ratio == -1)
-            return -1;
-        return ratio * amount;
-    }
-    public int GetStandardResource()
-    {
-        return marketStatus.standardResourceId;
-    }
-}
-*/
 
-public class TimeManager
-{
-    public List<TimeNode> timeNodes = new List<TimeNode>(); //시대에 대한 정보
-    public float currentTime;
-    public int currentTimeNodeIndex;
-    public float timeRatio; //1초당 얼마의 시간을 흘려보낼 것인가
-
-    public string GetDateTimeString()
+    public int Add(Object obj)
     {
-        return ""; //(int)currentTime;
+        obj.seq = seq++;
+        objects[obj.seq] = obj;
+
+        return obj.seq;
+    }
+
+    public void Remove(int seq)
+    {
+        objects.Remove(seq);
+    }
+    public Object Get(int seq)
+    {
+        if(objects.ContainsKey(seq))
+            return objects[seq];
+        return null;
     }
 }
