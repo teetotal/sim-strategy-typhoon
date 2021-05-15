@@ -12,6 +12,41 @@ public struct UnderAttack
         this.amount = amount;
     }
 }
+//request 정보
+public struct RequestInfo
+{
+    public int mySeq;
+    public int targetMapId;
+    public Object targetObject;
+    public Object fromObject;
+    public float amount;
+}
+public struct QNode
+{
+    public ActionType type;
+    public RequestInfo requestInfo;
+    public int tribeId;
+    public int mapId; //mapid
+    public int id;
+    public bool immediately;
+    public List<int> values;    //caller쪽과 protocol을 맞춰야 한다.
+    public int insertIndex;
+
+    public QNode(ActionType type, int tribeId, int mapId, int id, List<int> values, bool immediately, int insertIndex)
+    {
+        this.tribeId = tribeId;
+        this.type = type;
+        this.mapId = mapId;
+        this.id = id;
+        this.values = values;
+        this.immediately = immediately;
+        this.insertIndex = insertIndex;
+
+        //---------------
+        requestInfo = new RequestInfo();
+    }
+}
+/* --------------------------- */
 
 //각종 행위. 공격, 이동
 public struct Action
@@ -19,6 +54,7 @@ public struct Action
     public ActionType type;
     public float totalTime;       //Action이 적용되는 총 시간
     public float currentTime;     //현재까지 진행된 시간
+    public RequestInfo requestInfo;
     public List<int> values;      //기타 추가 정보. 이동시 A* route같은거 담는 용도
     public bool immediately;
 
@@ -32,6 +68,9 @@ public struct Action
         this.values = values;
         list = null;
         this.immediately = immediately;
+
+        //-----------
+        requestInfo = new RequestInfo();
     }
 
     public void SetMovingRoute(Vector3 currentPosition)
@@ -151,28 +190,6 @@ public class NeutralBuilding: Object
     }
 }
 
-/* --------------------------- */
-public struct QNode
-{
-    public ActionType type;
-    public int tribeId;
-    public int mapId; //mapid
-    public int id;
-    public bool immediately;
-    public List<int> values;    //caller쪽과 protocol을 맞춰야 한다.
-    public int insertIndex;
-
-    public QNode(ActionType type, int tribeId, int mapId, int id, List<int> values, bool immediately, int insertIndex)
-    {
-        this.tribeId = tribeId;
-        this.type = type;
-        this.mapId = mapId;
-        this.id = id;
-        this.values = values;
-        this.immediately = immediately;
-        this.insertIndex = insertIndex;
-    }
-}
 /* --------------------------- */
 //시대 정보
 public struct TimeNode

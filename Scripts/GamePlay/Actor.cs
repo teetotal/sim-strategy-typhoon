@@ -11,6 +11,12 @@ public class Actor : ActingObject
     //전투의 경우, 수량 정보도 필요할 수 있음.
     public int currentHeadcount; //현재 인원. 전체 인원은 type과 level로 파악
     */
+    /*
+    target map id
+    from object
+    amount
+    target object // load/delivery
+    */
     public override bool AddAction(QNode node)
     {
         //생성중에는 아무것도 못함

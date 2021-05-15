@@ -7,18 +7,13 @@ public class Mob : ActingObject
 {
     public int attachedId;
     float elapseRoutine = 0;
-    
+    /*
+    target map id
+    from object
+    amount
+    */
     public override bool AddAction(QNode node)
     {
-        if(this.HasActionType(ActionType.MOB_DIE))
-        {
-            return false;
-        }
-        if(node.type == ActionType.MOB_DIE)
-        {
-            actions.Clear();
-        }
-
         Meta.Mob meta = MetaManager.Instance.mobInfo[this.id];
         switch(node.type)
         {
@@ -27,7 +22,7 @@ public class Mob : ActingObject
             case ActionType.MOB_MOVING:
             case ActionType.MOB_FLYING:
             {
-                Action action = GetMovingFlyingAction(node.type, node.id);
+                Action action = GetMovingFlyingAction(node.type, node.requestInfo.targetMapId);
                 if(action.type != ActionType.MAX)
                 {
                     actions.Add(action);
@@ -45,17 +40,26 @@ public class Mob : ActingObject
             actions[0]: from TAG
             actions[1]: attack amount
             */
+                /*
                 Object obj = Util.GetObject(node.id, (TAG)node.values[0]);
                 //일부러 null 체크 안함
                 underAttackQ.Enqueue(new UnderAttack(obj, node.values[1]));
+                */
+                underAttackQ.Enqueue(new UnderAttack(node.requestInfo.fromObject, (int)node.requestInfo.amount));
                 break;
             case ActionType.MOB_DIE:
             /*
             id: from seq
             actions[0]: from TAG
             */
-                actions.Add(new Action(node.type, 2, new List<int>() { node.id, node.values[0] }));
+            {
+                Action action = new Action();
+                action.type = node.type;
+                action.requestInfo = node.requestInfo;
+                actions.Add(action);
+                //actions.Add(new Action(node.type, 2, new List<int>() { node.id, node.values[0] }));
                 break;
+            }
         }
 
         return true;
@@ -172,7 +176,8 @@ public class Mob : ActingObject
                         Context.Instance.onCreationFinish(action.type, this);
                         break;
                     case ActionType.MOB_DIE:
-                        Context.Instance.onDie(action.type, this, ObjectManager.Instance.Get(action.values[0]));
+                        //Context.Instance.onDie(action.type, this, ObjectManager.Instance.Get(action.values[0]));
+                        Context.Instance.onDie(action.type, this, action.requestInfo.fromObject);
                         Destroy();
                         return;
                 }
@@ -199,15 +204,30 @@ public class Mob : ActingObject
                 HideProgress();
                 underAttackQ.Clear();
                 this.actions.Clear();
+
+                QNode q = new QNode();
+                q.type = ActionType.MOB_DIE;
+                q.requestInfo.mySeq = this.seq;
+                q.requestInfo.fromObject = p.from;
+                Updater.Instance.AddQ(q);
+                /*
                 Updater.Instance.AddQ(ActionType.MOB_DIE, this.tribeId, this.mapId, p.from.seq
                     , new List<int>() { (int)MetaManager.Instance.GetTag(p.from.gameObject.tag) }
                     , false);
+                */
                 return;
             }
             else
             {
                 //도망가기
                 if(!this.HasActionType(ActionType.MOB_ATTACK))
+                {
+                    QNode q = new QNode();
+                    q.type = meta.flyingHeight > 0 ? ActionType.MOB_FLYING : ActionType.MOB_MOVING;
+                    q.requestInfo.mySeq = this.seq;
+                    q.requestInfo.targetMapId = MapManager.Instance.GetRandomNearEmptyMapId(this.mapId, meta.movingRange);
+                    Updater.Instance.AddQ(q);
+                    /*
                     Updater.Instance.AddQ(
                         meta.flyingHeight > 0 ? ActionType.MOB_FLYING : ActionType.MOB_MOVING, 
                         this.tribeId,
@@ -216,6 +236,9 @@ public class Mob : ActingObject
                         null,
                         false
                         );
+                    */
+                }
+                    
             }
             return;
         }

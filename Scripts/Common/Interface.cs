@@ -535,15 +535,23 @@ public abstract class ActingObject : Object
                         at = ActionType.BUILDING_UNDER_ATTACK;
                     else if(t == TAG.MOB)
                         at = ActionType.MOB_UNDER_ATTACK;
-                    
-                    Updater.Instance.AddQ(
-                        at,
+
+                    //임시로 꼬일까봐 둘다 셋팅
+                    QNode q = new QNode(at,
                         followObject.tribeId,
                         followObject.mapId, 
                         this.mapId,
                         new List<int>() { (int)tag, ability.attack },
-                        true
-                    );
+                        true, -1);
+
+                    q.type = at;
+                    q.requestInfo.mySeq = followObject.seq;
+                    q.requestInfo.fromObject = this;
+                    q.requestInfo.amount = ability.attack;
+                    
+                    Updater.Instance.AddQ(q);
+
+
                     action.currentTime = 0;
                     actions[0] = action;
                 }

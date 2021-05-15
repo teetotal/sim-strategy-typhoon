@@ -70,6 +70,10 @@ public class Updater
     {
         queue.Enqueue(new QNode(type, tribeId, mapId, id, values, immediately, insertIndex));
     }
+    public void AddQ(QNode q)
+    {
+        queue.Enqueue(q);
+    }
     public void AddQs(List<QNode> list)
     {
         for(int n = 0; n < list.Count; n++)

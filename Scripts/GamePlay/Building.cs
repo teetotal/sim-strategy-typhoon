@@ -23,6 +23,10 @@ public class BuildingObject : Object
 
     public List<Actor> actors = new List<Actor>();
     public float rotation;
+    /*
+    from object
+    amount
+    */
     public override bool AddAction(QNode node)
     {
         Meta.Building meta =  MetaManager.Instance.buildingInfo[this.id];
@@ -51,6 +55,7 @@ public class BuildingObject : Object
             /*
             node.id: from
             node.values[0]: from TAG
+            node.values[1]: amount
             */
                 Object obj = Util.GetObject(node.id, (TAG)node.values[0]);
                 //일부러 null 체크 안함

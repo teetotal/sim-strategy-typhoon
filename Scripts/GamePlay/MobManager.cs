@@ -34,36 +34,38 @@ public class MobManager
     }
     public void Fetch(QNode q)
     {
-        if(q.type == ActionType.MOB_CREATE)
+        switch(q.type) 
         {   
-            Meta.Mob meta = MetaManager.Instance.mobInfo[q.id];
-            //probability
-            if(!Util.Random(meta.regenProbability))
-                return;
+            case ActionType.MOB_CREATE:
+                Meta.Mob meta = MetaManager.Instance.mobInfo[q.id];
+                //probability
+                if(!Util.Random(meta.regenProbability))
+                    return;
 
-            int mapId = MapManager.Instance.GetRandomNearEmptyMapId(q.mapId, meta.movingRange); 
-            if(mapId == -1)
-                return;
+                int mapId = MapManager.Instance.GetRandomNearEmptyMapId(q.mapId, meta.movingRange); 
+                if(mapId == -1)
+                    return;
 
-            if(!Context.Instance.onCreationEvent(q))
-                return;
+                if(!Context.Instance.onCreationEvent(q))
+                    return;
 
-            /*
-            Mob obj = new Mob();
-            obj.attachedId = q.mapId;   //소속 위치 
-            if(obj.Create(q.tribeId, mapId, q.id, true))
-            {
-                mobs[obj.mapId] = obj;
-            }
-            */
-            Mob obj = Create(mapId, q.mapId, q.id, 0, true);
-            if(obj == null)
-                return;
-        }
-        else
-        {
-            mobs[q.mapId].AddAction(q);
-        }
+                /*
+                Mob obj = new Mob();
+                obj.attachedId = q.mapId;   //소속 위치 
+                if(obj.Create(q.tribeId, mapId, q.id, true))
+                {
+                    mobs[obj.mapId] = obj;
+                }
+                */
+                Mob obj = Create(mapId, q.mapId, q.id, 0, true);
+                if(obj == null)
+                    return;
+            break;
+            default:
+                ObjectManager.Instance.Get(q.requestInfo.mySeq).AddAction(q);
+                //mobs[q.mapId].AddAction(q);
+            break;
+        } 
     }
     public void Instantiate()
     {
@@ -83,11 +85,20 @@ public class MobManager
             mobs[obj.mapId] = obj;
 
             //routine 추가
+            QNode q = new QNode();
+            q.type = meta.flyingHeight == 0 ? ActionType.MOB_MOVING : ActionType.MOB_FLYING;
+            q.requestInfo.mySeq = obj.seq;
+            q.requestInfo.targetMapId = -1;
+
             obj.routine = new List<QNode>()
             {
+                q
+                /*
                 new QNode(
                     meta.flyingHeight == 0 ? ActionType.MOB_MOVING : ActionType.MOB_FLYING, 
                     -1, -1, -1, null, false, -1)
+                */
+
             };
             return obj;
         }
