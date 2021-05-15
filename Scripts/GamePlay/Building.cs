@@ -84,16 +84,16 @@ public class BuildingObject : Object
         return true;
     }
 
-    public void Instantiate()
+    public override void Instantiate()
     {
         Meta.Building meta = MetaManager.Instance.buildingInfo[id];
         Instantiate(meta.level[level].prefab, false);
     }
-    public void RemoveActor(int mapId)
+    public void RemoveActor(int seq)
     {
         for(int n = 0; n < actors.Count; n++)
         {
-            if(actors[n].mapId == mapId)
+            if(actors[n].seq == seq)
             {
                 actors.RemoveAt(n);
                 return;
@@ -183,10 +183,9 @@ public class BuildingObject : Object
                                                 , 0);
                         }
                         actions.Clear();
-                        //DestroyProgress();
+                        
                         BuildingManager.Instance.objects.Remove(mapId);
-                        this.DestroyGameObject();
-                        MapManager.Instance.Remove(mapId, TAG.BUILDING);
+                        this.Release();
                         return;
                 }
                 actions.RemoveAt(0);

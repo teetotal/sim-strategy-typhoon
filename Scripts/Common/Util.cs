@@ -63,7 +63,7 @@ public class Util
             case TAG.ACTOR:
                 return ActorManager.Instance.actors[mapId].id;
             case TAG.MOB:
-                return MobManager.Instance.mobs[mapId].id;
+                return ObjectManager.Instance.Get(mapId).id;
             case TAG.NEUTRAL:
                 return NeutralManager.Instance.objects[mapId].id;
         }
@@ -79,7 +79,7 @@ public class Util
             case TAG.ACTOR:
                 return ActorManager.Instance.actors[mapId];
             case TAG.MOB:
-                return MobManager.Instance.mobs[mapId];
+                return ObjectManager.Instance.Get(mapId);
             case TAG.NEUTRAL:
                 return NeutralManager.Instance.objects[mapId];
         }

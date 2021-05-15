@@ -16,7 +16,6 @@ public class MobManager
     }
     float time;
     int lastRegenTime = 0;
-    public Dictionary<int, Mob> mobs = new Dictionary<int, Mob>();
     private static readonly Lazy<MobManager> hInstance = new Lazy<MobManager>(() => new MobManager());
     
     public static MobManager Instance
@@ -28,10 +27,7 @@ public class MobManager
     protected MobManager()
     {
     }
-    public void Clear()
-    {
-        mobs.Clear();
-    }
+    
     public void Fetch(QNode q)
     {
         switch(q.type) 
@@ -49,30 +45,14 @@ public class MobManager
                 if(!Context.Instance.onCreationEvent(q))
                     return;
 
-                /*
-                Mob obj = new Mob();
-                obj.attachedId = q.mapId;   //소속 위치 
-                if(obj.Create(q.tribeId, mapId, q.id, true))
-                {
-                    mobs[obj.mapId] = obj;
-                }
-                */
                 Mob obj = Create(mapId, q.mapId, q.id, 0, true);
                 if(obj == null)
                     return;
             break;
             default:
                 ObjectManager.Instance.Get(q.requestInfo.mySeq).AddAction(q);
-                //mobs[q.mapId].AddAction(q);
             break;
         } 
-    }
-    public void Instantiate()
-    {
-        foreach(KeyValuePair<int, Mob> kv in mobs)
-        {
-            kv.Value.Instantiate();
-        }
     }
     public Mob Create(int mapId, int regenMapId, int id, float roatation, bool isInstantiate)
     {
@@ -82,24 +62,11 @@ public class MobManager
         obj.attachedId = regenMapId;   //소속 위치 
         if(obj.Create(-1, mapId, id, isInstantiate))
         {
-            mobs[obj.mapId] = obj;
-
             //routine 추가
-            QNode q = new QNode();
-            q.type = meta.flyingHeight == 0 ? ActionType.MOB_MOVING : ActionType.MOB_FLYING;
-            q.requestInfo.mySeq = obj.seq;
+            QNode q = new QNode(meta.flyingHeight == 0 ? ActionType.MOB_MOVING : ActionType.MOB_FLYING, obj.seq);
             q.requestInfo.targetMapId = -1;
 
-            obj.routine = new List<QNode>()
-            {
-                q
-                /*
-                new QNode(
-                    meta.flyingHeight == 0 ? ActionType.MOB_MOVING : ActionType.MOB_FLYING, 
-                    -1, -1, -1, null, false, -1)
-                */
-
-            };
+            obj.routine = new List<QNode>() { q };
             return obj;
         }
 
@@ -115,17 +82,20 @@ public class MobManager
 
         //소속된 위치 정보가 있어야 함
         Dictionary<int, RegenCounting> cnts = new Dictionary<int, RegenCounting>(); //소속 위치, mob id, count
-        foreach(KeyValuePair<int, Mob> kv in mobs)
+
+        List<int> seqs = ObjectManager.Instance.GetObjectSeqs(TAG.MOB);
+        for(int n = 0; n < seqs.Count; n++)
         {
-            if(!cnts.ContainsKey(kv.Value.attachedId))
+            Mob obj = (Mob)ObjectManager.Instance.Get(seqs[n]);
+            if(!cnts.ContainsKey(obj.attachedId))
             {
-                cnts[kv.Value.attachedId] = new RegenCounting(kv.Value.id, 1);
+                cnts[obj.attachedId] = new RegenCounting(obj.id, 1);
             }
             else
             {
-                RegenCounting p = cnts[kv.Value.attachedId];
+                RegenCounting p = cnts[obj.attachedId];
                 p.amount++;
-                cnts[kv.Value.attachedId] = p;
+                cnts[obj.attachedId] = p;
             }
         }
 
@@ -142,20 +112,20 @@ public class MobManager
     }
     public void Update(bool onlyBasicUpdate)
     {
-        List<Mob> list = new List<Mob>();
-        foreach(KeyValuePair<int, Mob> kv in mobs)
+        List<int> seqs = ObjectManager.Instance.GetObjectSeqs(TAG.MOB);
+        
+        for(int n = 0; n < seqs.Count; n++)
         {
-            list.Add(kv.Value);
-        }
-
-        for(int n = 0; n < list.Count; n++)
-        {
-            list[n].Update();
-            if(!onlyBasicUpdate)
+            Object obj = ObjectManager.Instance.Get(seqs[n]);
+            if(obj != null)
             {
-                list[n].UpdateUIPosition();
-                list[n].UpdateUnderAttack();
-                list[n].UpdateDefence();
+                obj.Update();
+                if(!onlyBasicUpdate)
+                {
+                    obj.UpdateUIPosition();
+                    obj.UpdateUnderAttack();
+                    obj.UpdateDefence();
+                }
             }
         }
     }

@@ -64,6 +64,7 @@ public abstract class Object
     //fn
     public abstract bool AddAction(QNode node);
     public abstract bool Create(int tribeId, int mapId, int id, bool isInstantiate);
+    public abstract void Instantiate();
     public abstract void Update();
     public abstract void UpdateDefence();
     public abstract void UpdateUnderAttack();
@@ -95,13 +96,16 @@ public abstract class Object
 
         return gameObject;
     }
-    protected void DestroyGameObject()
+    protected void Release()
     {
+        //remove map manager
+        MapManager.Instance.Remove(this.mapId, this.tag);
+
+        //prefab release
         string prefab = "";
-        TAG tag = MetaManager.Instance.GetTag(this.gameObject.tag);
         this.gameObject.transform.parent = null;
         
-        switch(tag)
+        switch(this.tag)
         {
             case TAG.ACTOR:
             prefab = MetaManager.Instance.actorInfo[this.id].level[this.level].prefab;
@@ -114,6 +118,10 @@ public abstract class Object
             break;
         }
         GameObjectPooling.Instance.Release(prefab, this.gameObject);
+
+        //remove Object pooling
+        ObjectManager.Instance.Remove(this.seq);
+         
     }
     public void ShowHP(int totalHP)
     {

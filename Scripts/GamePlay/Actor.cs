@@ -149,21 +149,17 @@ public class Actor : ActingObject
         return MapManager.Instance.SetCurrentMap(this, TAG.ACTOR); //currentMap에 등록
     }
 
-    public void Instantiate()
+    public override void Instantiate()
     {
         Meta.Actor meta = MetaManager.Instance.actorInfo[id];
         Instantiate(meta.level[this.level].prefab, meta.flying);
     }
     public void Destroy()
     {
-        ObjectManager.Instance.Remove(this.seq);
-        //object삭제
-        this.DestroyGameObject();
+        this.attachedBuilding.RemoveActor(this.seq); //부모 빌딩에서 삭제   
         ActorManager.Instance.actors.Remove(this.mapId);
-        this.attachedBuilding.RemoveActor(this.mapId);
-        MapManager.Instance.Remove(this.mapId, TAG.ACTOR);
-        //DestroyProgress();
         Clear();
+        this.Release();
     }
 
     //동시에 진행 못하고 순차적으로함. 이래야 아래 같은 시퀀스가 가능해짐

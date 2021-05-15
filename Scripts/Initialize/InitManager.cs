@@ -27,10 +27,13 @@ public class InitManager
         MetaManager.Instance.Load();
         TradingManager.Instance.Load();
 
+        /*
         BuildingManager.Instance.Clear();
         ActorManager.Instance.Clear();
         MobManager.Instance.Clear();
         NeutralManager.Instance.Clear();
+        */
+        ObjectManager.Instance.Clear();
         EnvironmentManager.Instance.Clear();
 
         MapManager.Instance.Load(mapFilePath);
@@ -42,10 +45,14 @@ public class InitManager
     {
         GameObjectPooling.Instance.Reset();
         MapManager.Instance.CreatePrefabs();
+        /*
         BuildingManager.Instance.Instantiate();
         NeutralManager.Instance.Instantiate();
-        EnvironmentManager.Instance.Instantiate();
         MobManager.Instance.Instantiate();
+        */
+        
+        EnvironmentManager.Instance.Instantiate();
+        ObjectManager.Instance.Instantiate();
 
         return true;
     }

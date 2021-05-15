@@ -226,9 +226,9 @@ public class MapMaker : MonoBehaviour
                     {
                         NeutralManager.Instance.Destroy(mapId);
                     }
-                    else if(MobManager.Instance.mobs.ContainsKey(mapId)) //mob 찾기 
+                    else if(ObjectManager.Instance.ContainsKey(mapId))//mob 찾기 
                     {
-                        MobManager.Instance.mobs[mapId].Destroy();
+                        ((Mob)ObjectManager.Instance.Get(mapId)).Destroy();
                     }
                     else if(ActorManager.Instance.actors.ContainsKey(mapId)) //actor 찾기 
                     {
@@ -557,6 +557,17 @@ public class MapMaker : MonoBehaviour
         
         //mob
         save.mobs = new List<GameStatus.Mob>();
+        List<int> mobs = ObjectManager.Instance.GetObjectSeqs(TAG.MOB);
+        for(int seq = 0; seq < mobs.Count; seq++)
+        {
+            Mob obj = (Mob)ObjectManager.Instance.Get(seq);
+            GameStatus.Mob mob = new GameStatus.Mob();
+            mob.mapId = obj.attachedId;
+            mob.mobId = obj.id;
+            mob.amount = 1;
+            save.mobs.Add(mob);
+        }
+        /*
         foreach(KeyValuePair<int, Mob> kv in MobManager.Instance.mobs)
         {
             GameStatus.Mob mob = new GameStatus.Mob();
@@ -565,6 +576,7 @@ public class MapMaker : MonoBehaviour
             mob.amount = 1;
             save.mobs.Add(mob);
         }
+        */
 
         //environment
         save.environments = new List<GameStatus.Environment>();

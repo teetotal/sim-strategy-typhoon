@@ -45,6 +45,20 @@ public struct QNode
         //---------------
         requestInfo = new RequestInfo();
     }
+    public QNode(ActionType type, int seq)
+    {
+        this.tribeId = -1;
+        this.type = type;
+        this.mapId = -1;
+        this.id = -1;
+        this.values = null;
+        this.immediately = false;
+        this.insertIndex = -1;
+
+        //---------------
+        requestInfo = new RequestInfo();
+        requestInfo.mySeq = seq;
+    }
 }
 /* --------------------------- */
 
@@ -71,6 +85,18 @@ public struct Action
 
         //-----------
         requestInfo = new RequestInfo();
+    }
+    public Action(ActionType type, RequestInfo requestInfo, float totalTime = 0)
+    {
+        this.type = type;
+        this.currentTime = 0;
+        this.totalTime = totalTime;
+        this.values = null;
+        list = null;
+        this.immediately = false;
+
+        //-----------
+        this.requestInfo = requestInfo;
     }
 
     public void SetMovingRoute(Vector3 currentPosition)
@@ -169,7 +195,7 @@ public class NeutralBuilding: Object
 
         return true;
     }
-    public void Instantiate()
+    public override void Instantiate()
     {
         Meta.Neutral meta = MetaManager.Instance.neutralInfo[id];
         Instantiate(meta.prefab, false);

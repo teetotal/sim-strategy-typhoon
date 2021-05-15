@@ -7,11 +7,7 @@ public class Mob : ActingObject
 {
     public int attachedId;
     float elapseRoutine = 0;
-    /*
-    target map id
-    from object
-    amount
-    */
+    
     public override bool AddAction(QNode node)
     {
         Meta.Mob meta = MetaManager.Instance.mobInfo[this.id];
@@ -35,31 +31,11 @@ public class Mob : ActingObject
                 actions.Add(new Action(node.type, meta.ability.attackSpeed)); //공격 속도
                 break;
             case ActionType.MOB_UNDER_ATTACK:
-            /*
-            id: from mapId
-            actions[0]: from TAG
-            actions[1]: attack amount
-            */
-                /*
-                Object obj = Util.GetObject(node.id, (TAG)node.values[0]);
-                //일부러 null 체크 안함
-                underAttackQ.Enqueue(new UnderAttack(obj, node.values[1]));
-                */
                 underAttackQ.Enqueue(new UnderAttack(node.requestInfo.fromObject, (int)node.requestInfo.amount));
                 break;
             case ActionType.MOB_DIE:
-            /*
-            id: from seq
-            actions[0]: from TAG
-            */
-            {
-                Action action = new Action();
-                action.type = node.type;
-                action.requestInfo = node.requestInfo;
-                actions.Add(action);
-                //actions.Add(new Action(node.type, 2, new List<int>() { node.id, node.values[0] }));
+                actions.Add(new Action(node.type, node.requestInfo));
                 break;
-            }
         }
 
         return true;
@@ -78,9 +54,6 @@ public class Mob : ActingObject
 
         //MapManager 변경. 
         MapManager.Instance.Move(mapId, to);
-        //MobManager변경
-        MobManager.Instance.mobs[to] = this;
-        MobManager.Instance.mobs.Remove(mapId);
 
         Action  action = (type == ActionType.MOB_MOVING) ? GetMovingAction(to, meta.ability, type) : GetFlyingAction(to, meta.ability, type);
         if(action.type == ActionType.MAX)
@@ -92,13 +65,12 @@ public class Mob : ActingObject
         //Mob map id변경
         this.mapId = to;
         GameObject parent = MapManager.Instance.defaultGameObjects[to];
-        //gameObject.name = this.mapId.ToString();
         gameObject.transform.SetParent(parent.transform);
 
         return action;
     }
 
-    public void Instantiate()
+    public override void Instantiate()
     {
         Meta.Mob meta = MetaManager.Instance.mobInfo[id];
         Instantiate(meta.prefab, meta.flyingHeight > 0 ? true: false);
@@ -108,9 +80,7 @@ public class Mob : ActingObject
     {
         Clear();
         //object삭제
-        this.DestroyGameObject();
-        MobManager.Instance.mobs.Remove(this.mapId);
-        MapManager.Instance.Remove(this.mapId, TAG.MOB);
+        this.Release();
     }
 
     public override bool Create(int tribeId, int mapId, int id, bool isInstantiate)
@@ -176,7 +146,6 @@ public class Mob : ActingObject
                         Context.Instance.onCreationFinish(action.type, this);
                         break;
                     case ActionType.MOB_DIE:
-                        //Context.Instance.onDie(action.type, this, ObjectManager.Instance.Get(action.values[0]));
                         Context.Instance.onDie(action.type, this, action.requestInfo.fromObject);
                         Destroy();
                         return;
@@ -205,16 +174,9 @@ public class Mob : ActingObject
                 underAttackQ.Clear();
                 this.actions.Clear();
 
-                QNode q = new QNode();
-                q.type = ActionType.MOB_DIE;
-                q.requestInfo.mySeq = this.seq;
+                QNode q = new QNode(ActionType.MOB_DIE, this.seq);
                 q.requestInfo.fromObject = p.from;
                 Updater.Instance.AddQ(q);
-                /*
-                Updater.Instance.AddQ(ActionType.MOB_DIE, this.tribeId, this.mapId, p.from.seq
-                    , new List<int>() { (int)MetaManager.Instance.GetTag(p.from.gameObject.tag) }
-                    , false);
-                */
                 return;
             }
             else
@@ -222,21 +184,9 @@ public class Mob : ActingObject
                 //도망가기
                 if(!this.HasActionType(ActionType.MOB_ATTACK))
                 {
-                    QNode q = new QNode();
-                    q.type = meta.flyingHeight > 0 ? ActionType.MOB_FLYING : ActionType.MOB_MOVING;
-                    q.requestInfo.mySeq = this.seq;
+                    QNode q = new QNode(meta.flyingHeight > 0 ? ActionType.MOB_FLYING : ActionType.MOB_MOVING, this.seq);
                     q.requestInfo.targetMapId = MapManager.Instance.GetRandomNearEmptyMapId(this.mapId, meta.movingRange);
                     Updater.Instance.AddQ(q);
-                    /*
-                    Updater.Instance.AddQ(
-                        meta.flyingHeight > 0 ? ActionType.MOB_FLYING : ActionType.MOB_MOVING, 
-                        this.tribeId,
-                        this.mapId,
-                        MapManager.Instance.GetRandomNearEmptyMapId(this.mapId, meta.movingRange),
-                        null,
-                        false
-                        );
-                    */
                 }
                     
             }

@@ -126,7 +126,8 @@ public class MetaManager
 
 public class ObjectManager
 {
-    public Dictionary<int, Object> objects = new Dictionary<int, Object>();
+    private Dictionary<int, Object> objects = new Dictionary<int, Object>();
+    private Dictionary<TAG, HashSet<int>> index = new Dictionary<TAG, HashSet<int>>();
     int seq = 0;
     private static readonly Lazy<ObjectManager> hInstance = new Lazy<ObjectManager>(() => new ObjectManager());
  
@@ -139,6 +140,14 @@ public class ObjectManager
 
     protected ObjectManager()
     {
+        for(int n = 0;  n < (int)TAG.MAX; n++)
+        {
+            TAG tag = (TAG)n;
+            if(tag == TAG.BOTTOM || tag == TAG.ENVIRONMENT)
+                continue;
+
+            index[tag] = new HashSet<int>();
+        }
     }
 
     public int Add(Object obj)
@@ -146,17 +155,55 @@ public class ObjectManager
         obj.seq = seq++;
         objects[obj.seq] = obj;
 
+        index[obj.tag].Add(obj.seq);
+
         return obj.seq;
     }
 
     public void Remove(int seq)
     {
+        Object  obj = objects[seq];
+        index[obj.tag].Remove(obj.seq);
         objects.Remove(seq);
+    }
+    public bool ContainsKey(int seq)
+    {
+        return objects.ContainsKey(seq);
     }
     public Object Get(int seq)
     {
         if(objects.ContainsKey(seq))
             return objects[seq];
         return null;
+    }
+    public void Clear()
+    {
+        objects.Clear();
+        for(int n = 0;  n < (int)TAG.MAX; n++)
+        {
+            TAG tag = (TAG)n;
+            if(tag == TAG.BOTTOM || tag == TAG.ENVIRONMENT)
+                continue;
+
+            index[tag].Clear();
+        }
+    }
+
+    public void Instantiate()
+    {
+        for(int n = 0; n < objects.Count; n++)
+        {
+            objects[n].Instantiate();
+        }
+    }
+    public List<int> GetObjectSeqs(TAG tag)
+    {
+        List<int> list = new List<int>();
+        foreach(int seq in index[tag])
+        {
+            list.Add(seq);
+        }
+        
+        return list;
     }
 }
