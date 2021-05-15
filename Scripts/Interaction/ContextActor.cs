@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 public class ContextCreatingActor : IContext
 {
-    public int selectedMapId, selectedBuildId;
+    public BuildingObject selectedBuilding;
     public void Init()
     {
         Reset();
     }
     public void Reset()
     {
-        selectedMapId = -1;
-        selectedBuildId = -1;
+        selectedBuilding = null;
     }
 
     public void OnMove()
@@ -29,10 +28,9 @@ public class ContextCreatingActor : IContext
     {
     }
     //-------------------------------------
-    public void SetSelectedBuilding(int mapId, int buildingId)
+    public void SetSelectedBuilding(BuildingObject selectedBuilding)
     {
-        selectedMapId = mapId;
-        selectedBuildId = buildingId;
+        this.selectedBuilding = selectedBuilding;
     }
 }
 public class ContextActor : IContext

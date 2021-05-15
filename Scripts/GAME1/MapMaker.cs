@@ -216,29 +216,30 @@ public class MapMaker : MonoBehaviour
             case "buttonX":
                 if(SelectionUI.Instance.selectedObject != null)
                 {
-                    int mapId = SelectionUI.Instance.GetSelectedMapId();
+                    int id = SelectionUI.Instance.GetSelectedObjectId();
                     //environment 찾기
-                    if(EnvironmentManager.Instance.environments.ContainsKey(mapId))
+                    if(EnvironmentManager.Instance.environments.ContainsKey(id))
                     {
-                        EnvironmentManager.Instance.DestroyEnvironment(mapId);
+                        EnvironmentManager.Instance.DestroyEnvironment(id);
                     } 
-                    else if(NeutralManager.Instance.objects.ContainsKey(mapId)) //neutral 찾기 
-                    {
-                        NeutralManager.Instance.Destroy(mapId);
-                    }
-                    else if(ObjectManager.Instance.ContainsKey(mapId))//mob 찾기 
-                    {
-                        ((Mob)ObjectManager.Instance.Get(mapId)).Destroy();
-                    }
-                    else if(ActorManager.Instance.actors.ContainsKey(mapId)) //actor 찾기 
-                    {
-                        ActorManager.Instance.actors[mapId].Destroy();
-                    }
                     else
                     {
-                        //building 찾기
-                        Object building = BuildingManager.Instance.objects[mapId];
-                        Updater.Instance.AddQ(ActionType.BUILDING_DESTROY, building.tribeId, mapId, -1, null, true);
+                        Object p = ObjectManager.Instance.Get(id);
+                        switch(p.tag)
+                        {
+                            case TAG.MOB:
+                                ((Mob)p).Destroy();
+                            break;
+                            case TAG.ACTOR:
+                                ((Actor)p).Destroy();
+                            break;
+                            case TAG.BUILDING:
+                                Updater.Instance.AddQ(new QNode(ActionType.BUILDING_DESTROY, p.seq));
+                            break;
+                            case TAG.NEUTRAL:
+                                ((NeutralBuilding)p).Destroy();
+                            break;
+                        }
                     }
                 }
                 SelectionUI.Instance.Hide();
@@ -253,10 +254,10 @@ public class MapMaker : MonoBehaviour
                 break;
             case "buttonB":
                 {
-                    int mapId = SelectionUI.Instance.GetSelectedMapId();
-                    if(mapId != -1)
+                    int seq = SelectionUI.Instance.GetSelectedObjectId();
+                    if(seq != -1)
                     {
-                        OnClickForCreatingActor(BuildingManager.Instance.objects[mapId]);
+                        OnClickForCreatingActor((BuildingObject)ObjectManager.Instance.Get(seq));
                     }
                     SelectionUI.Instance.Hide();
                 }
@@ -319,9 +320,15 @@ public class MapMaker : MonoBehaviour
         {
             int id = int.Parse(arr[1]);
             //actor에 대한 cost 처리
-            int mapId = ((ContextCreatingActor)Context.Instance.contexts[Context.Mode.UI_ACTOR]).selectedMapId;
+            BuildingObject building = ((ContextCreatingActor)Context.Instance.contexts[Context.Mode.UI_ACTOR]).selectedBuilding;
             //building정보에서 tribe정보를 actor에 반영하기 때문에 tribeId는 몰라도 된다. 
-            Updater.Instance.AddQ(ActionType.ACTOR_CREATE, -1, mapId, id, null, true);
+            //Updater.Instance.AddQ(ActionType.ACTOR_CREATE, -1, mapId, id, null, true);
+            QNode q = new QNode();
+            q.type = ActionType.ACTOR_CREATE;
+            q.id = id;
+            q.requestInfo.fromObject = building;
+            Updater.Instance.AddQ(q);
+
             Context.Instance.SetMode(Context.Mode.NONE);
             HideLayers();
         }
@@ -348,7 +355,7 @@ public class MapMaker : MonoBehaviour
                 
         actorLayer.SetActive(true);
         Context.Instance.SetMode(Context.Mode.UI_ACTOR);
-        ((ContextCreatingActor)Context.Instance.contexts[Context.Mode.UI_ACTOR]).SetSelectedBuilding(building.mapId, building.id);
+        ((ContextCreatingActor)Context.Instance.contexts[Context.Mode.UI_ACTOR]).SetSelectedBuilding(building);
     }
     void OnCreatePost(GameObject obj, string layerName)
     {
@@ -507,6 +514,7 @@ public class MapMaker : MonoBehaviour
         r2.amount = int.Parse(GameObject.Find("resource2").GetComponent<InputField>().text);
         
         SortedDictionary<int, List<BuildingObject>> temp = new SortedDictionary<int, List<BuildingObject>>();
+        /*
         foreach(KeyValuePair<int, BuildingObject> kv in BuildingManager.Instance.objects)
         {
             int tribeId = kv.Value.tribeId;
@@ -517,6 +525,22 @@ public class MapMaker : MonoBehaviour
 
             temp[tribeId].Add(kv.Value);
         }
+        */
+        List<int> list = ObjectManager.Instance.GetObjectSeqs(TAG.BUILDING);
+        for(int n = 0; n < list.Count; n++)
+        {
+            int seq = list[n];
+            Object obj = ObjectManager.Instance.Get(seq);
+
+            int tribeId = obj.tribeId;
+            if(!temp.ContainsKey(tribeId))
+            {
+                temp[tribeId] = new List<BuildingObject>();
+            }
+
+            temp[tribeId].Add((BuildingObject)obj);
+        }
+
         //tribes
         save.tribes = new List<GameStatus.Tribe>();
 
@@ -558,8 +582,9 @@ public class MapMaker : MonoBehaviour
         //mob
         save.mobs = new List<GameStatus.Mob>();
         List<int> mobs = ObjectManager.Instance.GetObjectSeqs(TAG.MOB);
-        for(int seq = 0; seq < mobs.Count; seq++)
+        for(int n = 0; n < mobs.Count; n++)
         {
+            int seq = mobs[n];
             Mob obj = (Mob)ObjectManager.Instance.Get(seq);
             GameStatus.Mob mob = new GameStatus.Mob();
             mob.mapId = obj.attachedId;
@@ -592,6 +617,20 @@ public class MapMaker : MonoBehaviour
 
         //neutral
         save.neutrals = new List<GameStatus.Neutral>();
+        List<int> neutrals = ObjectManager.Instance.GetObjectSeqs(TAG.NEUTRAL);
+        for(int n = 0; n < neutrals.Count; n++)
+        {
+            int seq = neutrals[n];
+            Object p = ObjectManager.Instance.Get(seq);
+
+            GameStatus.Neutral neutral = new GameStatus.Neutral();
+            neutral.mapId = p.mapId;
+            neutral.neutralId = p.id;
+            neutral.rotation = p.gameObject.transform.rotation.eulerAngles.y;
+
+            save.neutrals.Add(neutral);
+        }
+        /*
         foreach(KeyValuePair<int, NeutralBuilding> kv in NeutralManager.Instance.objects)
         {
             GameStatus.Neutral neutral = new GameStatus.Neutral();
@@ -601,6 +640,7 @@ public class MapMaker : MonoBehaviour
 
             save.neutrals.Add(neutral);
         }
+        */
         string path = GameObject.Find("filepath").GetComponent<InputField>().text;
         path = Json.SaveJsonFile(path, save);
 
@@ -627,10 +667,10 @@ public class MapMaker : MonoBehaviour
             return;
 
         //Debug.Log(string.Format("OnSelected {0} {1} {2}", tag, mapId, id));
-        Object obj = Util.GetObject(mapId, tag);
-        int tribeId = obj != null ? obj.tribeId : -1;
+        int seq = Util.GetIntFromGameObjectName(gameObject.name);
+        Object obj = ObjectManager.Instance.Get(seq);
         SelectionUI.Instance.Activate(tag, gameObject, new string[1] { 
-            string.Format("{0} {1} {2}", Util.GetNameInGame(tag, id),  tribeId, mapId )
+            string.Format("{0} {1} {2}", Util.GetNameInGame(tag, id),  obj.tribeId, mapId.ToString() )
             });
     }
     //Actor 모든 행동 이벤트
@@ -641,10 +681,10 @@ public class MapMaker : MonoBehaviour
     {
     }
     
-    public void OnLoadResource(Actor actor, int targetBuildingMapId)
+    public void OnLoadResource(Actor actor)
     {
     }
-    public void OnDelivery(Actor actor, int targetBuildingMapId, TAG targetBuildingTag)
+    public void OnDelivery(Actor actor, Object target)
     {
     }
     public bool CheckDefenseAttack(Object target, Object from)

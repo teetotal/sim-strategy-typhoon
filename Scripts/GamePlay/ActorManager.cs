@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class ActorManager
 {
-    public Dictionary<int, Actor> actors = new Dictionary<int, Actor>();
     private static readonly Lazy<ActorManager> hInstance = new Lazy<ActorManager>(() => new ActorManager());
-    
     public static ActorManager Instance
     {
         get {
@@ -15,48 +13,39 @@ public class ActorManager
     protected ActorManager()
     {
     }
-    public void Clear()
-    {
-        actors.Clear();
-    }
     public void Fetch(QNode q)
     {
-        int mapId = q.mapId;
         if(q.type == ActionType.ACTOR_CREATE)
         {
-            q.tribeId = BuildingManager.Instance.objects[mapId].tribeId;
+            q.tribeId = q.requestInfo.fromObject.tribeId;
             if(!Context.Instance.onCreationEvent(q))
                 return;
-            Actor actor = Create(q.mapId, q.id, true);
-            mapId = actor.mapId;
+            Actor actor = Create((BuildingObject)q.requestInfo.fromObject, q.id, true);
+            q.requestInfo.mySeq = actor.seq;
         }
         
-        if(actors.ContainsKey(mapId) == false)
-        {
-            Debug.Log(string.Format("Invalid mapId. {0}", q.type.ToString()));
-        }
-        else
-        {
-            actors[mapId].AddAction(q);
-        }
+        Object obj = ObjectManager.Instance.Get(q.requestInfo.mySeq);
+        obj.AddAction(q);
     }
 
-    public void SetActor(int buildingMapId, int actorId, float HP)
+    public void SetActor(int buildingSeq, int actorId, float HP)
     {
-        Actor actor = Create(buildingMapId, actorId, false);
+        BuildingObject building = (BuildingObject)ObjectManager.Instance.Get(buildingSeq);
+        Actor actor = Create(building, actorId, false);
         actor.currentHP = HP;
     }
 
-    private Actor Create(int buildingMapId, int id, bool isInstantiate)
+    private Actor Create(BuildingObject building, int id, bool isInstantiate)
     {
-        BuildingObject building = BuildingManager.Instance.objects[buildingMapId];
+        //BuildingObject building = BuildingManager.Instance.objects[buildingMapId];
+        //BuildingObject building = (BuildingObject)ObjectManager.Instance.Get(buildingSeq);
         int tribeId = building.tribeId;
         
         Actor obj = new Actor();
-        if(obj.Create(building.tribeId, buildingMapId, id, isInstantiate))
+        if(obj.Create(tribeId, building.mapId, id, isInstantiate))
         {
             //actor등록
-            actors[obj.mapId] = obj;
+            //actors[obj.mapId] = obj;
             //building에 actor등록
             building.actors.Add(obj);
             //actor에 building등록
@@ -70,6 +59,24 @@ public class ActorManager
     
     public void Update(bool onlyBasicUpdate)
     {
+        List<int> seqs = ObjectManager.Instance.GetObjectSeqs(TAG.ACTOR);
+        
+        for(int n = 0; n < seqs.Count; n++)
+        {
+            Object obj = ObjectManager.Instance.Get(seqs[n]);
+            if(obj != null)
+            {
+                obj.Update();
+                if(!onlyBasicUpdate)
+                {
+                    obj.UpdateUIPosition();
+                    obj.UpdateUnderAttack();
+                    obj.UpdateDefence();
+                    obj.UpdateEarning();
+                }
+            }
+        }
+        /*
         List<Actor> list = new List<Actor>();
         foreach(KeyValuePair<int, Actor> kv in actors)
         {
@@ -88,5 +95,6 @@ public class ActorManager
             }
             
         }
+        */
     }
 }

@@ -112,9 +112,9 @@ public struct Action
             for(int n = 1; n < values.Count; n++)
             {
                 Vector3 p = GetMapPosition(values[n]);
-                list.Add((prev + p) / 2);
+                list.Add( Util.AdjustY((prev + p) / 2, false) );
                 
-                list.Add(p);
+                list.Add( Util.AdjustY(p, false) );
                 prev = p;
             }
         }
@@ -173,46 +173,6 @@ public struct Action
     Vector3 GetMapPosition(int mapId)
     {
         return MapManager.Instance.defaultGameObjects[mapId].transform.position;
-    }
-}
-/* --------------------------- */
-//중립 지역 건물 정보
-public class NeutralBuilding: Object
-{
-    public float rotation;
-    public override bool AddAction(QNode node)
-    {
-        return true;
-    }
-    public override bool Create(int tribeId, int mapId, int id, bool isInstantiate)
-    {
-        this.Init(-1, id, mapId, TAG.NEUTRAL, -1, 0);
-
-        if(isInstantiate)
-        {
-            Instantiate();
-        }
-
-        return true;
-    }
-    public override void Instantiate()
-    {
-        Meta.Neutral meta = MetaManager.Instance.neutralInfo[id];
-        Instantiate(meta.prefab, false);
-    }
-
-    public override void Update()
-    {
-    }
-    public override void UpdateUnderAttack()
-    {
-    }
-    public override void UpdateDefence()
-    {
-
-    }
-    public override void UpdateEarning()
-    {
     }
 }
 

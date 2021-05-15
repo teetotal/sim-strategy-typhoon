@@ -34,16 +34,18 @@ public class Actor : ActingObject
                 break;
             case ActionType.ACTOR_MOVING_1_STEP:
             {
-                if(node.id == -1 || MapManager.Instance.GetCost(node.id) != MapManager.Instance.mapMeta.defaultVal.cost)
+                if(MapManager.Instance.GetCost(node.requestInfo.targetMapId) != MapManager.Instance.mapMeta.defaultVal.cost)
+                {
+                    //정확한 위치를 찍어서 들어 오기 때문에 이동할 수 없으면 튕긴다. 
                     return false;
+                }
                 
-                action = GetMovingAction(node.id, meta.level[this.level].ability, ActionType.ACTOR_MOVING, 3);
+                action = GetMovingAction(node.requestInfo.targetMapId, meta.level[this.level].ability, ActionType.ACTOR_MOVING, 3);
                 if(action.type == ActionType.MAX)
                     return false;
                 
                 RemoveActionType(node.type); //이전 이동 액션을 제거
                 MoveMapId(action.values[action.values.Count - 1]);
-                
                 break;
             }
             case ActionType.ACTOR_MOVING:
@@ -53,6 +55,7 @@ public class Actor : ActingObject
                 mapId: 사용 안함
                 id:     target 위치
                 */
+                /*
                 if(node.id == -1)  
                     return false;
                 
@@ -75,23 +78,36 @@ public class Actor : ActingObject
                 RemoveActionType(node.type); //이전 이동 액션을 제거
 
                 MoveMapId(node.id);
+                */
+                if(MapManager.Instance.GetCost(node.requestInfo.targetMapId) != MapManager.Instance.mapMeta.defaultVal.cost)
+                {
+                    node.requestInfo.targetMapId = MapManager.Instance.GetRandomNearEmptyMapId(node.requestInfo.targetMapId, 1);
+                    if(node.requestInfo.targetMapId== -1)
+                        return false;
+                }
 
+                action = (node.type == ActionType.ACTOR_MOVING) ? 
+                        GetMovingAction(node.requestInfo.targetMapId, meta.level[this.level].ability, node.type) : GetFlyingAction(node.requestInfo.targetMapId, meta.level[this.level].ability, node.type);
+                if(action.type == ActionType.MAX)
+                    return false;
+                
+                RemoveActionType(node.type); //이전 이동 액션을 제거
+                MoveMapId(node.requestInfo.targetMapId);
                 break;
             }
             case ActionType.ACTOR_ATTACK:
-            {
                 action = new Action(node.type, meta.level[this.level].ability.attackSpeed); //공격 속도
                 break;
-            }
             case ActionType.ACTOR_UNDER_ATTACK:
             /*
             id: from mapId
             actions[0]: from TAG
             actions[1]: attack amount
             */
-                Object obj = Util.GetObject(node.id, (TAG)node.values[0]);
+                //Object obj = Util.GetObject(node.id, (TAG)node.values[0]);
                 //일부러 null 체크 안함
-                underAttackQ.Enqueue(new UnderAttack(obj, node.values[1]));
+                //underAttackQ.Enqueue(new UnderAttack(obj, node.values[1]));
+                underAttackQ.Enqueue(new UnderAttack(node.requestInfo.fromObject, (int)node.requestInfo.amount));
                 break;
             case ActionType.ACTOR_DIE_FROM_DESTROYED_BUILDING:
             case ActionType.ACTOR_DIE:
@@ -99,13 +115,14 @@ public class Actor : ActingObject
             id: from mapId
             actions[0]: from TAG
             */
-                action = new Action(node.type, 2, new List<int>() { node.id, node.values[0] }, node.immediately);
+                //action = new Action(node.type, 2, new List<int>() { node.id, node.values[0] }, node.immediately);
+                action = new Action(node.type, node.requestInfo, 2);
                 break;
             case ActionType.ACTOR_LOAD_RESOURCE:
-                action = new Action(node.type, 1, new List<int>() { node.id });
+                action = new Action(node.type, node.requestInfo, 1);//, new List<int>() { node.id });
                 break;
             case ActionType.ACTOR_DELIVERY:
-                action = new Action(node.type, 1, new List<int>() { node.id, node.values[0] });
+                action = new Action(node.type, node.requestInfo, 1); //, new List<int>() { node.id, node.values[0] });
                 break;
         }
         if(node.insertIndex != -1 && actions.Count > 0)
@@ -120,8 +137,8 @@ public class Actor : ActingObject
         //mapmanager 변경. 
         MapManager.Instance.Move(mapId, target);
         //actormanager변경
-        ActorManager.Instance.actors[target] = this;
-        ActorManager.Instance.actors.Remove(mapId);
+        //ActorManager.Instance.actors[target] = this;
+        //ActorManager.Instance.actors.Remove(mapId);
 
         //actor map id변경
         this.mapId = target;
@@ -157,7 +174,7 @@ public class Actor : ActingObject
     public void Destroy()
     {
         this.attachedBuilding.RemoveActor(this.seq); //부모 빌딩에서 삭제   
-        ActorManager.Instance.actors.Remove(this.mapId);
+        //ActorManager.Instance.actors.Remove(this.mapId);
         Clear();
         this.Release();
     }
@@ -203,7 +220,7 @@ public class Actor : ActingObject
                     break;
                 case ActionType.ACTOR_ATTACK:
                 {
-                    Attack(meta.level[this.level].ability, TAG.ACTOR, meta.flying);
+                    Attack(meta.level[this.level].ability, meta.flying);
                     return;
                 }
                 case ActionType.ACTOR_DIE_FROM_DESTROYED_BUILDING:
@@ -224,21 +241,21 @@ public class Actor : ActingObject
                     case ActionType.ACTOR_DIE_FROM_DESTROYED_BUILDING:
                     case ActionType.ACTOR_DIE:
                         //Context.Instance.onCreationFinish(action.type, this);
-                        Context.Instance.onDie(action.type, this, Util.GetObject(action.values[0], (TAG)action.values[1]));
+                        Context.Instance.onDie(action.type, this, action.requestInfo.fromObject);
                         Destroy();
                         return;
                     case ActionType.ACTOR_LOAD_RESOURCE:
                         /*
                         values[0]:     적재할 리소스를 가지고 있는 빌딩 mapId
                         */
-                        Context.Instance.onLoadResource(this, action.values[0]);
+                        Context.Instance.onLoadResource(this);
                         break;
                     case ActionType.ACTOR_DELIVERY:
                         /*
                         values[0]:   배송할 건물의 mapId
                         values[1]:   배송할 건물의 TAG
                         */
-                        Context.Instance.onDelivery(this, action.values[0], (TAG)action.values[1]);
+                        Context.Instance.onDelivery(this, action.requestInfo.targetObject);
                         break;
                 }
                 actions.RemoveAt(0);
@@ -263,9 +280,15 @@ public class Actor : ActingObject
                 HideProgress();
                 underAttackQ.Clear();
                 this.actions.Clear();
+                /*
                 Updater.Instance.AddQ(ActionType.ACTOR_DIE, this.tribeId, this.mapId, p.from.mapId
                     , new List<int>() { (int)MetaManager.Instance.GetTag(p.from.gameObject.tag) }
                     , false);
+                */
+                QNode q = new QNode(ActionType.ACTOR_DIE, this.seq);
+                q.requestInfo.fromObject = p.from;
+                Updater.Instance.AddQ(q);
+                
                 return;
             }
 

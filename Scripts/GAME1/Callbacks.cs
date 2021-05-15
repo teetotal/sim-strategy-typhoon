@@ -66,10 +66,39 @@ public class Callbacks
         
         SetMessage(string.Format("OnDie {0} {1} > {2}", type, from.tribeId, obj.tribeId), booties);
     }
-    public void SetDelivery(Actor actor, int targetMapId, TAG targetBuildingTag)
+    public void SetDelivery(Actor actor, Object target) //, TAG targetBuildingTag)
     {
         Meta.Actor meta = MetaManager.Instance.actorInfo[actor.id];
         ActionType type = meta.flying ? ActionType.ACTOR_FLYING: ActionType.ACTOR_MOVING;
+
+        List<QNode> qs = new List<QNode>();
+        // 1. home으로 가서
+        {
+            QNode q = new QNode(type, actor.seq);
+            q.requestInfo.targetMapId = actor.attachedBuilding.mapId;
+            qs.Add(q);
+        }
+        // 2. 적재
+        {
+            QNode q = new QNode(ActionType.ACTOR_LOAD_RESOURCE, actor.seq);
+            qs.Add(q);
+        }
+        // 3. 시장으로 이동
+        {
+            QNode q = new QNode(type, actor.seq);
+            q.requestInfo.targetMapId = target.mapId;
+            qs.Add(q);
+        }
+        // 4. 판매
+        {
+            QNode q = new QNode(ActionType.ACTOR_DELIVERY, actor.seq);
+            q.requestInfo.targetObject = target;
+            qs.Add(q);
+        }
+
+        actor.SetRoutine(qs);
+
+        /*
         //routine 추가
         actor.SetRoutine(new List<QNode>()
         {
@@ -78,6 +107,7 @@ public class Callbacks
             new QNode(type, actor.tribeId, actor.mapId, targetMapId, null, false, -1), // 시장으로 이동
             new QNode(ActionType.ACTOR_DELIVERY, actor.tribeId, actor.mapId, targetMapId, new List<int>() { (int)targetBuildingTag }, false, -1) //판매
         });
+        */
     }
 
     // 모든 선택 이벤트 통합.
@@ -87,7 +117,9 @@ public class Callbacks
             return;
 
         //Debug.Log(string.Format("OnSelected {0} {1} {2}", tag, mapId, id));
-        Object obj = Util.GetObject(mapId, tag);
+        //Object obj = Util.GetObject(mapId, tag);
+        int seq = Util.GetIntFromGameObjectName(gameObject.name);
+        Object obj = ObjectManager.Instance.Get(seq);
         SelectionUI.Instance.Activate(tag, gameObject, new string[1] { 
             string.Format("{0} {1} {2}", Util.GetNameInGame(tag, id),  obj.tribeId, mapId.ToString() )
             });
@@ -104,6 +136,10 @@ public class Callbacks
         {   
             if(actor.mapId != targetId && MapManager.Instance.IsEmptyMapId(targetId))
             {
+                QNode q = new QNode(meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, actor.seq);
+                q.requestInfo.targetMapId = targetId;
+                Updater.Instance.AddQ(q);
+                /*
                 Updater.Instance.AddQ(
                     meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
                     actor.tribeId,
@@ -111,6 +147,7 @@ public class Callbacks
                     targetId, 
                     null,
                     false);
+                */
             }
             return;
         }
@@ -119,6 +156,7 @@ public class Callbacks
         
         switch(tag)
         {
+            case TAG.ACTOR:
             case TAG.BUILDING:
                 if(meta.level[actor.level].ability.attackDistance < MapManager.Instance.GetDistance(actor.GetCurrentMapId(), targetObject.mapId))
                 {
@@ -128,16 +166,17 @@ public class Callbacks
 
                 if(actor.tribeId != targetObject.tribeId && actor.SetFollowObject(targetObject))
                 {
-                   Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.tribeId, actor.mapId, -1, null, false);
+                   //Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.tribeId, actor.mapId, -1, null, false);
+                   Updater.Instance.AddQ(new QNode(ActionType.ACTOR_ATTACK, actor.seq));
                 }
                 break;
 
             case TAG.NEUTRAL:
                 Meta.Neutral targetMeta = MetaManager.Instance.neutralInfo[targetObject.id]; 
                 if(targetMeta.type == (int)BuildingType.MARKET)
-                    SetDelivery(actor, targetObject.mapId, TAG.NEUTRAL);
+                    SetDelivery(actor, targetObject);
                 break;
-
+            /*
             case TAG.ACTOR:
                 if(meta.level[actor.level].ability.attackDistance < MapManager.Instance.GetDistance(actor.GetCurrentMapId(), targetObject.GetCurrentMapId()))
                 {
@@ -149,11 +188,12 @@ public class Callbacks
                     Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.tribeId, actor.mapId, -1, null, false);
                 }
                 break;
-
+            */
             case TAG.MOB:
                 if(actor.SetFollowObject(targetObject))
                 {
-                    Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.tribeId, actor.mapId, -1, null, false);
+                    //Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.tribeId, actor.mapId, -1, null, false);
+                    Updater.Instance.AddQ(new QNode(ActionType.ACTOR_ATTACK, actor.seq));
                 }
                 break;
             
@@ -166,7 +206,7 @@ public class Callbacks
         //if(to.currentHP <= 0) Debug.Log("OnAttack Die");  
     }
     
-    public void OnLoadResource(Actor actor, int targetBuildingMapId)
+    public void OnLoadResource(Actor actor)
     {
         //짐 싣기
         GameObject selectedObj = actor.gameObject;
@@ -177,7 +217,7 @@ public class Callbacks
         Vector3 size = selectedObj.GetComponent<BoxCollider>().size;
         o.transform.localPosition = new Vector3(0, size.y, 0);
     }
-    public void OnDelivery(Actor actor, int targetBuildingMapId, TAG targetBuildingTag)
+    public void OnDelivery(Actor actor, Object target)
     {
         Transform load = actor.gameObject.transform.Find("load");
         if(load == null)

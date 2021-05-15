@@ -266,11 +266,15 @@ public class GamePlay : MonoBehaviour
             case "buttonX":
                 if(SelectionUI.Instance.selectedObject != null)
                 {
-                    int mapId = SelectionUI.Instance.GetSelectedMapId();
-                    Object building = BuildingManager.Instance.objects[mapId];
+                    int seq = SelectionUI.Instance.GetSelectedObjectId();
+                    BuildingObject building = (BuildingObject)ObjectManager.Instance.Get(seq);//BuildingManager.Instance.objects[mapId];
                     
-                    if(BuildingManager.Instance.objects[mapId].actions.Count == 0)
-                        Updater.Instance.AddQ(ActionType.BUILDING_DESTROY, building.tribeId, mapId, -1, null, true);
+                    if(building.actions.Count == 0)
+                    {
+                        QNode q = new QNode(ActionType.BUILDING_DESTROY, building.seq);
+                        q.immediately = true;
+                        Updater.Instance.AddQ(q);
+                    }
                     else
                         Debug.Log("The Building has actions");
                 }
@@ -286,10 +290,10 @@ public class GamePlay : MonoBehaviour
                 break;
             case "buttonB":
                 {
-                    int mapId = SelectionUI.Instance.GetSelectedMapId();
-                    if(mapId != -1)
+                    int seq = SelectionUI.Instance.GetSelectedObjectId();
+                    if(seq != -1)
                     {
-                        OnClickForCreatingActor(BuildingManager.Instance.objects[mapId]);
+                        OnClickForCreatingActor((BuildingObject)ObjectManager.Instance.Get(seq));
                     }
                     SelectionUI.Instance.Hide();
                 }
@@ -297,9 +301,9 @@ public class GamePlay : MonoBehaviour
             case "buttonI":
                 {
                     TAG tag = MetaManager.Instance.GetTag(SelectionUI.Instance.selectedObject.tag);
-                    int mapId = SelectionUI.Instance.GetSelectedMapId();
-                    int id = Util.GetIdInGame(tag, mapId);
-                    Debug.Log(string.Format("buttonI {0} {1} {2}", tag, mapId, id));
+                    int seq = SelectionUI.Instance.GetSelectedObjectId();
+                   
+                    Debug.Log(string.Format("buttonI {0} {1}", tag, seq));
                     SelectionUI.Instance.Hide();
                     if(tag == TAG.NEUTRAL)
                     {
@@ -318,9 +322,8 @@ public class GamePlay : MonoBehaviour
             case "buttonU":
                 if(SelectionUI.Instance.selectedObject != null)
                 {
-                    int mapId = SelectionUI.Instance.GetSelectedMapId();
-                    int actorId = ActorManager.Instance.actors[mapId].id;
-                    OnClickForUpgradingActor(mapId, actorId);
+                    int seq = SelectionUI.Instance.GetSelectedObjectId();
+                    OnClickForUpgradingActor(ObjectManager.Instance.Get(seq));
                 }
                 break;
         }
@@ -344,9 +347,15 @@ public class GamePlay : MonoBehaviour
         {
             int id = int.Parse(arr[1]);
             //actor에 대한 cost 처리
-            int mapId = ((ContextCreatingActor)Context.Instance.contexts[Context.Mode.UI_ACTOR]).selectedMapId;
+            BuildingObject building = ((ContextCreatingActor)Context.Instance.contexts[Context.Mode.UI_ACTOR]).selectedBuilding;
             //building정보에서 tribe정보를 actor에 반영하기 때문에 tribeId는 몰라도 된다. 
-            Updater.Instance.AddQ(ActionType.ACTOR_CREATE, -1, mapId, id, null, false);
+            //Updater.Instance.AddQ(ActionType.ACTOR_CREATE, -1, mapId, id, null, false);
+            QNode q = new QNode();
+            q.type = ActionType.ACTOR_CREATE;
+            q.id = id;
+            q.requestInfo.fromObject = building;
+            Updater.Instance.AddQ(q);
+
             Context.Instance.SetMode(Context.Mode.NONE);
             HideLayers();
         }
@@ -373,15 +382,15 @@ public class GamePlay : MonoBehaviour
                 
         actorLayer.SetActive(true);
         Context.Instance.SetMode(Context.Mode.UI_ACTOR);
-        ((ContextCreatingActor)Context.Instance.contexts[Context.Mode.UI_ACTOR]).SetSelectedBuilding(building.mapId, building.id);
+        ((ContextCreatingActor)Context.Instance.contexts[Context.Mode.UI_ACTOR]).SetSelectedBuilding(building);
     }
-    void OnClickForUpgradingActor(int mapId, int actorId)
+    void OnClickForUpgradingActor(Object actor)
     {
         
         ((ContextActor)Context.Instance.contexts[Context.Mode.ACTOR]).Clear();
         Context.Instance.SetMode(Context.Mode.NONE);
         //강화
-        GachaManager.Instance.SetGachaTarget(ActorManager.Instance.actors[mapId], TAG.ACTOR);
+        GachaManager.Instance.SetGachaTarget(actor, actor.tag);
         SceneManager.LoadScene("LevelUp");
         /*
         //camera moving

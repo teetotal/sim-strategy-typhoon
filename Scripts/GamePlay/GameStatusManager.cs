@@ -42,7 +42,7 @@ public class GameStatusManager
             for(int m = 0; m < tribe.buildings.Count; m++)
             {
                 GameStatus.Building building = tribe.buildings[m];
-                BuildingManager.Instance.SetBuilding(tribeId, building.mapId, building.buildingId, building.rotation);
+                int seq = BuildingManager.Instance.SetBuilding(tribeId, building.mapId, building.buildingId, building.rotation);
                 /*
                 Updater.Instance.AddQ(ActionType.BUILDING_CREATE, 
                                         n,
@@ -52,7 +52,7 @@ public class GameStatusManager
                 for(int i = 0; i < building.actors.Count; i++)
                 {
                     GameStatus.MapIdActorIdHP p = building.actors[i];
-                    ActorManager.Instance.SetActor(building.mapId, p.actorId, p.HP);
+                    ActorManager.Instance.SetActor(seq, p.actorId, p.HP);
                     //Updater.Instance.AddQ(ActionType.ACTOR_CREATE, n, building.mapId, p.actorId, new List<int>() { p.HP }, true);
                 }
             }

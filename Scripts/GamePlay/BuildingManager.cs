@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class BuildingManager
 {
-    public Dictionary<int, BuildingObject> objects = new Dictionary<int, BuildingObject>();
     private static readonly Lazy<BuildingManager> hInstance = new Lazy<BuildingManager>(() => new BuildingManager());
-    
     public static BuildingManager Instance
     {
         get {
@@ -15,50 +13,52 @@ public class BuildingManager
     protected BuildingManager()
     {
     }
-    public void Clear()
-    {
-        objects.Clear();
-    }
     public void Fetch(QNode q)
     {
         if(q.type == ActionType.BUILDING_CREATE)
         {
             if(Context.Instance.onCreationEvent(q))
             {
-                if(!Create(q.tribeId, q.mapId, q.id, 0, true))
-                {
-                    return;
-                }
+                q.requestInfo.mySeq = Create(q.tribeId, q.mapId, q.id, 0, true);
             }
-            else{
+            else
+            {
                 return;
             }
         }
 
+        Object obj = ObjectManager.Instance.Get(q.requestInfo.mySeq);
+        if(obj != null)
+        {
+            obj.AddAction(q);
+        }
+        /*
         if(objects.ContainsKey(q.mapId))
         {
             objects[q.mapId].AddAction(q);
         }
+        */
     }
 
-    public bool SetBuilding(int tribeId, int mapId, int id, float roatation)
+    public int SetBuilding(int tribeId, int mapId, int id, float roatation)
     {
         return Create(tribeId, mapId, id, roatation, false);
     }
 
-    private bool Create(int tribeId, int mapId, int id, float roatation, bool isInstantiate)
+    private int Create(int tribeId, int mapId, int id, float roatation, bool isInstantiate)
     {
         BuildingObject obj = new BuildingObject();
         obj.rotation = roatation;
         if(obj.Create(tribeId, mapId, id, isInstantiate))
         {
-            objects[obj.mapId] = obj;
+            //objects[obj.mapId] = obj;
             MapManager.Instance.AssignBuilding(obj.mapId);
-            return true;
+            return obj.seq;
         }
 
-        return false;
+        return -1;
     }
+    /*
     public void Instantiate()
     {
         foreach(KeyValuePair<int, BuildingObject> kv in objects)
@@ -72,6 +72,7 @@ public class BuildingManager
             }
         }
     }
+    */
     /*
     public void Construct(QNode q)
     {
@@ -95,6 +96,24 @@ public class BuildingManager
     */
     public void Update(bool onlyBasicUpdate)
     {
+        List<int> seqs = ObjectManager.Instance.GetObjectSeqs(TAG.BUILDING);
+        
+        for(int n = 0; n < seqs.Count; n++)
+        {
+            Object obj = ObjectManager.Instance.Get(seqs[n]);
+            if(obj != null)
+            {
+                obj.Update();
+                if(!onlyBasicUpdate)
+                {
+                    obj.UpdateUIPosition();
+                    obj.UpdateUnderAttack();
+                    obj.UpdateDefence();
+                    obj.UpdateEarning();
+                }
+            }
+        }
+        /*
         List<BuildingObject> list = new List<BuildingObject>();
         foreach(KeyValuePair<int, BuildingObject> kv in objects)
         {
@@ -112,5 +131,6 @@ public class BuildingManager
                 list[n].UpdateEarning();
             }
         }
+        */
     }
 }

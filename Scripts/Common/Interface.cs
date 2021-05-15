@@ -506,7 +506,7 @@ public abstract class ActingObject : Object
         
         return true;
     }
-    protected void Attack(Meta.Ability ability, TAG tag, bool isFlying)
+    protected void Attack(Meta.Ability ability, bool isFlying)
     {
         Action action = this.actions[0];
         ActionType attackAction = ActionType.MAX;
@@ -535,13 +535,12 @@ public abstract class ActingObject : Object
                 if(action.currentTime >= action.totalTime)
                 {
                     //상대방 공격 당함
-                    TAG t = MetaManager.Instance.GetTag(followObject.gameObject.tag);
                     ActionType at = ActionType.MAX;
-                    if(t == TAG.ACTOR)
+                    if(followObject.tag == TAG.ACTOR)
                         at = ActionType.ACTOR_UNDER_ATTACK;
-                    else if(t == TAG.BUILDING)
+                    else if(followObject.tag == TAG.BUILDING)
                         at = ActionType.BUILDING_UNDER_ATTACK;
-                    else if(t == TAG.MOB)
+                    else if(followObject.tag == TAG.MOB)
                         at = ActionType.MOB_UNDER_ATTACK;
 
                     //임시로 꼬일까봐 둘다 셋팅
@@ -576,6 +575,7 @@ public abstract class ActingObject : Object
         {
             //SetAnimation(ActionType.ACTOR_MAX);
             this.Clear(true, false, false);
+            /*
             List<QNode> list = new List<QNode>()
             {
                 //공격하기
@@ -597,6 +597,19 @@ public abstract class ActingObject : Object
                     0
                     ),
             };
+            */
+            List<QNode> list = new List<QNode>();
+            // 1. 따라가기
+            {
+                QNode q = new QNode(movingAction, this.seq);
+                q.requestInfo.targetMapId = MapManager.Instance.GetRandomNearEmptyMapId(followObject.GetCurrentMapId(), (int)ability.attackDistance);
+                list.Add(q);
+            }
+            // 2. 공격하기
+            {
+                QNode q = new QNode(attackAction, this.seq);
+                list.Add(q);
+            }
             
             Updater.Instance.AddQs(list);
         }

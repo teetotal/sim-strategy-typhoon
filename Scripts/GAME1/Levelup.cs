@@ -255,6 +255,22 @@ public class Levelup : MonoBehaviour
     List<GameObject> GeScrollItemsActors()
     {
         List<GameObject> list = new List<GameObject>();
+        List<int> seqs = ObjectManager.Instance.GetObjectSeqs(TAG.ACTOR);
+        for(int n = 0; n < seqs.Count; n++)
+        {
+            int seq = seqs[n];
+            Object p = ObjectManager.Instance.Get(seq);
+
+            GameObject obj = Resources.Load<GameObject>("button_default");
+            if(p.tribeId == GachaManager.Instance.target.tribeId)
+            {
+                Meta.Actor meta = MetaManager.Instance.actorInfo[p.id];
+                obj.GetComponentInChildren<Text>().text = meta.name + " lv." + p.level.ToString();
+                obj.name = string.Format("item-{0}", p.seq);
+                list.Add(Instantiate(obj)); 
+            }  
+        }
+        /*
         foreach(KeyValuePair<int, Actor> kv in ActorManager.Instance.actors)
         {
             GameObject obj = Resources.Load<GameObject>("button_default");
@@ -265,10 +281,9 @@ public class Levelup : MonoBehaviour
                 obj.GetComponentInChildren<Text>().text = meta.name + " lv." + kv.Value.level.ToString();
                 obj.name = string.Format("item-{0}", kv.Key);
                 list.Add(Instantiate(obj)); 
-            }
-            
+            }  
         }
-
+        */
         return list;
     }
 

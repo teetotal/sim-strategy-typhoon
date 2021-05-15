@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class NeutralManager
 {
-    public Dictionary<int, NeutralBuilding> objects = new Dictionary<int, NeutralBuilding>();
     private static readonly Lazy<NeutralManager> hInstance = new Lazy<NeutralManager>(() => new NeutralManager());
-    
     public static NeutralManager Instance
     {
         get {
@@ -14,11 +12,6 @@ public class NeutralManager
     }
     protected NeutralManager()
     {
-    }
-
-    public void Clear()
-    {
-        objects.Clear();
     }
 
     public void Fetch(QNode q)
@@ -30,7 +23,7 @@ public class NeutralManager
                     Create(q.mapId, q.id, 0, true);
                 break;
             case ActionType.NEUTRAL_DESTROY:
-                Destroy(q.mapId);
+                ((NeutralBuilding)ObjectManager.Instance.Get(q.requestInfo.mySeq)).Destroy();
                 break;
             default:
                 return;
@@ -76,30 +69,28 @@ public class NeutralManager
         obj.rotation = roatation;
         if(obj.Create(-1, mapId, id, isInstantiate))
         {
-            objects[obj.mapId] = obj;
+            //objects[obj.mapId] = obj;
             MapManager.Instance.AssignBuilding(obj.mapId);
             return true;
         }
         return false;
     }
-    public void Instantiate()
-    {
-        foreach(KeyValuePair<int, NeutralBuilding> kv in objects)
-        {
-            kv.Value.Instantiate();
-            kv.Value.gameObject.transform.localEulerAngles += new Vector3(0, kv.Value.rotation, 0);
-        }
-    }
-
-    public void Destroy(int mapId)
-    {
-        MapManager.Instance.Remove(mapId, TAG.NEUTRAL);
-        GameObject.Destroy(objects[mapId].gameObject); //map maker 에서만 쓰이니까 풀링 안한다.
-        objects.Remove(mapId);
-
-    }
     public void Update()
     {
+        List<int> seqs = ObjectManager.Instance.GetObjectSeqs(TAG.NEUTRAL);
+        
+        for(int n = 0; n < seqs.Count; n++)
+        {
+            Object obj = ObjectManager.Instance.Get(seqs[n]);
+            if(obj != null)
+            {
+                obj.Update();
+                obj.UpdateUIPosition();
+                obj.UpdateUnderAttack();
+                obj.UpdateDefence();
+            }
+        }
+        /*
         foreach(KeyValuePair<int, NeutralBuilding> kv in objects)
         {
             kv.Value.Update();
@@ -107,5 +98,6 @@ public class NeutralManager
             kv.Value.UpdateUnderAttack();
             kv.Value.UpdateDefence();
         }
+        */
     }
 }

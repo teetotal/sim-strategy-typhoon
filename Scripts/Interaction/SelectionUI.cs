@@ -86,7 +86,7 @@ public class SelectionUI
                 kv.Value.bottom.SetActive(false);
         }
     }
-    public int GetSelectedMapId()
+    public int GetSelectedObjectId()
     {
         if(selectedObject == null)
             return -1;

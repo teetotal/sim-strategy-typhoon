@@ -67,9 +67,9 @@ public class Context
     public OnCreationEvent onCreationEvent;
     public delegate void OnAttack(Object from, Object to, int amount);
     public OnAttack onAttack;
-    public delegate void OnLoadResource(Actor actor, int targetBuildingMapId);
+    public delegate void OnLoadResource(Actor actor);
     public OnLoadResource onLoadResource;
-    public delegate void OnDelivery(Actor actor, int targetBuildingMapId, TAG targetBuildingTag);
+    public delegate void OnDelivery(Actor actor, Object target);
     public OnDelivery onDelivery;
     public delegate bool CheckDefenseAttack(Object target, Object from);
     public CheckDefenseAttack checkDefenseAttack;

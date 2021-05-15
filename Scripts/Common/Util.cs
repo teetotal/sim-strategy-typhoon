@@ -54,38 +54,6 @@ public class Util
         return string.Empty;
     }
 
-    public static int GetIdInGame(TAG tag, int mapId)
-    {
-        switch(tag)
-        {
-            case TAG.BUILDING:
-                return BuildingManager.Instance.objects[mapId].id;
-            case TAG.ACTOR:
-                return ActorManager.Instance.actors[mapId].id;
-            case TAG.MOB:
-                return ObjectManager.Instance.Get(mapId).id;
-            case TAG.NEUTRAL:
-                return NeutralManager.Instance.objects[mapId].id;
-        }
-
-        return -1;
-    }
-    public static Object GetObject(int mapId, TAG tag)
-    {
-        switch(tag)
-        {
-            case TAG.BUILDING:
-                return BuildingManager.Instance.objects[mapId];
-            case TAG.ACTOR:
-                return ActorManager.Instance.actors[mapId];
-            case TAG.MOB:
-                return ObjectManager.Instance.Get(mapId);
-            case TAG.NEUTRAL:
-                return NeutralManager.Instance.objects[mapId];
-        }
-
-        return null;
-    }
     public static ActionType GetUnderAttackActionType(TAG tag)
     {
         switch(tag)

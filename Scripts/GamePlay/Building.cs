@@ -57,12 +57,15 @@ public class BuildingObject : Object
             node.values[0]: from TAG
             node.values[1]: amount
             */
-                Object obj = Util.GetObject(node.id, (TAG)node.values[0]);
+                //Object obj = Util.GetObject(node.id, (TAG)node.values[0]);
                 //일부러 null 체크 안함
-                underAttackQ.Enqueue(new UnderAttack(obj, node.values[1]));
+                //underAttackQ.Enqueue(new UnderAttack(obj, node.values[1]));
+
+                underAttackQ.Enqueue(new UnderAttack(node.requestInfo.fromObject, (int)node.requestInfo.amount));
                 return true;
             case ActionType.BUILDING_DESTROY:
-                action = new Action(node.type, 2, new List<int>() { node.id, node.values == null ? (int)ActionType.MAX : node.values[0] }, node.immediately);
+                //action = new Action(node.type, 2, new List<int>() { node.id, node.values == null ? (int)ActionType.MAX : node.values[0] }, node.immediately);
+                action = new Action(node.type, node.requestInfo, 2);
                 break;
         }
         actions.Add(action);
@@ -174,6 +177,7 @@ public class BuildingObject : Object
                         for(int n = 0; n < this.actors.Count; n++)
                         {
                             Actor actor = actors[n];
+                            /*
                             Updater.Instance.AddQ(ActionType.ACTOR_DIE_FROM_DESTROYED_BUILDING
                                                 , actor.tribeId
                                                 , actor.mapId
@@ -181,10 +185,14 @@ public class BuildingObject : Object
                                                 , new List<int>() { action.values[1] }
                                                 , action.immediately
                                                 , 0);
+                            */
+                            QNode q = new QNode(ActionType.ACTOR_DIE_FROM_DESTROYED_BUILDING, actor.seq);
+                            q.requestInfo.fromObject = action.requestInfo.fromObject;
+                            Updater.Instance.AddQ(q);
                         }
                         actions.Clear();
                         
-                        BuildingManager.Instance.objects.Remove(mapId);
+                        //BuildingManager.Instance.objects.Remove(mapId);
                         this.Release();
                         return;
                 }
@@ -210,12 +218,17 @@ public class BuildingObject : Object
                 HideProgress();
                 underAttackQ.Clear();
                 this.actions.Clear();
+                /*
                 Updater.Instance.AddQ(ActionType.BUILDING_DESTROY
                                     , this.tribeId
                                     , this.mapId
                                     , p.from.mapId
                                     , new List<int>() { (int)MetaManager.Instance.GetTag(p.from.gameObject.tag) }
                                     , false);
+                */
+                QNode q = new QNode(ActionType.BUILDING_DESTROY, this.seq);
+                q.requestInfo.fromObject = p.from;
+                Updater.Instance.AddQ(q);
                 return;
             }
         }
@@ -248,9 +261,8 @@ public class BuildingObject : Object
         List<GameObject> list = MapManager.Instance.GetFilledMapId(this.mapId, (int)meta.level[this.level].defense.range, new List<TAG>() { TAG.ENVIRONMENT, TAG.NEUTRAL });
         for(int n = 0; n < list.Count; n++)
         {
-            int target = Util.GetIntFromGameObjectName(list[n].name);
-            TAG tag = MetaManager.Instance.GetTag(list[n].tag);
-            Object obj = Util.GetObject(target, tag);
+            int seq = Util.GetIntFromGameObjectName(list[n].name);
+            Object obj = ObjectManager.Instance.Get(seq);
             //이미 죽었으면 패스
             if(obj.currentHP <= 0)
                 continue;
