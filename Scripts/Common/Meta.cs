@@ -192,7 +192,7 @@ public class GameStatus
     public struct ResourceIdAmount
     {
         public int resourceId;
-        public int amount;
+        public float amount;
     }
     [Serializable]
     public class Building : MapIdBuildingId

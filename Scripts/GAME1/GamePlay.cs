@@ -386,7 +386,9 @@ public class GamePlay : MonoBehaviour
     }
     void OnClickForUpgradingActor(Object actor)
     {
-        
+        //저장
+        GameStatusManager.Instance.Save(GameStatusManager.Instance.savedFilePath);
+
         ((ContextActor)Context.Instance.contexts[Context.Mode.ACTOR]).Clear();
         Context.Instance.SetMode(Context.Mode.NONE);
         //강화

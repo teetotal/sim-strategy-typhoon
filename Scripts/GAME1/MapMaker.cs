@@ -499,6 +499,30 @@ public class MapMaker : MonoBehaviour
     }
     void Save()
     {
+        GameStatus.ResourceIdAmount r0 = new GameStatus.ResourceIdAmount();
+        r0.resourceId = 0;
+        r0.amount = int.Parse(GameObject.Find("resource0").GetComponent<InputField>().text);
+
+        GameStatus.ResourceIdAmount r1 = new GameStatus.ResourceIdAmount();
+        r1.resourceId = 1;
+        r1.amount = int.Parse(GameObject.Find("resource1").GetComponent<InputField>().text);
+
+        GameStatus.ResourceIdAmount r2 = new GameStatus.ResourceIdAmount();
+        r2.resourceId = 2;
+        r2.amount = int.Parse(GameObject.Find("resource2").GetComponent<InputField>().text);
+
+        for(int tribe = 0; tribe < 3; tribe++)
+        {
+            GameStatusManager.Instance.AddResource(tribe, r0.resourceId, r0.amount);
+            GameStatusManager.Instance.AddResource(tribe, r1.resourceId, r1.amount);
+            GameStatusManager.Instance.AddResource(tribe, r2.resourceId, r2.amount);
+        }
+        
+        string path = GameObject.Find("filepath").GetComponent<InputField>().text;
+        GameStatusManager.Instance.Save(path);
+    }
+    void _Save()
+    {
         GameStatus save = new GameStatus();
 
         GameStatus.ResourceIdAmount r0 = new GameStatus.ResourceIdAmount();
