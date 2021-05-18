@@ -54,13 +54,13 @@ public class MobManager
             break;
         } 
     }
-    public Mob Create(int mapId, int regenMapId, int id, float roatation, bool isInstantiate)
+    public Mob Create(int mapId, int regenMapId, int id, float rotation, bool isInstantiate)
     {
         Meta.Mob meta = MetaManager.Instance.mobInfo[id];
 
         Mob obj = new Mob();
         obj.attachedId = regenMapId;   //소속 위치 
-        if(obj.Create(-1, mapId, id, isInstantiate))
+        if(obj.Create(-1, mapId, id, isInstantiate, rotation))
         {
             //routine 추가
             QNode q = new QNode(meta.flyingHeight == 0 ? ActionType.MOB_MOVING : ActionType.MOB_FLYING, obj.seq);

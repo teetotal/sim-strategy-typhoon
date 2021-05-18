@@ -4,14 +4,13 @@ using UnityEngine;
 //중립 지역 건물 정보
 public class NeutralBuilding: Object
 {
-    public float rotation;
     public override bool AddAction(QNode node)
     {
         return true;
     }
-    public override bool Create(int tribeId, int mapId, int id, bool isInstantiate)
+    public override bool Create(int tribeId, int mapId, int id, bool isInstantiate, float rotation)
     {
-        this.Init(-1, id, mapId, TAG.NEUTRAL, -1, 0);
+        this.Init(-1, id, mapId, TAG.NEUTRAL, -1, 0, rotation);
 
         if(isInstantiate)
         {

@@ -231,6 +231,9 @@ public class GamePlay : MonoBehaviour
             case "btn_inventory":
                 ShowPopup(POPUPID.INVENTORY);
                 return;
+            case "btn_lobby":
+                SceneManager.LoadScene("Lobby");
+                return;
             default:
                 break;
         }

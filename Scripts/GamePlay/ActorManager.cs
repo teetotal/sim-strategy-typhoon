@@ -20,7 +20,7 @@ public class ActorManager
             q.tribeId = q.requestInfo.fromObject.tribeId;
             if(!Context.Instance.onCreationEvent(q))
                 return;
-            Actor actor = Create((BuildingObject)q.requestInfo.fromObject, q.id, true);
+            Actor actor = Create((BuildingObject)q.requestInfo.fromObject, q.id, true, -1, 180);
             q.requestInfo.mySeq = actor.seq;
         }
         
@@ -28,24 +28,24 @@ public class ActorManager
         obj.AddAction(q);
     }
 
-    public void SetActor(int buildingSeq, int actorId, float HP)
+    public void SetActor(int buildingSeq, int actorId, float HP, int mapId, float rotation)
     {
         BuildingObject building = (BuildingObject)ObjectManager.Instance.Get(buildingSeq);
-        Actor actor = Create(building, actorId, false);
+        Actor actor = Create(building, actorId, false, mapId, rotation);
         actor.currentHP = HP;
     }
 
-    private Actor Create(BuildingObject building, int id, bool isInstantiate)
+    private Actor Create(BuildingObject building, int id, bool isInstantiate, int mapId, float rotation)
     {
-        //BuildingObject building = BuildingManager.Instance.objects[buildingMapId];
-        //BuildingObject building = (BuildingObject)ObjectManager.Instance.Get(buildingSeq);
         int tribeId = building.tribeId;
+        if(mapId == -1)
+        {
+            mapId = building.mapId;
+        }
         
         Actor obj = new Actor();
-        if(obj.Create(tribeId, building.mapId, id, isInstantiate))
+        if(obj.Create(tribeId, mapId, id, isInstantiate, rotation))
         {
-            //actor등록
-            //actors[obj.mapId] = obj;
             //building에 actor등록
             building.actors.Add(obj);
             //actor에 building등록

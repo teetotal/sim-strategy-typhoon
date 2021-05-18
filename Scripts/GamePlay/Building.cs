@@ -72,12 +72,12 @@ public class BuildingObject : Object
         return true;
     }
     
-    public override bool Create(int tribeId, int mapId, int id, bool isInstantiate)
+    public override bool Create(int tribeId, int mapId, int id, bool isInstantiate, float rotation)
     {
         this.currentMapId = mapId;
         this.elapsedDefense = 0;
 
-        this.Init(tribeId, id, mapId, TAG.BUILDING, MetaManager.Instance.buildingInfo[id].level[0].HP, 0);
+        this.Init(tribeId, id, mapId, TAG.BUILDING, MetaManager.Instance.buildingInfo[id].level[0].HP, 0, rotation);
 
         if(isInstantiate)
         {

@@ -45,11 +45,10 @@ public class BuildingManager
         return Create(tribeId, mapId, id, roatation, false);
     }
 
-    private int Create(int tribeId, int mapId, int id, float roatation, bool isInstantiate)
+    private int Create(int tribeId, int mapId, int id, float rotation, bool isInstantiate)
     {
         BuildingObject obj = new BuildingObject();
-        obj.rotation = roatation;
-        if(obj.Create(tribeId, mapId, id, isInstantiate))
+        if(obj.Create(tribeId, mapId, id, isInstantiate, rotation))
         {
             //objects[obj.mapId] = obj;
             MapManager.Instance.AssignBuilding(obj.mapId);

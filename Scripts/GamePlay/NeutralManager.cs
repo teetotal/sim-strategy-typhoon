@@ -66,8 +66,7 @@ public class NeutralManager
     public bool Create(int mapId, int id, float roatation, bool isInstantiate)
     {
         NeutralBuilding obj = new NeutralBuilding();
-        obj.rotation = roatation;
-        if(obj.Create(-1, mapId, id, isInstantiate))
+        if(obj.Create(-1, mapId, id, isInstantiate, roatation))
         {
             //objects[obj.mapId] = obj;
             MapManager.Instance.AssignBuilding(obj.mapId);

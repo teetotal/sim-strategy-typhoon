@@ -147,15 +147,18 @@ public class Actor : ActingObject
         gameObject.transform.SetParent(parent.transform);
     }
     
-    public override bool Create(int tribeId, int mapId, int id, bool isInstantiate)
+    public override bool Create(int tribeId, int mapId, int id, bool isInstantiate, float rotation)
     {
-        //생성 위치 찾기.
-        mapId = MapManager.Instance.AssignNearEmptyMapId(mapId);
-        if(mapId == -1)
-            return false;
+        if(MapManager.Instance.GetCost(mapId) != MapManager.Instance.mapMeta.defaultVal.cost)
+        {
+            //생성 위치 찾기.
+            mapId = MapManager.Instance.AssignNearEmptyMapId(mapId);
+            if(mapId == -1)
+                return false;
+        }
         
         Meta.Actor meta = MetaManager.Instance.actorInfo[id];
-        this.Init(tribeId, id, mapId, TAG.ACTOR, meta.level[0].ability.HP, 0);
+        this.Init(tribeId, id, mapId, TAG.ACTOR, meta.level[0].ability.HP, 0, rotation);
 
         //prefab 생성
         if(isInstantiate)

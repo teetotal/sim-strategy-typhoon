@@ -50,6 +50,7 @@ public abstract class Object
     //-----
 
     public GameObject gameObject;
+    public float rotation;
     public int tribeId = -1;
     public int mapId;
     public int currentMapId = -1;
@@ -63,14 +64,14 @@ public abstract class Object
     
     //fn
     public abstract bool AddAction(QNode node);
-    public abstract bool Create(int tribeId, int mapId, int id, bool isInstantiate);
+    public abstract bool Create(int tribeId, int mapId, int id, bool isInstantiate, float rotation);
     public abstract void Instantiate();
     public abstract void Update();
     public abstract void UpdateDefence();
     public abstract void UpdateUnderAttack();
     public abstract void UpdateEarning();
 
-    protected void Init(int tribeId, int id, int mapId, TAG tag, float HP, int level)
+    protected void Init(int tribeId, int id, int mapId, TAG tag, float HP, int level, float rotation)
     {
         this.tribeId = tribeId;
         this.id = id;
@@ -78,6 +79,7 @@ public abstract class Object
         this.tag = tag;
         this.currentHP = HP;
         this.level = level;
+        this.rotation = rotation;
 
         ObjectManager.Instance.Add(this);
     }
@@ -85,7 +87,7 @@ public abstract class Object
     protected GameObject Instantiate(string prefab, bool flying)
     {
         Vector3 position = MapManager.Instance.GetVector3FromMapId(mapId);
-        GameObject obj = GameObjectPooling.Instance.Get(prefab, Util.AdjustY(position, flying), Quaternion.Euler(0, 180, 0));
+        GameObject obj = GameObjectPooling.Instance.Get(prefab, Util.AdjustY(position, flying), Quaternion.Euler(0, rotation, 0));
 
         obj.tag = MetaManager.Instance.GetTag(tag);
         obj.name = this.seq.ToString(); //mapId.ToString();

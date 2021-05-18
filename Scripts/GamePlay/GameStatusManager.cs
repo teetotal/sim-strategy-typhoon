@@ -55,7 +55,7 @@ public class GameStatusManager
                 for(int i = 0; i < building.actors.Count; i++)
                 {
                     GameStatus.MapIdActorIdHP p = building.actors[i];
-                    ActorManager.Instance.SetActor(seq, p.actorId, p.HP);
+                    ActorManager.Instance.SetActor(seq, p.actorId, p.HP, p.mapId, p.rotation);
                     //Updater.Instance.AddQ(ActionType.ACTOR_CREATE, n, building.mapId, p.actorId, new List<int>() { p.HP }, true);
                 }
             }

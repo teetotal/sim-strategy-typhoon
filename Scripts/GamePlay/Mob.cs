@@ -83,10 +83,10 @@ public class Mob : ActingObject
         this.Release();
     }
 
-    public override bool Create(int tribeId, int mapId, int id, bool isInstantiate)
+    public override bool Create(int tribeId, int mapId, int id, bool isInstantiate, float rotation)
     {
         Meta.Mob meta = MetaManager.Instance.mobInfo[id];
-        this.Init(tribeId, id, mapId, TAG.MOB, meta.ability.HP, 0);
+        this.Init(tribeId, id, mapId, TAG.MOB, meta.ability.HP, 0, rotation);
 
         if(isInstantiate)
             this.Instantiate();
