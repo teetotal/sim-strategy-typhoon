@@ -64,8 +64,8 @@ public class Mob : ActingObject
 
         //Mob map id변경
         this.mapId = to;
-        GameObject parent = MapManager.Instance.defaultGameObjects[to];
-        gameObject.transform.SetParent(parent.transform);
+        //GameObject parent = MapManager.Instance.defaultGameObjects[to];
+        //gameObject.transform.SetParent(parent.transform);
 
         return action;
     }

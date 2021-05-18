@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+
 public class GamePlay : MonoBehaviour
 {
     enum POPUPID
@@ -11,9 +12,6 @@ public class GamePlay : MonoBehaviour
         TRADING
     }
     Callbacks callbacks = new Callbacks();
-    //GameObject cmObj;
-    //float cmRatio = 0;
-    //Vector3 cmDefault;
     //-------------------
     public Transform canvas;
 
@@ -25,7 +23,6 @@ public class GamePlay : MonoBehaviour
 
     //a*
     List<int> route = new List<int>();
-    //float time = 0;
     GameObject actor_scrollview;
     UITrading uiTrading;
     UIInventory uiInventory;
@@ -79,6 +76,21 @@ public class GamePlay : MonoBehaviour
                                 "CubeGreen", 
                                 "CubeRed"
                                 );
+
+        //camera
+        float h = 42;
+        float angle = 32;
+        
+        int mapId = MapManager.Instance.GetMapId(MapManager.Instance.mapMeta.dimension / 2);
+        Vector3 pos = MapManager.Instance.GetVector3FromMapId(mapId);
+        pos.y = h;
+        
+        float radian = (90 - angle) * Mathf.Deg2Rad;
+        float t = Mathf.Tan(radian);
+        pos.z = pos.z - (h * t);
+        Camera.main.transform.position = pos;
+        Camera.main.transform.rotation = Quaternion.Euler(angle, 0 , 0);
+
     }
     void InitSelectionUI()
     {
@@ -143,23 +155,6 @@ public class GamePlay : MonoBehaviour
             case "scrollview_actor":
                 actor_scrollview = obj;
                 break;
-            /*
-            case "resource1":
-                obj.GetComponentInChildren<Text>().text = string.Format("{0} {1}", 
-                    MetaManager.Instance.resourceInfo[0], 
-                    GameSystem.Instance.gameStatus.GetResource(0, 0));
-                break;
-            case "resource2":
-                obj.GetComponentInChildren<Text>().text = string.Format("{0} {1}", 
-                    MetaManager.Instance.resourceInfo[1], 
-                    GameSystem.Instance.gameStatus.GetResource(0, 1));
-                break;
-            case "resource3":
-                obj.GetComponentInChildren<Text>().text = string.Format("{0} {1}", 
-                    MetaManager.Instance.resourceInfo[2], 
-                    GameSystem.Instance.gameStatus.GetResource(0, 2));
-                break;
-            */
             default:
                 break;
         }

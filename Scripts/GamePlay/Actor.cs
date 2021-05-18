@@ -136,15 +136,11 @@ public class Actor : ActingObject
     {
         //mapmanager 변경. 
         MapManager.Instance.Move(mapId, target);
-        //actormanager변경
-        //ActorManager.Instance.actors[target] = this;
-        //ActorManager.Instance.actors.Remove(mapId);
-
         //actor map id변경
         this.mapId = target;
         GameObject parent = MapManager.Instance.defaultGameObjects[target];
-        //gameObject.name = this.mapId.ToString();
-        gameObject.transform.SetParent(parent.transform);
+        
+        //gameObject.transform.SetParent(parent.transform);
     }
     
     public override bool Create(int tribeId, int mapId, int id, bool isInstantiate, float rotation)

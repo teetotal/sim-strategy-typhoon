@@ -91,8 +91,8 @@ public abstract class Object
 
         obj.tag = MetaManager.Instance.GetTag(tag);
         obj.name = this.seq.ToString(); //mapId.ToString();
-        GameObject parent = MapManager.Instance.defaultGameObjects[mapId];
-        obj.transform.SetParent(parent.transform);
+        //GameObject parent = MapManager.Instance.defaultGameObjects[mapId];
+        //obj.transform.SetParent(parent.transform);
 
         this.gameObject = obj;
 

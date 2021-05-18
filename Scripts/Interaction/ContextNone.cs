@@ -20,7 +20,8 @@ public class ContextNone : IContext
 
     Vector3 GetDiff(Vector3 v3Direction)
     {
-        return v3Rotation * (v3Direction * weight);
+        //return v3Rotation * (v3Direction * weight);
+        return v3Direction * weight;
     }
 
     public void OnMove()
