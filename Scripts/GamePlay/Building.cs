@@ -22,7 +22,6 @@ public class BuildingObject : Object
     bool defenseLock = false;
 
     public List<Actor> actors = new List<Actor>();
-    public float rotation;
     /*
     from object
     amount
