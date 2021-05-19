@@ -38,7 +38,7 @@ public class GamePlay : MonoBehaviour
             return;
         } 
 
-        LoaderPerspective.Instance.AddComponents(OnCreate, OnCreatePost);
+        LoaderPerspective.Instance.AddComponents(null, OnCreatePost);
         buildingLayer = GameObject.Find("buildings");
         actorLayer = GameObject.Find("actors");
 
@@ -90,6 +90,16 @@ public class GamePlay : MonoBehaviour
         pos.z = pos.z - (h * t);
         Camera.main.transform.position = pos;
         Camera.main.transform.rotation = Quaternion.Euler(angle, 0 , 0);
+
+        //plane
+        GameObject plane = GameObject.Find("plane");
+        /*
+        RectTransform rect = plane.GetComponent<RectTransform>();
+        Vector2 size = rect.sizeDelta;
+        rect.sizeDelta = size * 32;
+        */
+        plane.transform.localScale = new Vector3(32, 1, 32);
+        
 
     }
     void InitSelectionUI()
@@ -282,7 +292,7 @@ public class GamePlay : MonoBehaviour
                 if(SelectionUI.Instance.selectedObject != null)
                 {
                     Vector3 angles = SelectionUI.Instance.selectedObject.transform.localEulerAngles;
-                    SelectionUI.Instance.selectedObject.transform.localEulerAngles = new Vector3(angles.x, angles.y + 90, angles.z);
+                    SelectionUI.Instance.selectedObject.transform.localEulerAngles = new Vector3(angles.x, angles.y + 45, angles.z);
                 }
                 SelectionUI.Instance.Hide();
                 break;
@@ -392,12 +402,6 @@ public class GamePlay : MonoBehaviour
         //강화
         GachaManager.Instance.SetGachaTarget(actor, actor.tag);
         SceneManager.LoadScene("LevelUp");
-        /*
-        //camera moving
-        cmObj = ActorManager.Instance.actors[mapId].gameObject;
-        cmRatio = 0;
-        cmDefault = Camera.main.transform.position;
-        */
     }
     
 
@@ -423,29 +427,7 @@ public class GamePlay : MonoBehaviour
                     break;
             }
         }
-        /*
-        if(cmObj != null)
-        {
-            cmRatio += Time.deltaTime;
-            if(cmRatio < 1 )
-            {
-                float s = Mathf.Sin( 90 * cmRatio * Mathf.PI / 180 );
-                //Debug.Log(string.Format("sin{0} {1}", cmRatio, s));
-                //Camera.main.transform.position = Vector3.Lerp(cmDefault, cmObj.transform.position, s);
-                Camera.main.fieldOfView = 10 - (5 * cmRatio);
-                Camera.main.transform.RotateAround(cmObj.transform.position, cmObj.transform.rotation.eulerAngles, 10*s);
-
-            }
-                
-        }
-        */
     }
-    
-    GameObject OnCreate(string layerName,string name, string tag, Vector2 position, Vector2 size)
-    {
-        return null;
-    } 
-
     //-------------------------------------------------
     private void InitPopup()
     {

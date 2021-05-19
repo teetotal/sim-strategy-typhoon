@@ -125,11 +125,12 @@ public class Callbacks
             });
     }
     //Actor 모든 행동 이벤트
-    public void OnActorAction(Actor actor, GameObject target)
+    public void OnActorAction(Actor actor, GameObject target, Vector3 position)
     {
         //Debug.Log(string.Format("OnAction {0}, {1}, {2}, {3}", mapId, id, tag, targetMapId));
         Meta.Actor meta = MetaManager.Instance.actorInfo[actor.id];
         TAG tag = MetaManager.Instance.GetTag(target.tag);
+        //Get map id
         int targetId = Util.GetIntFromGameObjectName(target.name);
 
         if(tag == TAG.BOTTOM || tag == TAG.ENVIRONMENT)
@@ -139,15 +140,6 @@ public class Callbacks
                 QNode q = new QNode(meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, actor.seq);
                 q.requestInfo.targetMapId = targetId;
                 Updater.Instance.AddQ(q);
-                /*
-                Updater.Instance.AddQ(
-                    meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, 
-                    actor.tribeId,
-                    actor.mapId, 
-                    targetId, 
-                    null,
-                    false);
-                */
             }
             return;
         }
@@ -166,7 +158,6 @@ public class Callbacks
 
                 if(actor.tribeId != targetObject.tribeId && actor.SetFollowObject(targetObject))
                 {
-                   //Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.tribeId, actor.mapId, -1, null, false);
                    Updater.Instance.AddQ(new QNode(ActionType.ACTOR_ATTACK, actor.seq));
                 }
                 break;
@@ -176,23 +167,9 @@ public class Callbacks
                 if(targetMeta.type == (int)BuildingType.MARKET)
                     SetDelivery(actor, targetObject);
                 break;
-            /*
-            case TAG.ACTOR:
-                if(meta.level[actor.level].ability.attackDistance < MapManager.Instance.GetDistance(actor.GetCurrentMapId(), targetObject.GetCurrentMapId()))
-                {
-                    SetMessage("too far target to attack", null);
-                    return;
-                }
-                if(actor.tribeId != targetObject.tribeId && actor.SetFollowObject(targetObject))
-                {
-                    Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.tribeId, actor.mapId, -1, null, false);
-                }
-                break;
-            */
             case TAG.MOB:
                 if(actor.SetFollowObject(targetObject))
                 {
-                    //Updater.Instance.AddQ(ActionType.ACTOR_ATTACK, actor.tribeId, actor.mapId, -1, null, false);
                     Updater.Instance.AddQ(new QNode(ActionType.ACTOR_ATTACK, actor.seq));
                 }
                 break;

@@ -17,6 +17,8 @@ public class EnvironmentManager
         }
         public GameObject Instantiate(int mapId)
         {
+            return null;
+            
             Meta.Environment meta = MetaManager.Instance.environmentInfo[id];
             GameObject parent = MapManager.Instance.defaultGameObjects[mapId];
 

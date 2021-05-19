@@ -85,7 +85,7 @@ public class ContextActor : IContext
         if(obj != null)
         {
             Context.Instance.SetMode(Context.Mode.NONE);
-            Context.Instance.onAction((Actor)selectedObject, obj);
+            Context.Instance.onAction((Actor)selectedObject, obj, Util.GetTouchedPosition(Input.mousePosition));
         } 
         else
         {

@@ -79,6 +79,16 @@ public class Util
         }
         return null;
     }
+    public static Vector3 GetTouchedPosition(Vector3 touchPosition)
+    {
+        Ray ray = Camera.main.ScreenPointToRay(touchPosition);
+        RaycastHit hit;
+        if(Physics.Raycast(ray, out hit))
+        {
+            return hit.point;
+        }
+        return Vector3.zero;
+    }
     public static string GetCurrencyString(float n)
     {
         return string.Format("{0:N}", n);

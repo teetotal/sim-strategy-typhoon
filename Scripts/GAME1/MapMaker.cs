@@ -58,6 +58,20 @@ public class MapMaker : MonoBehaviour
                                 );
         //update 중지
         Updater.Instance.onlyBasicUpdate = true;
+
+        //camera
+        float h = 42;
+        float angle = 32;
+        
+        int mapId = MapManager.Instance.GetMapId(MapManager.Instance.mapMeta.dimension / 2);
+        Vector3 pos = MapManager.Instance.GetVector3FromMapId(mapId);
+        pos.y = h;
+        
+        float radian = (90 - angle) * Mathf.Deg2Rad;
+        float t = Mathf.Tan(radian);
+        pos.z = pos.z - (h * t);
+        Camera.main.transform.position = pos;
+        Camera.main.transform.rotation = Quaternion.Euler(angle, 0 , 0);
     }
 
     // Update is called once per frame
@@ -248,7 +262,7 @@ public class MapMaker : MonoBehaviour
                 if(SelectionUI.Instance.selectedObject != null)
                 {
                     Vector3 angles = SelectionUI.Instance.selectedObject.transform.localEulerAngles;
-                    SelectionUI.Instance.selectedObject.transform.localEulerAngles = new Vector3(angles.x, angles.y + 90, angles.z);
+                    SelectionUI.Instance.selectedObject.transform.localEulerAngles = new Vector3(angles.x, angles.y + 45, angles.z);
                 }
                 SelectionUI.Instance.Hide();
                 break;
@@ -517,7 +531,7 @@ public class MapMaker : MonoBehaviour
             GameStatusManager.Instance.AddResource(tribe, r1.resourceId, r1.amount);
             GameStatusManager.Instance.AddResource(tribe, r2.resourceId, r2.amount);
         }
-        
+
         string path = GameObject.Find("filepath").GetComponent<InputField>().text;
         GameStatusManager.Instance.Save(path);
     }
@@ -698,7 +712,7 @@ public class MapMaker : MonoBehaviour
             });
     }
     //Actor 모든 행동 이벤트
-    public void OnActorAction(Actor actor, GameObject target)
+    public void OnActorAction(Actor actor, GameObject target, Vector3 position)
     {
     }
     public void OnAttack(Object from, Object to, int amount)

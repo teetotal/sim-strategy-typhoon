@@ -111,7 +111,7 @@ public struct Action
             Vector3 prev = list[0];
             for(int n = 1; n < values.Count; n++)
             {
-                Vector3 p = GetMapPosition(values[n]);
+                Vector3 p = MapManager.Instance.GetVector3FromMapId(values[n]);//GetMapPosition(values[n]);
                 list.Add( Util.AdjustY((prev + p) / 2, false) );
                 
                 list.Add( Util.AdjustY(p, false) );
@@ -169,10 +169,6 @@ public struct Action
         //Debug.Log(string.Format("{0} {1} {2} {3}/{4}", to, from, ratio, this.currentTime, this.totalTime));
 
         return true;
-    }
-    Vector3 GetMapPosition(int mapId)
-    {
-        return MapManager.Instance.defaultGameObjects[mapId].transform.position;
     }
 }
 
