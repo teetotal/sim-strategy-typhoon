@@ -17,18 +17,14 @@ public class EnvironmentManager
         }
         public GameObject Instantiate(int mapId)
         {
-            return null;
-            
-            Meta.Environment meta = MetaManager.Instance.environmentInfo[id];
-            GameObject parent = MapManager.Instance.defaultGameObjects[mapId];
+            //return null;
 
-            this.gameObject = MapManager.Instance.CreateInstance(mapId, 
-                                                                        meta.name, 
-                                                                        parent.transform.position + new Vector3(0, 0.1f, 0), 
-                                                                        mapId.ToString(),
-                                                                        TAG.ENVIRONMENT,
-                                                                        parent
-                                                                        );
+            Meta.Environment meta = MetaManager.Instance.environmentInfo[id];
+            this.gameObject = MapManager.Instance.CreateInstance( meta.name, 
+                                                                  MapManager.Instance.GetVector3FromMapId(mapId) + new Vector3(0, 0.1f, 0),
+                                                                  mapId.ToString(),
+                                                                  TAG.ENVIRONMENT
+                                                                    );
             this.gameObject.transform.localEulerAngles += new Vector3(0, rotation, 0);
             return this.gameObject;
         }

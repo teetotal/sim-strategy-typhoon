@@ -12,9 +12,5 @@
         "cost": 0,
         "prefabId": 0,
         "AstarNodeCost": 0.1
-    },
-    "nodes": [],
-    "mobs": [],
-    "neutrals": [],
-    "tribes": []
+    }
 }

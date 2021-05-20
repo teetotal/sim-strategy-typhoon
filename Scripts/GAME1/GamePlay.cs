@@ -90,17 +90,6 @@ public class GamePlay : MonoBehaviour
         pos.z = pos.z - (h * t);
         Camera.main.transform.position = pos;
         Camera.main.transform.rotation = Quaternion.Euler(angle, 0 , 0);
-
-        //plane
-        GameObject plane = GameObject.Find("plane");
-        /*
-        RectTransform rect = plane.GetComponent<RectTransform>();
-        Vector2 size = rect.sizeDelta;
-        rect.sizeDelta = size * 32;
-        */
-        plane.transform.localScale = new Vector3(32, 1, 32);
-        
-
     }
     void InitSelectionUI()
     {

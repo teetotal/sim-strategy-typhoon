@@ -9,6 +9,8 @@ public class MapManager
     
     public int[,] map;
     public List<Object[,]> currentMap = new List<Object[,]>(); //현재 위치 저장 맵. 일단은 여러개가 같은 위치에 있어도 하나의 객체만 저장한다.
+    private Vector2 startPosition;
+    private GameObject plane;
     private static readonly Lazy<MapManager> hInstance = new Lazy<MapManager>(() => new MapManager());
     public static MapManager Instance
     {
@@ -34,12 +36,6 @@ public class MapManager
         Vector2Int pos = GetMapPosition(mapId);
         map[pos.x, pos.y] = cost;
     }
-    public int GetMapId(Vector3 position)
-    {
-        int start = (int)(mapMeta.dimension.x / 2);
-        Vector2Int pos = new Vector2Int((int)position.x + start, (int)position.z + start);
-        return GetMapId(pos);
-    }
     public int GetMapId(Vector2Int pos)
     {
         if(pos.x >= mapMeta.dimension.x || pos.y >= mapMeta.dimension.y)
@@ -63,10 +59,13 @@ public class MapManager
         int y = id / mapMeta.dimension.x;
         int x = id % mapMeta.dimension.x;
 
-        int startX = mapMeta.dimension.x / 2;
-        int startY = mapMeta.dimension.y / 2;
-
-        return new Vector3(x - startX, 0, y - startY);
+        return new Vector3(x - startPosition.x, 0, y - startPosition.y);
+    }
+    public int GetMapId(Vector3 position)
+    {
+        int start = (int)(mapMeta.dimension.x / 2);
+        Vector2Int pos = new Vector2Int((int)position.x + start, (int)position.z + start);
+        return GetMapId(pos);
     }
     public bool IsEmptyMapId(int id)
     {
@@ -261,6 +260,21 @@ public class MapManager
                 map[j, i] = mapMeta.defaultVal.cost;
             }
         }
+
+        //set start position
+        startPosition = new Vector2(mapMeta.dimension.x / 2, mapMeta.dimension.y / 2);
+
+        if(mapMeta.dimension.x % 2 == 0)
+        {
+            startPosition.x -= 0.5f;
+        }
+
+        if(mapMeta.dimension.y % 2 == 0)
+        {
+            startPosition.y -= 0.5f;
+        }
+
+        /*
         //set specific
         for(int n = 0; n < mapMeta.nodes.Count; n++)
         {
@@ -273,10 +287,6 @@ public class MapManager
             {
                 int mapId = node.positions[i];
                 EnvironmentManager.Instance.Create(mapId, node.prefabId, 0, false);
-                /*
-                Vector2Int position = GetMapPosition(mapId);
-                map[position.x, position.y] = prefabInfo.cost;
-                */
             }
 
             //range
@@ -285,10 +295,6 @@ public class MapManager
                 for(int id = node.range.start; id <= node.range.end; id++)
                 {
                     int mapId = id;
-                    /*
-                    Vector2Int position = GetMapPosition(mapId);
-                    map[position.x, position.y] = prefabInfo.cost;
-                    */
                     EnvironmentManager.Instance.Create(mapId, prefabInfo.id, 0, false);
                 }
             }
@@ -300,11 +306,8 @@ public class MapManager
             Map.Neutral ne = mapMeta.neutrals[n];
             NeutralManager.Instance.Create(ne.mapId, ne.id, ne.rotation, false);
             AssignBuilding(ne.mapId);
-            /*
-            Vector2Int position = GetMapPosition(ne.mapId);
-            map[position.x, position.y] = -1;
-            */
         }
+        */
     }
     
     public void CreatePrefabs()
@@ -315,6 +318,14 @@ public class MapManager
         Vector2Int startPosition = new Vector2Int(mapMeta.dimension.x / 2, mapMeta.dimension.y / 2);
         //Map.Prefab prefabInfoDefault = mapMeta.prefabs[mapMeta.defaultVal.prefabId];
         Meta.Environment prefabInfoDefault = MetaManager.Instance.environmentInfo[mapMeta.defaultVal.prefabId];
+
+        //plane
+        GameObject p = Resources.Load<GameObject>(prefabInfoDefault.name);
+        plane = GameObject.Instantiate(p, Vector3.zero, Quaternion.identity);
+        plane.name = "plane";
+        plane.tag = MetaManager.Instance.GetTag(TAG.BOTTOM);
+        plane.transform.localScale = new Vector3(mapMeta.dimension.x, 1, mapMeta.dimension.y);
+
         //init map
         /*
         int idx = 0;
@@ -333,6 +344,7 @@ public class MapManager
             }
         }
         */
+        /*
         //set specific
         for(int n = 0; n < mapMeta.nodes.Count; n++)
         {
@@ -373,13 +385,15 @@ public class MapManager
                 }
             }
         }
+        */
     }
-    public GameObject CreateInstance(int mapId, string prefab, Vector3 position, string name, TAG tag, GameObject parent)
+    public GameObject CreateInstance(string prefab, Vector3 position, string name, TAG tag)
     {
         GameObject p = Resources.Load<GameObject>(prefab);
         p = GameObject.Instantiate(p, position, Quaternion.identity);
         p.name = name;
         p.tag = MetaManager.Instance.GetTag(tag);
+        /*
         switch(tag)
         {
             case TAG.BOTTOM:
@@ -395,9 +409,9 @@ public class MapManager
                 buildingObjects[mapId] = p;
             break;
         } 
-            
-        if(parent != null)
-            p.transform.SetParent(parent.transform);
+        */  
+        if(plane != null)
+            p.transform.SetParent(plane.transform);
 
         return p;
     }
