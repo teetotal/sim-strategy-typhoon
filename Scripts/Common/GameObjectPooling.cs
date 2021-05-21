@@ -42,6 +42,7 @@ public class GameObjectPooling
             
         gameObject.transform.position = position;
         gameObject.transform.rotation = quaternion;
+        gameObject.name = prefab;
 
         return gameObject;
     }

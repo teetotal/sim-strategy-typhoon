@@ -64,7 +64,7 @@ public class MapManager
     public int GetMapId(Vector3 position)
     {
         int start = (int)(mapMeta.dimension.x / 2);
-        Vector2Int pos = new Vector2Int((int)position.x + start, (int)position.z + start);
+        Vector2Int pos = new Vector2Int((int)position.x + start, (int)position.z + (start));
         return GetMapId(pos);
     }
     public bool IsEmptyMapId(int id)

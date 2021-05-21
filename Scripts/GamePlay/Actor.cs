@@ -138,8 +138,7 @@ public class Actor : ActingObject
         MapManager.Instance.Move(mapId, target);
         //actor map id변경
         this.mapId = target;
-        GameObject parent = MapManager.Instance.defaultGameObjects[target];
-        
+        //GameObject parent = MapManager.Instance.defaultGameObjects[target];
         //gameObject.transform.SetParent(parent.transform);
     }
     

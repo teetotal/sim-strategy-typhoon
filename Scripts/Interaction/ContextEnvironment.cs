@@ -69,7 +69,8 @@ public class ContextEnvironment : IContext
     {
         for(int n=0; n < areaObjects.Count; n++)
         {
-            GameObject.DestroyImmediate(areaObjects[n]);
+            GameObjectPooling.Instance.Release(areaObjects[n].name, areaObjects[n]);
+            //GameObject.DestroyImmediate(areaObjects[n]);
         }
         areaObjects.Clear();
     }
@@ -90,13 +91,16 @@ public class ContextEnvironment : IContext
             {
                 Vector3 position = MapManager.Instance.GetVector3FromMapId(id);
                 
-                GameObject obj = Context.Instance.greenPrefab;
+                string prefab = Context.Instance.greenPrefab;
                 if(!MapManager.Instance.IsEmptyMapId(id))
                 {
-                    obj = Context.Instance.redPrefab;
+                    prefab = Context.Instance.redPrefab;
                     ret = false;
                 }
-                areaObjects.Add(GameObject.Instantiate(obj, new Vector3(position.x, position.y + 0.1f, position.z), Quaternion.identity));
+                areaObjects.Add(
+                    GameObjectPooling.Instance.Get(prefab, new Vector3(position.x, position.y + 0.1f, position.z), Quaternion.identity)
+                    //GameObject.Instantiate(obj, new Vector3(position.x, position.y + 0.1f, position.z), Quaternion.identity)
+                    );
             }
             else
             {

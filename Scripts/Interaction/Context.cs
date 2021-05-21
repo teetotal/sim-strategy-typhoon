@@ -61,7 +61,7 @@ public class Context
     }
     public delegate void OnSelectionEvent(TAG tag, int mapId, int id, GameObject gameObject);
     public OnSelectionEvent onSelectEvent;
-    public delegate void OnActorAction(Actor actor, GameObject targetObject, Vector3 position);
+    public delegate void OnActorAction(Actor actor, GameObject targetObject, int mapId);
     public OnActorAction onAction;
     public delegate bool OnCreationEvent(QNode q);
     public OnCreationEvent onCreationEvent;
@@ -85,7 +85,8 @@ public class Context
     private static readonly Lazy<Context> hInstance = new Lazy<Context>(() => new Context());
     public Mode mode = Mode.NONE;
     public Transform canvas;
-    public GameObject greenPrefab, redPrefab, progressPrefab;
+    public GameObject progressPrefab;
+    public string greenPrefab, redPrefab;
     public static Context Instance
     {
         get {
@@ -149,8 +150,8 @@ public class Context
 
         this.canvas = canvas;
         this.progressPrefab = Resources.Load<GameObject>(progressPrefab);
-        this.greenPrefab = Resources.Load<GameObject>(greenCube);
-        this.redPrefab = Resources.Load<GameObject>(redCube);
+        this.greenPrefab = greenCube;
+        this.redPrefab = redCube;
 
         //init
         foreach (KeyValuePair<Context.Mode, IContext> kv in contexts)

@@ -49,14 +49,29 @@ public class ContextActor : IContext
 
     public void OnMove()
     {
+        Clear();
+        Vector3 pos = Util.GetTouchedPosition(Input.mousePosition);
+        int mapId = MapManager.Instance.GetMapId(pos);
+
+        Vector3 position = MapManager.Instance.GetVector3FromMapId(mapId);
+
+        string prefab = Context.Instance.greenPrefab;    
+        if(!MapManager.Instance.IsEmptyMapId(mapId))
+        {
+            prefab = Context.Instance.redPrefab;
+        }
+        point = GameObjectPooling.Instance.Get(prefab, new Vector3(position.x, position.y + 0.1f, position.z), Quaternion.identity);
+        point.name = prefab;
+
+        /*
         GameObject obj = Touch.Instance.GetTouchedObject3D();
         if(obj != null && obj.tag == MetaManager.Instance.GetTag(TAG.BOTTOM))
         {
-            Clear();
             int id = Util.GetIntFromGameObjectName(obj.name);
             Vector3 position = MapManager.Instance.GetVector3FromMapId(id);
             Vector2Int pos = MapManager.Instance.GetMapPosition(id);
             GameObject prefab = Context.Instance.greenPrefab;
+            
             if(!MapManager.Instance.IsEmptyMapId(id))
             {
                 prefab = Context.Instance.redPrefab;
@@ -65,11 +80,13 @@ public class ContextActor : IContext
             point = GameObject.Instantiate(prefab, new Vector3(position.x, position.y + 0.1f, position.z), Quaternion.identity);
             
         }
+        */
     }
     public void Clear()
     {
         if(point)
-            GameObject.DestroyImmediate(point);
+            GameObjectPooling.Instance.Release(point.name, point);
+            //GameObject.DestroyImmediate(point);
         point = null;
     }
 
@@ -84,8 +101,11 @@ public class ContextActor : IContext
         GameObject obj = Touch.Instance.GetTouchedObject3D();
         if(obj != null)
         {
+            Vector3 pos = Util.GetTouchedPosition(Input.mousePosition);
+            int mapId = MapManager.Instance.GetMapId(pos);
+
             Context.Instance.SetMode(Context.Mode.NONE);
-            Context.Instance.onAction((Actor)selectedObject, obj, Util.GetTouchedPosition(Input.mousePosition));
+            Context.Instance.onAction((Actor)selectedObject, obj, mapId);
         } 
         else
         {

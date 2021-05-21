@@ -125,24 +125,26 @@ public class Callbacks
             });
     }
     //Actor 모든 행동 이벤트
-    public void OnActorAction(Actor actor, GameObject target, Vector3 position)
+    public void OnActorAction(Actor actor, GameObject target, int mapId)
     {
         //Debug.Log(string.Format("OnAction {0}, {1}, {2}, {3}", mapId, id, tag, targetMapId));
         Meta.Actor meta = MetaManager.Instance.actorInfo[actor.id];
         TAG tag = MetaManager.Instance.GetTag(target.tag);
-        //Get map id
-        int targetId = Util.GetIntFromGameObjectName(target.name);
+        
 
         if(tag == TAG.BOTTOM || tag == TAG.ENVIRONMENT)
         {   
-            if(actor.mapId != targetId && MapManager.Instance.IsEmptyMapId(targetId))
+            if(actor.mapId != mapId && MapManager.Instance.IsEmptyMapId(mapId))
             {
                 QNode q = new QNode(meta.flying ? ActionType.ACTOR_FLYING : ActionType.ACTOR_MOVING, actor.seq);
-                q.requestInfo.targetMapId = targetId;
+                q.requestInfo.targetMapId = mapId;
                 Updater.Instance.AddQ(q);
             }
             return;
         }
+
+        //Get map id
+        int targetId = Util.GetIntFromGameObjectName(target.name);
 
         Object targetObject = ObjectManager.Instance.Get(targetId);
         
