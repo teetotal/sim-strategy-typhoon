@@ -65,10 +65,26 @@ public class MapManager
     {
         int start = (int)(mapMeta.dimension.x / 2);
         Vector2Int pos = new Vector2Int((int)position.x + start, (int)position.z + (start));
+
+        //float r = position.z % 1.0f;
+        //0을 기준으로 +,-에 따라 다르게 
+        if(pos.y < start)
+        {
+            //if(r != 0.0f)
+                pos.y -= 1;
+        }
+        if(pos.x < start)
+        {
+            pos.x -= 1;
+        }
+        
         return GetMapId(pos);
     }
     public bool IsEmptyMapId(int id)
     {
+        if(id == -1)
+            return false;
+            
         Vector2Int pos = GetMapPosition(id);
         //Debug.Log(string.Format("IsEmptyMapId {0} - {1}", pos, map[pos.x, pos.y]));
         if(map[pos.x, pos.y] == mapMeta.defaultVal.cost) // && defaultGameObjects[id].gameObject.transform.childCount == 0)

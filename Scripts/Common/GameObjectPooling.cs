@@ -37,7 +37,7 @@ public class GameObjectPooling
         else
         {
             gameObject = Alloc(prefab);
-            Debug.Log(string.Format("Allocation {0} {1}", prefab, allocCount[prefab]));
+            //Debug.Log(string.Format("Allocation {0} {1}", prefab, allocCount[prefab]));
         }
             
         gameObject.transform.position = position;

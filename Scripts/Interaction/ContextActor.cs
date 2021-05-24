@@ -50,7 +50,9 @@ public class ContextActor : IContext
     public void OnMove()
     {
         Clear();
-        Vector3 pos = Util.GetTouchedPosition(Input.mousePosition);
+
+        Vector3 mousePosition = Input.mousePosition;
+        Vector3 pos = Util.GetTouchedPosition(mousePosition);
         int mapId = MapManager.Instance.GetMapId(pos);
 
         Vector3 position = MapManager.Instance.GetVector3FromMapId(mapId);
@@ -101,8 +103,10 @@ public class ContextActor : IContext
         GameObject obj = Touch.Instance.GetTouchedObject3D();
         if(obj != null)
         {
-            Vector3 pos = Util.GetTouchedPosition(Input.mousePosition);
+            Vector3 mousePosition = Input.mousePosition;
+            Vector3 pos = Util.GetTouchedPosition(mousePosition);
             int mapId = MapManager.Instance.GetMapId(pos);
+            Debug.Log(string.Format("{0}, {1}, {2}", mousePosition, pos, mapId));
 
             Context.Instance.SetMode(Context.Mode.NONE);
             Context.Instance.onAction((Actor)selectedObject, obj, mapId);
